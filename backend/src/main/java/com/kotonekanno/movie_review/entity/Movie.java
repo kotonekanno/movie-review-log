@@ -14,14 +14,11 @@ public class Movie {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "external_id", nullable = false, unique = true)
-  private Integer externalId;
+  @Column(name = "tmdb_id", nullable = false, unique = true)
+  private Long tmdbId;
 
   @Column(name = "ja_title")
   private String jaTitle;
-
-  @Column(name = "en_title")
-  private String enTitle;
 
   @Column(name = "original_title", nullable = false)
   private String originalTitle;
@@ -29,8 +26,6 @@ public class Movie {
   @Column(name = "release_year")
   private Integer releaseYear;
 
-  private String country;
-
-  @Column(name = "poster_url")
-  private String posterUrl;
+  @Column(name = "poster_path")
+  private String posterPath;
 }

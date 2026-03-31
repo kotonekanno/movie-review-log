@@ -1,9 +1,9 @@
 package com.kotonekanno.movie_review.repository;
 
+import com.kotonekanno.movie_review.entity.PasswordResetToken;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.kotonekanno.movie_review.entity.Genre;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GenreRepository extends JpaRepository<Genre, Long> {
+public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, String> {
 }

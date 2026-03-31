@@ -20,7 +20,4 @@ public class Genre {
 
   @Column(name = "ja_name")
   private String jaName;
-
-  @Column(name = "en_name")
-  private String enName;
 }

@@ -25,9 +25,6 @@ public class Review {
   @JoinColumn(name = "movie_id", nullable = false)
   private Movie movie;
 
-  @Column(name = "display_language", nullable = false)
-  private String displayLanguage;
-
   @Column(nullable = false)
   private Double score;
 
@@ -36,7 +33,7 @@ public class Review {
   @Column(name = "watched_at")
   private LocalDate watchedAt;
 
-  @Column(name = "created_at", nullable = false, updatable = false)
+  @Column(name = "created_at", updatable = false)
   private LocalDateTime createdAt;
 
   @Column(name = "updated_at")

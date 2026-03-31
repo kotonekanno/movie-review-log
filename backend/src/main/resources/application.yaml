@@ -10,5 +10,5 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update   # 本番では変更
+      ddl-auto: update   # 本番では変更(update/create)
     show-sql: true

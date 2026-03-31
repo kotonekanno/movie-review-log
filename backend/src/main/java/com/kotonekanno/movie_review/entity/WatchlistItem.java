@@ -25,9 +25,6 @@ public class WatchlistItem {
   @JoinColumn(name = "movie_id", nullable = false)
   private Movie movie;
 
-  @Column(name = "display_language",  nullable = false)
-  private String displayLanguage;
-
   @Column(nullable = false)
   private Integer priority;
 
@@ -36,12 +33,8 @@ public class WatchlistItem {
   @Column(nullable = false)
   private Boolean isWatched;
 
-
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
-
-  @Column(name = "updated_at")
-  private LocalDateTime updatedAt;
 
   @Column(name = "deleted_at")
   private LocalDateTime deletedAt;
@@ -54,10 +47,5 @@ public class WatchlistItem {
     if (this.isWatched == null) {
       this.isWatched = false;
     }
-  }
-
-  @PreUpdate
-  public void preUpdate() {
-    this.updatedAt = LocalDateTime.now();
   }
 }
