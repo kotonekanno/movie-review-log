@@ -3,11 +3,15 @@ package com.kotonekanno.movie_review.config;
 import com.kotonekanno.movie_review.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -23,23 +27,25 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        .csrf(AbstractHttpConfigurer::disable)                     // 開発用
-        .userDetailsService(customUserDetailsService)
-
+        .cors(Customizer.withDefaults())
+        .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers("/login", "/register", "/error").permitAll()
-            .anyRequest().permitAll()                              // テスト用　// .authenticated()
+            .anyRequest().authenticated()
         )
-
         .formLogin(form -> form
-            .loginPage("/login")
             .loginProcessingUrl("/login")
-            .defaultSuccessUrl("/home", true)
-            .failureUrl("/login?error=true")
-            .usernameParameter("email")
-            .permitAll()
+            .successHandler((req, res, auth) -> {
+              res.setContentType("application/json");
+              res.getWriter().write("{\"status\":\"ok\"}");
+            })
+            .failureHandler((req, res, ex) -> {
+              res.setContentType("application/json");
+              res.setStatus(401);
+              res.getWriter().write("{\"status\":\"error\",\"message\":\"Invalid credentials\"}");
+            })
         )
-
         .logout(logout -> logout
             .logoutUrl("/logout")
             .logoutSuccessUrl("/login?logout")
@@ -49,7 +55,18 @@ public class SecurityConfig {
   }
 
   @Bean
-  public PasswordEncoder passwordEncoder() {
+  public BCryptPasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  public AuthenticationManager authenticationManager(HttpSecurity http,
+                                                     CustomUserDetailsService userDetailsService,
+                                                     BCryptPasswordEncoder passwordEncoder) throws Exception {
+    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+    authProvider.setUserDetailsService(userDetailsService);
+    authProvider.setPasswordEncoder(passwordEncoder);
+
+    return new ProviderManager(authProvider);
   }
 }

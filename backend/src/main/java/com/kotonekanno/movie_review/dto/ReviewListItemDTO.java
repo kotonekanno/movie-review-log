@@ -1,7 +1,8 @@
 package com.kotonekanno.movie_review.dto;
 
 public record ReviewListItemDTO(
-  String title,
-  String posterPath,
-  Double score
+    Long reviewId,
+    String title,
+    String posterPath,
+    Double score
 ) {}

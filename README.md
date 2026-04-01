@@ -11,3 +11,11 @@ psql -U postgres -W movie_review_app_dev
 ```
 
 Access http://localhost:8080/
+
+## How to run React
+
+```bash
+npm run dev
+```
+
+Access http://localhost:5173/login

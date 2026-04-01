@@ -50,7 +50,7 @@ DB name: `movie_review_app` / `movie_review_app_dev`
 | id                | bigint        | NOT NULL  | PRIMARY KEY             |                      |
 | user_id           | bitint        | NOT NULL  | REFERENCES user(id)     | ユーザーID           |
 | tmdb_id           | bigint        | NOT NULL  | REFERENCES movie(id)    | TMDB内のID           |
-| score             | double        | NOT NULL  | CHECK(0 < score < 5)    | 点数（0〜5）          |
+| score             | double        | NOT NULL  | CHECK(0 < score < 5)    | 点数（0.0-5.0）      |
 | text              | varchar(255)  | NULL      |                         | レビュー             |
 | watched_at        | date          | NULL      |                         | 視聴日               |
 | created_at        | timestamp     | NULL      |                         | レビュー作成日時     |

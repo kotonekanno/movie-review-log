@@ -5,6 +5,7 @@ import com.kotonekanno.movie_review.dto.ReviewListItemDTO;
 import com.kotonekanno.movie_review.entity.Movie;
 import com.kotonekanno.movie_review.entity.Review;
 import com.kotonekanno.movie_review.entity.User;
+import com.kotonekanno.movie_review.exception.AccessDeniedException;
 import com.kotonekanno.movie_review.exception.NotFoundException;
 import com.kotonekanno.movie_review.form.ReviewForm;
 import com.kotonekanno.movie_review.repository.MovieRepository;
@@ -61,21 +62,73 @@ public class ReviewService {
   }
 
   // Get details of a review
+  // needs verification
   @Transactional(readOnly = true)
-  public ReviewDTO getDetails(User user, Long movieId) {
-    return reviewRepository.findReviewDTOById(user.getId(), movieId)
+  public ReviewDTO getDetails(User user, Long reviewId) {
+    Review review = reviewRepository
+        .findById(reviewId)
         .orElseThrow(() -> new NotFoundException("Review not found"));
+
+    if (!review.getUser().equals(user)) {
+      throw new AccessDeniedException("You do not have permission to view this review");
+    }
+
+    return new ReviewDTO(
+        review.getMovie().getJaTitle(),
+        review.getMovie().getOriginalTitle(),
+        review.getMovie().getReleaseYear(),
+        review.getMovie().getPosterPath(),
+        review.getScore(),
+        review.getText(),
+        review.getWatchedAt()
+    );
   }
 
   // Update a review
+  // needs verification
+  @Transactional
+  public ReviewDTO update(User user, Long reviewId, ReviewForm form) {
+    Review review = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new NotFoundException("Review not found"));
 
+    if (!review.getUser().equals(user)) {
+      throw new AccessDeniedException("You do not have permission to update this review");
+    }
+
+    if (form.getText() != null) {
+      review.setText(form.getText());
+    }
+    if (form.getScore() != null) {
+      review.setScore(form.getScore());
+    }
+    if (form.getWatchedAt() != null) {
+      review.setWatchedAt(form.getWatchedAt());
+    }
+
+    Review updated = reviewRepository.save(review);
+
+    return new ReviewDTO(
+        updated.getMovie().getJaTitle(),
+        updated.getMovie().getOriginalTitle(),
+        updated.getMovie().getReleaseYear(),
+        updated.getMovie().getPosterPath(),
+        updated.getScore(),
+        updated.getText(),
+        updated.getWatchedAt()
+    );
+  }
 
   // Delete a review
+  // needs verification
   @Transactional
-  public void delete(User user, Long movieId) {
+  public void delete(User user, Long reviewId) {
     Review review = reviewRepository
-        .findByUserIdAndMovieId(user.getId(), movieId)
+        .findById(reviewId)
         .orElseThrow(() -> new NotFoundException("Review not found"));
+
+    if (!review.getUser().equals(user)) {
+      throw new AccessDeniedException("You do not have permission to delete this review");
+    }
 
     review.setDeletedAt(LocalDateTime.now());
     reviewRepository.save(review);

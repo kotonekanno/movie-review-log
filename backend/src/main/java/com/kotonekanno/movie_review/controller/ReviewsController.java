@@ -23,34 +23,59 @@ public class ReviewsController {
   }
 
   // Create a review
+  // returns 201 Created
   @PostMapping
-  public ResponseEntity<Map<String, Long>> create(@AuthenticationPrincipal User user, @RequestBody ReviewForm form) {
+  public ResponseEntity<Map<String, Long>> create(
+      @AuthenticationPrincipal User user,
+      @RequestBody ReviewForm form
+  ) {
     Long reviewId = reviewService.create(user, form);
     return ResponseEntity.status(201)
         .body(Map.of("reviewId", reviewId));
   }
 
   // Get a list of reviews
+  // return 200 OK
   @GetMapping
-  public ResponseEntity<Map<String, List<ReviewListItemDTO>>> getAll(@AuthenticationPrincipal User user, @RequestParam int page) {
+  public ResponseEntity<Map<String, List<ReviewListItemDTO>>> getAll(
+      @AuthenticationPrincipal User user,
+      @RequestParam int page
+  ) {
     List<ReviewListItemDTO> reviews = reviewService.getAll(user, page);
 
     return ResponseEntity.ok(Map.of("reviews", reviews));
   }
 
   // Get details of a review
-  @GetMapping("/{movie_id}")
-  public ResponseEntity<ReviewDTO> getDetails(@AuthenticationPrincipal User user, @PathVariable("movie_id") Long movieId) {
-    return ResponseEntity.ok(reviewService.getDetails(user, movieId));
+  // returns 200 OK
+  @GetMapping("/{review_id}")
+  public ResponseEntity<ReviewDTO> getDetails(
+      @AuthenticationPrincipal User user,
+      @PathVariable("review_id") Long reviewId
+  ) {
+    return ResponseEntity.ok(reviewService.getDetails(user, reviewId));
   }
 
   // Update a review
-
+  // returns 200 OK
+  @PatchMapping("/{review_id}")
+  public ResponseEntity<ReviewDTO> update(
+      @AuthenticationPrincipal User user,
+      @PathVariable("review_id") Long reviewId,
+      @RequestBody ReviewForm form
+  ) {
+    ReviewDTO updatedReview = reviewService.update(user, reviewId, form);
+    return ResponseEntity.ok(updatedReview);
+  }
 
   // Delete a review
-  @DeleteMapping("/{movie_id}")
-  public ResponseEntity<Map<String, String>> delete(@AuthenticationPrincipal User user, @PathVariable("movie_id") Long movieId) {
-    reviewService.delete(user, movieId);
-    return ResponseEntity.noContent().build();
+  // returns 204 No Content
+  @DeleteMapping("/{review_id}")
+  public ResponseEntity<Void> delete(
+      @AuthenticationPrincipal User user,
+      @PathVariable("review_id") Long reviewId
+  ) {
+    reviewService.delete(user, reviewId);
+    return ResponseEntity.noContent().build();  // No content
   }
 }

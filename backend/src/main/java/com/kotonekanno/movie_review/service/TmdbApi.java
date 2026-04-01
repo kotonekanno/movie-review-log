@@ -1,6 +1,7 @@
 package com.kotonekanno.movie_review.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kotonekanno.movie_review.config.AppProperties;
 import com.kotonekanno.movie_review.dto.TmdbMovieDetailsDTO;
 import com.kotonekanno.movie_review.dto.TmdbSearchResponseDTO;
 import okhttp3.OkHttpClient;
@@ -15,12 +16,15 @@ public class TmdbApi {
 
   private final OkHttpClient client = new OkHttpClient();
   private final ObjectMapper mapper = new ObjectMapper();
+  private final AppProperties appProperties;
+  private final String apikey;
 
-  private final String apikey = System.getenv("API_KEY");
+  public TmdbApi(AppProperties appProperties) {
+    this.appProperties = appProperties;
+    this.apikey = appProperties.getApiKey();
+  }
 
   public TmdbSearchResponseDTO search(String query) throws IOException {
-    OkHttpClient client = new OkHttpClient();
-
     Request request = new Request.Builder()
         .url("https://api.themoviedb.org/3/search/movie?query=" + query + "&include_adult=true&language=ja-JP&page=1")
         .get()

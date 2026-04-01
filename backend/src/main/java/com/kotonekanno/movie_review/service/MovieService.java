@@ -37,7 +37,7 @@ public class MovieService {
 
   private MovieSearchResultDTO toSearchResultDto(TmdbSearchResultDTO movie) {
     return new MovieSearchResultDTO(
-        movie.tmdbId(),
+        movie.id(),
         movie.title(),
         movie.original_title(),
         movie.poster_path()

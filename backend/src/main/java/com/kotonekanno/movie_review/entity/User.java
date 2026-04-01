@@ -26,11 +26,4 @@ public class User {
   private LocalDateTime createdAt;
 
   private LocalDateTime deletedAt;
-
-  @PrePersist
-  public void prePersist() {
-    if (this.createdAt == null) {
-      this.createdAt = LocalDateTime.now();
-    }
-  }
 }
