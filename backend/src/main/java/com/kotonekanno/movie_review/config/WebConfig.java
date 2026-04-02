@@ -21,8 +21,6 @@ public class WebConfig {
 
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
-    System.out.println("フロントエンドURL: " + frontendUrl);
-
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(List.of(frontendUrl));
     configuration.setAllowedMethods(List.of("*"));

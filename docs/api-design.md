@@ -95,7 +95,7 @@
 
 ### GET /movies
 
-映画をTMDBでタイトル検索する
+映画をTMDBでタイトル検索し、20件取得する
 
 <!-- omit in toc -->
 #### クエリパラメータ
@@ -218,6 +218,9 @@
 
 <!-- omit in toc -->
 #### Response
+
+<!-- omit in toc -->
+##### 200 OK
 
 ```JSON
 {
