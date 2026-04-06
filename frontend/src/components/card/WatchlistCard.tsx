@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+import type { WatchlistItem } from "@/types/watchlist";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Accordion,
@@ -7,10 +9,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
-import type { WatchlistItem } from "@/types/watchlist";
 import WatchlistEditDialog from "@/components/dialog/WatchlistEditDialog";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const POSTER_BASE_URL = import.meta.env.VITE_POSTER_BASE_URL;
 
 interface Props {
   item: WatchlistItem;
@@ -23,10 +27,7 @@ function WatchlistCard({ item }: Props) {
     jaTitle: item.jaTitle,
     priority: item.priority,
     note: item.note,
-  });
-
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-  const POSTER_BASE_URL = import.meta.env.VITE_POSTER_BASE_URL;
+  });  
 
   const handleChange = async (value: boolean) => {
     setChecked(value);
@@ -46,6 +47,7 @@ function WatchlistCard({ item }: Props) {
 
   useEffect(() => {
     setChecked(!!item.isWatched);
+    setFormValues;
   }, [item.isWatched]);
 
   return (

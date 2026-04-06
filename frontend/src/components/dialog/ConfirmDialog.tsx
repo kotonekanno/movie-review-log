@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -8,14 +8,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
 interface ConfirmDialogProps {
-  leftOnClick?: () => void;
-  rightOnClick: () => void;
+  rightOnClick?: () => void;
+  leftOnClick: () => void;
 }
 
-export default function ConfirmDialog({ leftOnClick, rightOnClick }: ConfirmDialogProps) {
+export default function ConfirmDialog({ rightOnClick, leftOnClick }: ConfirmDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -33,20 +33,20 @@ export default function ConfirmDialog({ leftOnClick, rightOnClick }: ConfirmDial
         <DialogFooter className="flex gap-2">
           <DialogClose asChild>
             <Button
-              onClick={() => leftOnClick?.()}
-              variant="outline"
+              onClick={leftOnClick}
               className="flex-1"
             >
-              キャンセル
+              削除する
             </Button>
           </DialogClose>
 
           <DialogClose asChild>
             <Button
-              onClick={rightOnClick}
+              onClick={() => rightOnClick?.()}
+              variant="outline"
               className="flex-1"
             >
-              削除する
+              キャンセル
             </Button>
           </DialogClose>
         </DialogFooter>

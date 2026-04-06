@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 
+import type { ReviewFormValues } from "@/types/review";
+import type { MovieDetails } from "@/types/movie";
+import type { Movie } from "@/types/movie";
+
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -12,25 +16,25 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 
-import type { ReviewFormValues } from "@/types/review";
-import type { MovieDetails } from "@/types/movie";
-import type { Movie } from "@/types/movie";
-import MovieSearchDialog from "../dialog/MovieSearchDialog";
-import MovieDetailsCard from "../card/MovieDetailsCard";
+import MovieSearchDialog from "@/components/dialog/MovieSearchDialog";
+import MovieDetailsCard from "@/components/card/MovieDetailsCard";
 
 interface ReviewFormProps {
   onSubmit: (values: ReviewFormValues) => void | Promise<void>;
+  prevReview?: ReviewFormValues;
 }
 
-function ReviewForm({ onSubmit }: ReviewFormProps) {
-  const [tmdbId, setTmdbId] = useState<number | undefined>();
-  const [movieId, setMovieId] = useState<number | undefined>();
-  const [movie, setMovie] = useState<MovieDetails>();
-  const [text, setText] = useState<string>("");
-  const [score, setScore] = useState<number>(2.5);
-  const [watchedAt, setWatchedAt] = useState<string>(new Date().toISOString().slice(0,10));
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+function ReviewForm({ onSubmit, prevReview }: ReviewFormProps) {
+  const [tmdbId, setTmdbId] = useState<number | undefined>();
+  const [movieId, setMovieId] = useState<number | undefined>(prevReview?.movieId);
+  const [movie, setMovie] = useState<MovieDetails>();
+  const [text, setText] = useState<string>(prevReview?.text || "");
+  const [score, setScore] = useState<number>(prevReview?.score ?? 2.5);
+  const [watchedAt, setWatchedAt] = useState<string>(
+    prevReview?.watchedAt || new Date().toISOString().slice(0, 10)
+  );
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,7 +47,11 @@ function ReviewForm({ onSubmit }: ReviewFormProps) {
 
   const fetchMovieDetails = async (tmdbId: number) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/movies/${tmdbId}`, {
+      const res: Response = await fetch(`${API_BASE_URL}/movies/${tmdbId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
         credentials: "include",
       });
 
@@ -53,11 +61,10 @@ function ReviewForm({ onSubmit }: ReviewFormProps) {
         setMovieId(data.movieId);
         console.log("Movie fetch succeeded");
       } else {
-        alert("Movie fetch failed");
+        console.error("Movie fetch failed");
       }
     } catch (e) {
-      console.error(e);
-      alert("Error occurd");
+      console.error("Movie fetch failed: " + e);
     }
   };
 
@@ -100,7 +107,7 @@ function ReviewForm({ onSubmit }: ReviewFormProps) {
           min={0}
           max={5}
           step={0.1}
-          onValueChange={(val) => setScore(val[0])}
+          onValueChange={(val) => setScore(val[0]!)}
           className="w-full max-w-xs"
         />
         <div className="mt-1 font-semibold text-center">{score.toFixed(1)}</div>

@@ -1,6 +1,7 @@
 package com.kotonekanno.movielog.repository;
 
 import com.kotonekanno.movielog.dto.ReviewListItemDTO;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.kotonekanno.movielog.entity.Review;
@@ -22,7 +23,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         )
         FROM Review r
         JOIN r.movie m
-        WHERE r.user.id = :userId
+        WHERE r.user.id = :userId AND r.deletedAt IS NULL
       """)
-  List<ReviewListItemDTO> findReviewListDTOs(@Param("userId") Long userId, Pageable pageable);
+  Page<ReviewListItemDTO> findReviewListDTOs(@Param("userId") Long userId, Pageable pageable);
 }

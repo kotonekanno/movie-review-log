@@ -2,10 +2,10 @@ package com.kotonekanno.movielog.controller;
 
 import com.kotonekanno.movielog.entity.User;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 import com.kotonekanno.movielog.service.UserService;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -26,5 +26,12 @@ public class AuthController {
     User user = userService.register(email, password);
     return ResponseEntity.status(201)  // Created
         .body(Map.of("userId", user.getId()));
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<Void> getCurrentUser(
+      @AuthenticationPrincipal UserDetails user
+  ) {
+    return ResponseEntity.ok().build();
   }
 }

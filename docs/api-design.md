@@ -264,6 +264,7 @@
 
 ```JSON
 {
+  "reviewId": 123,
   "jaTitle": "スター・ウォーズ",
   "originalTitle": "Star Wars",
   "releaseYear": 1997,
@@ -276,6 +277,7 @@
 
 | field         | type    | description         |
 | ------------- | ------- | ------------------- |
+| reviewId      | Number  | レビューID          |
 | jaTitle       | String  | 日本語タイトル      |
 | originalTitle | String  | 原題                |
 | releaseYear   | Number  | 公開年              |
@@ -418,7 +420,7 @@
 
 ```JSON
 {
-  "results": [
+  "watchlist": [
     {
       "watchlistId": 123,
       "jaTitle": "スター・ウォーズ",
@@ -434,7 +436,7 @@
 
 | field         | type    | description         |
 | ------------- | ------- | ------------------- |
-| results       | Array   |                     |
+| watchlist     | Array   |                     |
 | watchlistId   | Number  | ウォッチリストID    |
 | jaTitle       | String  | 日本語タイトル      |
 | originalTitle | String  | 原題                |

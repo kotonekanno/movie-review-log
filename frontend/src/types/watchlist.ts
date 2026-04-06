@@ -14,3 +14,12 @@ export interface WatchlistFormValues {
   note: string;
   priority: number;
 }
+
+export interface FetchWatchlistResponse {
+  watchlist: WatchlistItem[];
+}
+
+
+export interface CreateWatchlistResponse {
+  watchlistId: number;
+}

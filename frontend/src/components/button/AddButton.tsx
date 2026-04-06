@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 
 interface Props {
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 function AddButton({ onClick }: Props) {

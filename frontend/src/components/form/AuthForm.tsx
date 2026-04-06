@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import type { AuthFormValues } from "@/types/auth";
 
 import { Button } from "@/components/ui/button";
@@ -12,14 +13,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface AuthFormProps {
+interface Props {
   onSubmit: (values: AuthFormValues) => void | Promise<void>;
   upperButtonText: string;
   bottomButtonText: string;
   bottomHref: string;  
 }
 
-function AuthForm({ onSubmit, upperButtonText, bottomButtonText, bottomHref }: AuthFormProps) {
+function AuthForm({ onSubmit, upperButtonText, bottomButtonText, bottomHref }: Props) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 

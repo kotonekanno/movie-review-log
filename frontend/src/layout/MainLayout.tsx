@@ -1,14 +1,18 @@
 import { Link, Outlet } from "react-router-dom";
 
+import LogoutButton from "@/components/button/LogoutButton";
+
 function MainLayout() {
   return (
     <div className="flex flex-col min-h-screen overflow-x-auto">
 
-      <header className="w-full bg-gray-800 text-white">
-        <div className="w-[72rem] mx-auto p-4">
+      <header className="w-full bg-[#742020] text-white">
+        <div className="w-[72rem] mx-auto p-4 flex items-center justify-between px-30">
           <Link to="/">
             <h1 className="text-xl font-bold">映画記録</h1>
           </Link>
+
+          <LogoutButton />
         </div>
       </header>
 

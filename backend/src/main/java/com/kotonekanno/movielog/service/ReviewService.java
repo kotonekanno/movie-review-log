@@ -2,6 +2,7 @@ package com.kotonekanno.movielog.service;
 
 import com.kotonekanno.movielog.dto.ReviewDTO;
 import com.kotonekanno.movielog.dto.ReviewListItemDTO;
+import com.kotonekanno.movielog.dto.ReviewListResponseDTO;
 import com.kotonekanno.movielog.entity.Movie;
 import com.kotonekanno.movielog.entity.Review;
 import com.kotonekanno.movielog.entity.User;
@@ -11,6 +12,7 @@ import com.kotonekanno.movielog.form.ReviewForm;
 import com.kotonekanno.movielog.repository.MovieRepository;
 import com.kotonekanno.movielog.repository.ReviewRepository;
 import com.kotonekanno.movielog.repository.UserRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -54,11 +56,11 @@ public class ReviewService {
 
   // Get a list of reviews
   @Transactional(readOnly = true)
-  public List<ReviewListItemDTO> getAll(UserDetails userDetails, int page) {
+  public ReviewListResponseDTO getAll(UserDetails userDetails, int page) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
 
-    int pageSize = 9;
+    int pageSize = 12;
     int safePage = Math.max(page, 1);
 
     Pageable pageable = PageRequest.of(
@@ -67,7 +69,12 @@ public class ReviewService {
         Sort.by(Sort.Direction.DESC, "createdAt")   // 選択肢化
     );
 
-    return reviewRepository.findReviewListDTOs(user.getId(), pageable);
+    Page<ReviewListItemDTO> result = reviewRepository.findReviewListDTOs(user.getId(), pageable);
+
+    return new ReviewListResponseDTO(
+        result.getContent(),
+        result.getTotalPages()
+    );
   }
 
   // Get details of a review
@@ -86,6 +93,7 @@ public class ReviewService {
     }
 
     return new ReviewDTO(
+        review.getId(),
         review.getMovie().getJaTitle(),
         review.getMovie().getOriginalTitle(),
         review.getMovie().getReleaseYear(),
@@ -122,6 +130,7 @@ public class ReviewService {
     Review updated = reviewRepository.save(review);
 
     return new ReviewDTO(
+        updated.getId(),
         updated.getMovie().getJaTitle(),
         updated.getMovie().getOriginalTitle(),
         updated.getMovie().getReleaseYear(),

@@ -1,19 +1,15 @@
-import type { Review } from "@/types/review"
+import type { Review } from "@/types/review";
 
-import {
-  Card,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import ScoreStars from "../others/ScoreStars";
+import { Card } from "@/components/ui/card";
 
-interface ReviewCardProps {
+import ScoreStars from "@/components/others/ScoreStars";
+
+interface Props {
   review: Review;
   onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 
-function ReviewCard({ review, onClick }: ReviewCardProps) {
+function ReviewCard({ review, onClick }: Props) {
   return (
     <>
       <Card className="relative mx-auto w-[240px] aspect-[2/3] pt-0 flex flex-col overflow-hidden my-4">

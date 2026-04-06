@@ -6,6 +6,7 @@ export interface Review {
 }
 
 export interface ReviewDetails {
+  reviewId: number;
   jaTitle: string;
   originalTitle: string;
   releaseYear: number;
@@ -20,4 +21,14 @@ export interface ReviewFormValues {
   text: string;
   score: number;
   watchedAt: string;
+}
+
+export interface ReviewListResponse {
+  reviews: Review[];
+  totalPages: number;
+}
+
+
+export interface CreateReviewResponse {
+  reviewId: number;
 }

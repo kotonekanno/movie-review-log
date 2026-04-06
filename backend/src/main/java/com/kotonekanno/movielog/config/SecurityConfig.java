@@ -34,6 +34,13 @@ public class SecurityConfig {
             .requestMatchers("/login", "/register", "/error").permitAll()
             .anyRequest().authenticated()
         )
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint((req, res, e) -> {
+              res.setStatus(401);
+              res.setContentType("application/json");
+              res.getWriter().write("{\"error\":\"Unauthorized\"}");
+            })
+        )
         .formLogin(form -> form
             .loginProcessingUrl("/login")
             .successHandler((req, res, auth) -> {
@@ -48,7 +55,10 @@ public class SecurityConfig {
         )
         .logout(logout -> logout
             .logoutUrl("/logout")
-            .logoutSuccessUrl("/login?logout")
+            .logoutSuccessHandler((req, res, auth) -> {
+              res.setContentType("application/json");
+              res.getWriter().write("{\"status\":\"logged out\"}");
+            })
         );
 
     return http.build();

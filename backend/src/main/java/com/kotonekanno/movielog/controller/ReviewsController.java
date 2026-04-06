@@ -2,6 +2,7 @@ package com.kotonekanno.movielog.controller;
 
 import com.kotonekanno.movielog.dto.ReviewDTO;
 import com.kotonekanno.movielog.dto.ReviewListItemDTO;
+import com.kotonekanno.movielog.dto.ReviewListResponseDTO;
 import com.kotonekanno.movielog.entity.User;
 import com.kotonekanno.movielog.form.ReviewForm;
 import com.kotonekanno.movielog.service.ReviewService;
@@ -38,13 +39,11 @@ public class ReviewsController {
   // Get a list of reviews
   // return 200 OK
   @GetMapping
-  public ResponseEntity<Map<String, List<ReviewListItemDTO>>> getAll(
+  public ResponseEntity<ReviewListResponseDTO> getAll(
       @AuthenticationPrincipal UserDetails userDetails,
       @RequestParam int page
   ) {
-    List<ReviewListItemDTO> reviews = reviewService.getAll(userDetails, page);
-
-    return ResponseEntity.ok(Map.of("reviews", reviews));
+    return ResponseEntity.ok(reviewService.getAll(userDetails, page));
   }
 
   // Get details of a review
