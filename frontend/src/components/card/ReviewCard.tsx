@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import ScoreStars from "../ScoreStars";
+import ScoreStars from "../others/ScoreStars";
 
 interface ReviewCardProps {
   review: Review;
@@ -25,14 +25,13 @@ function ReviewCard({ review, onClick }: ReviewCardProps) {
           />
         </div>
 
-        <CardHeader>
-          <CardTitle className="font-bold">{review.title}</CardTitle>
-        </CardHeader>
-
-        <CardFooter>
-          <span className="mr-2">{review.score}</span>
-          <ScoreStars score={review.score} />
-        </CardFooter>
+        <div className="absolute bottom-0 left-0 w-full bg-black/60 text-white p-2">
+          <div className="font-bold text-sm truncate">{review.title}</div>
+          <div className="flex items-center text-xs">
+            <span className="mr-1">{review.score}</span>
+            <ScoreStars score={review.score} />
+          </div>
+        </div>
       </Card>
     </>
   );

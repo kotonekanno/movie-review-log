@@ -53,6 +53,37 @@ public class MovieService {
 
   // Fetch details of a movie
   public MovieDetailsDTO fetchDetails(Long tmdbId) {
+    Optional<Movie> optionalMovie = movieRepository.findByTmdbId(tmdbId);
+
+    if (optionalMovie.isPresent()) {
+      Movie movie = optionalMovie.get();
+      return new MovieDetailsDTO(
+        movie.getId(),
+        movie.getJaTitle(),
+        movie.getOriginalTitle(),
+        movie.getReleaseYear(),
+        movie.getPosterPath()
+      );
+    }
+
+    TmdbMovieDetailsDTO response;
+    try {
+      response = tmdbApi.getDetails(tmdbId);
+    } catch (IOException e) {
+      throw new ExternalApiException("TMDB API error", e);
+    }
+
+    Movie movie = cache(tmdbId, response);
+
+    return new MovieDetailsDTO(
+      movie.getId(),
+      movie.getJaTitle(),
+      movie.getOriginalTitle(),
+      movie.getReleaseYear(),
+      movie.getPosterPath()
+    );
+  }
+  /*public MovieDetailsDTO fetchDetails(Long tmdbId) {
     Optional<MovieDetailsDTO> optionalDto = movieRepository.findMovieDetailsDTOByTmdbId(tmdbId);
 
     if (optionalDto.isPresent()) {
@@ -75,7 +106,7 @@ public class MovieService {
         movie.getReleaseYear(),
         movie.getPosterPath()
     );
-  }
+  }*/
 
   // Cache a movie
   private Movie cache(Long tmdbId, TmdbMovieDetailsDTO res) {

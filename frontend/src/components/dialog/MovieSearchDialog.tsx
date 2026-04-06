@@ -148,14 +148,11 @@ interface MovieSearchDialogProps {
   onSelectMovie: (movie: Movie) => void;
 }
 
-interface MovieSearchResponse {
-  results: Movie[];
-}
-
 function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
   const [query, setQuery] = useState<string>("");
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [hasSearched, setHasSearched] = useState(false);
+  const [hasSearched, setHasSearched] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const handleSearch = async () => {
@@ -165,8 +162,8 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
       });
 
       if (res.ok) {
-        const data: MovieSearchResponse = await res.json();
-        setMovies(data.results);
+        const data: Movie[] = await res.json();
+        setMovies(data);
         setHasSearched(true);
       } else {
         alert("Movie search failed");
@@ -178,7 +175,7 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="secondary" className="w-[100px] mx-auto">
           映画を検索
@@ -210,14 +207,14 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
               検索結果がありません
             </p>
           ) : (
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid gap-4">
               {movies.map((m) => (
                 <SearchResultCard
                   key={m.tmdbId}
                   movie={m}
                   onClick={() => {
                     onSelectMovie(m);
-                    close();
+                    setOpen(false);
                   }}
                 />
               ))}

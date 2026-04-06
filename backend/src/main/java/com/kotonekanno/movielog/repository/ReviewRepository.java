@@ -14,7 +14,7 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
   @Query("""
-        SELECT new com.kotonekanno.movie_review.dto.ReviewListItemDTO(
+        SELECT new com.kotonekanno.movielog.dto.ReviewListItemDTO(
           r.id,
           m.jaTitle,
           m.posterPath,

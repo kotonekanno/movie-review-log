@@ -110,28 +110,26 @@ function WatchlistPage() {
 export default WatchlistPage;*/
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
-import type { WatchlistItem } from "@/types/watchlist";
+import type { WatchlistFormValues, WatchlistItem } from "@/types/watchlist";
 import WatchlistCard from "@/components/card/WatchlistCard";
 import AddButton from "@/components/button/AddButton";
 import WatchlistEditDialog from "@/components/dialog/WatchlistEditDialog";
 
 function WatchlistPage() {
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
-  const [isOpen, setIsOpen] = useState(false); // Dialog開閉状態
-  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const fetchWatchlist = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/watchlist`, {
-        credentials: "include"
+        credentials: "include",
       });
 
       if (res.ok) {
         const data = await res.json();
-        setWatchlist(data.results);
+        setWatchlist(data.watchlist);
       } else {
         alert("Get watchlist failed");
       }
@@ -195,13 +193,13 @@ function WatchlistPage() {
 
   return (
     <div>
-      <h1>ウォッチリスト</h1>
+      <h1 className="text-3xl font-bold text-gray-800 text-center my-6">ウォッチリスト</h1>
 
       <div className="max-w-3xl mx-auto space-y-3">
-        {testWatchlist.length === 0 ? (
-          <p>ウォッチリストがありません</p>
+        {watchlist.length === 0 ? (
+          <p className="text-center text-gray-500">ウォッチリストがありません</p>
         ) : (
-          testWatchlist.map((item, idx) => (
+          watchlist.map((item, idx) => (
             <WatchlistCard
               key={idx}
               item={item}

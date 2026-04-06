@@ -32,7 +32,9 @@ function WatchlistCard({ item }: Props) {
     setChecked(value);
     await fetch(`${API_BASE_URL}/watchlist`, {
       method: "PATCH",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ watchlistId: item.watchlistId, isWatched: value }),
+      credentials: "include",
     });
   };
 
@@ -67,12 +69,15 @@ function WatchlistCard({ item }: Props) {
                 {item.priority}%
               </span>
               <div onClick={(e) => e.stopPropagation()}>
-                <Button onClick={() => setIsOpen(true)} className="my-auto">
+                <Button
+                  onClick={() => setIsOpen(true)}
+                  disabled={checked}
+                  className="my-auto"
+                >
                   編集
                 </Button>
                 <WatchlistEditDialog
                   buttonText="編集"
-                  disabled={checked}
                   isOpen={isOpen}
                   onOpenChange={setIsOpen}
                 />

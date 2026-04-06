@@ -16,7 +16,8 @@ function ReviewCreatePage() {
       const res = await fetch(`${API_BASE_URL}/reviews`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(review)
+        body: JSON.stringify(review),
+        credentials: "include",
       });
       const data: CreateReviewResponse = await res.json();
       if (res.status === 201) {

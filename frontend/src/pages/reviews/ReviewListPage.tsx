@@ -86,10 +86,10 @@ function ReviewListPage() {
     <div>
       <h1 className="text-3xl font-bold text-gray-800 text-center my-6">レビュー一覧</h1>
         <div className="grid grid-cols-4 gap-4">
-          {testReviews.length === 0 ? (
+          {reviews.length === 0 ? (
             <p className="text-center text-gray-500">レビューがありません</p>
           ) : (
-            testReviews.map((r, idx) => (
+            reviews.map((r, idx) => (
               <ReviewCard
                 key={idx}
                 review={r}

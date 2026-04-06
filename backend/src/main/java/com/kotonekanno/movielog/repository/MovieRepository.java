@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
   @Query("""
-      SELECT new com.kotonekanno.movie_review.dto.MovieDetailsDTO(
+      SELECT new com.kotonekanno.movielog.dto.MovieDetailsDTO(
         m.id,
         m.jaTitle,
         m.originalTitle,
@@ -24,4 +24,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
       WHERE m.id = :tmdbId
       """)
   Optional<MovieDetailsDTO> findMovieDetailsDTOByTmdbId(@Param("tmdbId") Long tmdbId);
+
+  Optional<Movie> findByTmdbId(Long tmdbId);
 }

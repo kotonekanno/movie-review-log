@@ -112,7 +112,7 @@
 
 ```JSON
 {
-  "results": [
+  [
     {
       "tmdbId": 123,
       "jaTitle": "スター・ウォーズ",

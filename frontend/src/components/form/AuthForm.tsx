@@ -60,19 +60,21 @@ function AuthForm({ onSubmit, upperButtonText, bottomButtonText, bottomHref }: A
               />
             </div>
           </div>
+
+          <CardFooter className="flex-col gap-2">
+            <Button type="submit" className="w-full">
+              {upperButtonText}
+            </Button>
+            <a
+              href={bottomHref}
+              className="inline-block text-sm underline-offset-4 hover:underline"
+            >
+              {bottomButtonText}
+            </a>
+          </CardFooter>
         </form>
       </CardContent>
-      <CardFooter className="flex-col gap-2">
-        <Button type="submit" className="w-full">
-          {upperButtonText}
-        </Button>
-        <a
-          href={bottomHref}
-          className="inline-block text-sm underline-offset-4 hover:underline"
-        >
-          {bottomButtonText}
-        </a>
-      </CardFooter>
+      
     </Card>
   );
 }

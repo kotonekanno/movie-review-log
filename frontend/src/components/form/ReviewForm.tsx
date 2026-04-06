@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import type { ReviewFormValues } from "@/types/review";
 import type { MovieDetails } from "@/types/movie";
 import type { Movie } from "@/types/movie";
-import MovieSearchDialog from "../MovieSearchDialog";
+import MovieSearchDialog from "../dialog/MovieSearchDialog";
 import MovieDetailsCard from "../card/MovieDetailsCard";
 
 interface ReviewFormProps {
@@ -43,7 +43,7 @@ function ReviewForm({ onSubmit }: ReviewFormProps) {
 
   const fetchMovieDetails = async (tmdbId: number) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/movies/${tmdbId}}`, {
+      const res = await fetch(`${API_BASE_URL}/movies/${tmdbId}`, {
         credentials: "include",
       });
 
@@ -51,6 +51,7 @@ function ReviewForm({ onSubmit }: ReviewFormProps) {
         const data: MovieDetails = await res.json();
         setMovie(data);
         setMovieId(data.movieId);
+        console.log("Movie fetch succeeded");
       } else {
         alert("Movie fetch failed");
       }

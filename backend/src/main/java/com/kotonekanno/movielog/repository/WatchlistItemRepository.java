@@ -13,7 +13,7 @@ import java.util.List;
 public interface WatchlistItemRepository extends JpaRepository<WatchlistItem, Long> {
 
   @Query("""
-      SELECT new com.kotonekanno.movie_review.dto.WatchlistItemDTO(
+      SELECT new com.kotonekanno.movielog.dto.WatchlistItemDTO(
         w.id,
         m.jaTitle,
         m.originalTitle,

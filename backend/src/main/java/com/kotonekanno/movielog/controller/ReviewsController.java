@@ -7,6 +7,7 @@ import com.kotonekanno.movielog.form.ReviewForm;
 import com.kotonekanno.movielog.service.ReviewService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,10 +27,10 @@ public class ReviewsController {
   // returns 201 Created
   @PostMapping
   public ResponseEntity<Map<String, Long>> create(
-      @AuthenticationPrincipal User user,
+      @AuthenticationPrincipal UserDetails userDetails,
       @RequestBody ReviewForm form
   ) {
-    Long reviewId = reviewService.create(user, form);
+    Long reviewId = reviewService.create(userDetails, form);
     return ResponseEntity.status(201)
         .body(Map.of("reviewId", reviewId));
   }
@@ -38,10 +39,10 @@ public class ReviewsController {
   // return 200 OK
   @GetMapping
   public ResponseEntity<Map<String, List<ReviewListItemDTO>>> getAll(
-      @AuthenticationPrincipal User user,
+      @AuthenticationPrincipal UserDetails userDetails,
       @RequestParam int page
   ) {
-    List<ReviewListItemDTO> reviews = reviewService.getAll(user, page);
+    List<ReviewListItemDTO> reviews = reviewService.getAll(userDetails, page);
 
     return ResponseEntity.ok(Map.of("reviews", reviews));
   }
@@ -50,21 +51,21 @@ public class ReviewsController {
   // returns 200 OK
   @GetMapping("/{review_id}")
   public ResponseEntity<ReviewDTO> getDetails(
-      @AuthenticationPrincipal User user,
+      @AuthenticationPrincipal UserDetails userDetails,
       @PathVariable("review_id") Long reviewId
   ) {
-    return ResponseEntity.ok(reviewService.getDetails(user, reviewId));
+    return ResponseEntity.ok(reviewService.getDetails(userDetails, reviewId));
   }
 
   // Update a review
   // returns 200 OK
   @PatchMapping("/{review_id}")
   public ResponseEntity<ReviewDTO> update(
-      @AuthenticationPrincipal User user,
+      @AuthenticationPrincipal UserDetails userDetails,
       @PathVariable("review_id") Long reviewId,
       @RequestBody ReviewForm form
   ) {
-    ReviewDTO updatedReview = reviewService.update(user, reviewId, form);
+    ReviewDTO updatedReview = reviewService.update(userDetails, reviewId, form);
     return ResponseEntity.ok(updatedReview);
   }
 
@@ -72,10 +73,10 @@ public class ReviewsController {
   // returns 204 No Content
   @DeleteMapping("/{review_id}")
   public ResponseEntity<Void> delete(
-      @AuthenticationPrincipal User user,
+      @AuthenticationPrincipal UserDetails userDetails,
       @PathVariable("review_id") Long reviewId
   ) {
-    reviewService.delete(user, reviewId);
+    reviewService.delete(userDetails, reviewId);
     return ResponseEntity.noContent().build();  // No content
   }
 }

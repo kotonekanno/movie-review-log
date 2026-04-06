@@ -7,6 +7,8 @@ function LoginPage() {
   const navigate = useNavigate();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+  console.log(API_BASE_URL);
+
   const handleLogin = async ({ email, password }: AuthFormValues) => {
     try {
       const params = new URLSearchParams();
@@ -19,6 +21,7 @@ function LoginPage() {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: params,
+        credentials: "include",
       });
 
       if (res.ok) {
@@ -28,6 +31,7 @@ function LoginPage() {
         alert("Login failed");
       }
     } catch (e) {
+      console.error(e);
       alert("Error occured");
     }
   };

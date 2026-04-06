@@ -21,7 +21,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/reviews" element={<ReviewListPage />} />
           <Route path="/reviews/edit" element={<ReviewCreatePage />} />
-          <Route path="/reviews/:movieId" element={<ReviewDetailsPage />} />
+          <Route path="/reviews/:reviewId" element={<ReviewDetailsPage />} />
           <Route path="/watchlist" element={<WatchlistPage />} />
         </Route>
 

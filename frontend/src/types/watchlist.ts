@@ -10,7 +10,7 @@ export interface WatchlistItem {
 
 
 export interface WatchlistFormValues {
-  movidId: number;
+  movieId: number;
   note: string;
   priority: number;
 }

@@ -11,16 +11,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-  private final UserRepository userRepository;
-
-  public CustomUserDetailsService(UserRepository userRepository) {
-    this.userRepository = userRepository;
-  }
+  @Autowired
+  private UserRepository userRepository;
 
   @Override
-  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+  public UserDetails loadUserByUsername(String email) {
     User user = userRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+    System.out.println("DB hash: " + user.getPasswordHash());
 
     return org.springframework.security.core.userdetails.User
         .withUsername(user.getEmail())
@@ -29,40 +28,4 @@ public class CustomUserDetailsService implements UserDetailsService {
         .disabled(user.getDeletedAt() != null)
         .build();
   }
-/*
-    return userRepository.findByEmail(email)
-        .map(
-            user -> new
-        )
-}
-*//*
-
-import com.kotonekanno.movielog.config.CustomUserDetails;
-import com.kotonekanno.movielog.exception.NotFoundException;
-import com.kotonekanno.movielog.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-
-@Service
-@RequiredArgsConstructor
-public class CustomUserDetailsService implements UserDetailsService {
-  private final UserRepository userRepository;
-
-  @Override
-  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    return userRepository.findByEmail(email)
-        .map(
-            user -> new CustomUserDetails(
-                user.getEmail(),
-                user.getPasswordHash(),
-                Collections.emptyList()
-            )
-        )
-        .orElseThrow(() -> new UsernameNotFoundException("ユーザー情報の取得に失敗しました。（email = " + email + "）"));
-  }*/
 }

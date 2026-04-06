@@ -8,7 +8,9 @@ import com.kotonekanno.movielog.exception.AccessDeniedException;
 import com.kotonekanno.movielog.exception.NotFoundException;
 import com.kotonekanno.movielog.form.WatchlistForm;
 import com.kotonekanno.movielog.repository.MovieRepository;
+import com.kotonekanno.movielog.repository.UserRepository;
 import com.kotonekanno.movielog.repository.WatchlistItemRepository;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,16 +20,20 @@ import java.util.List;
 public class WatchlistService {
 
   private final WatchlistItemRepository watchlistItemRepository;
+  private final UserRepository userRepository;
   private final MovieRepository movieRepository;
 
-  public WatchlistService(WatchlistItemRepository watchlistItemRepository, MovieRepository movieRepository) {
+  public WatchlistService(WatchlistItemRepository watchlistItemRepository, UserRepository userRepository, MovieRepository movieRepository) {
     this.watchlistItemRepository = watchlistItemRepository;
+    this.userRepository = userRepository;
     this.movieRepository = movieRepository;
   }
 
   // Create a watchlist item
   @Transactional
-  public Long create(User user, WatchlistForm form) {
+  public Long create(UserDetails userDetails, WatchlistForm form) {
+    User user = userRepository.findByEmail(userDetails.getUsername())
+        .orElseThrow(() -> new NotFoundException("User not found"));
     WatchlistItem watchlistItem = new WatchlistItem();
     Movie movie = movieRepository.findById(form.getMovieId())
         .orElseThrow(() -> new NotFoundException("Movie not found"));
@@ -42,14 +48,19 @@ public class WatchlistService {
 
   // Get a watchlist
   @Transactional(readOnly = true)
-  public List<WatchlistItemDTO> getAll(User user) {
+  public List<WatchlistItemDTO> getAll(UserDetails userDetails) {
+    User user = userRepository.findByEmail(userDetails.getUsername())
+        .orElseThrow(() -> new NotFoundException("User not found"));
+
     return watchlistItemRepository.findWatchlistItemDTOs(user.getId());
   }
 
   // Update a watchlist item
   // needs verification
   @Transactional
-  public WatchlistItemDTO update(User user, Long watchlistId, WatchlistForm form) {
+  public WatchlistItemDTO update(UserDetails userDetails, Long watchlistId, WatchlistForm form) {
+    User user = userRepository.findByEmail(userDetails.getUsername())
+        .orElseThrow(() -> new NotFoundException("User not found"));
     WatchlistItem watchlistItem = watchlistItemRepository.findById(watchlistId)
         .orElseThrow(() -> new NotFoundException("Watchlist item not found"));
 
@@ -80,7 +91,9 @@ public class WatchlistService {
   // Update isWatched of a watchlist item
   // needs verification
   @Transactional
-  public void updateIsWatched(User user, Long watchlistId, boolean isWatched) {
+  public void updateIsWatched(UserDetails userDetails, Long watchlistId, boolean isWatched) {
+    User user = userRepository.findByEmail(userDetails.getUsername())
+        .orElseThrow(() -> new NotFoundException("User not found"));
     WatchlistItem watchlistItem = watchlistItemRepository.findById(watchlistId)
         .orElseThrow(() -> new NotFoundException("Watchlist item not found"));
 
@@ -98,7 +111,9 @@ public class WatchlistService {
   // Delete a watchlist item
   // needs verification
   @Transactional
-  public void delete(User user, Long watchlistId) {
+  public void delete(UserDetails userDetails, Long watchlistId) {
+    User user = userRepository.findByEmail(userDetails.getUsername())
+        .orElseThrow(() -> new NotFoundException("User not found"));
     WatchlistItem watchlistItem = watchlistItemRepository
         .findById(watchlistId)
         .orElseThrow(() -> new NotFoundException("WatchlistItem not found"));
@@ -113,7 +128,9 @@ public class WatchlistService {
   // Delete all watched watchlist items
   // needs verification
   @Transactional
-  public void deleteIsWatched(User user, List<Long> watchlistIds) {
+  public void deleteIsWatched(UserDetails userDetails, List<Long> watchlistIds) {
+    User user = userRepository.findByEmail(userDetails.getUsername())
+        .orElseThrow(() -> new NotFoundException("User not found"));
     List<WatchlistItem> items = watchlistItemRepository.findAllById(watchlistIds);
 
     for (WatchlistItem item : items) {

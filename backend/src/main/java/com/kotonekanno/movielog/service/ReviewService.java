@@ -10,9 +10,11 @@ import com.kotonekanno.movielog.exception.NotFoundException;
 import com.kotonekanno.movielog.form.ReviewForm;
 import com.kotonekanno.movielog.repository.MovieRepository;
 import com.kotonekanno.movielog.repository.ReviewRepository;
+import com.kotonekanno.movielog.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,17 +25,21 @@ import java.util.List;
 public class ReviewService {
 
   private final ReviewRepository reviewRepository;
+  private final UserRepository userRepository;
   private final MovieRepository movieRepository;
 
-  public ReviewService(ReviewRepository reviewRepository, MovieRepository movieRepository) {
+  public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, MovieRepository movieRepository) {
     this.reviewRepository = reviewRepository;
+    this.userRepository = userRepository;
     this.movieRepository = movieRepository;
   }
 
   // Create a review
   @Transactional
-  public Long create(User user, ReviewForm form) {
+  public Long create(UserDetails userDetails, ReviewForm form) {
     Review review = new Review();
+    User user = userRepository.findByEmail(userDetails.getUsername())
+        .orElseThrow(() -> new NotFoundException("User not found"));
     Movie movie = movieRepository.findById(form.getMovieId())
         .orElseThrow(() -> new NotFoundException("Movie not found"));
 
@@ -48,7 +54,10 @@ public class ReviewService {
 
   // Get a list of reviews
   @Transactional(readOnly = true)
-  public List<ReviewListItemDTO> getAll(User user, int page) {
+  public List<ReviewListItemDTO> getAll(UserDetails userDetails, int page) {
+    User user = userRepository.findByEmail(userDetails.getUsername())
+        .orElseThrow(() -> new NotFoundException("User not found"));
+
     int pageSize = 9;
     int safePage = Math.max(page, 1);
 
@@ -64,7 +73,10 @@ public class ReviewService {
   // Get details of a review
   // needs verification
   @Transactional(readOnly = true)
-  public ReviewDTO getDetails(User user, Long reviewId) {
+  public ReviewDTO getDetails(UserDetails userDetails, Long reviewId) {
+    User user = userRepository.findByEmail(userDetails.getUsername())
+        .orElseThrow(() -> new NotFoundException("User not found"));
+
     Review review = reviewRepository
         .findById(reviewId)
         .orElseThrow(() -> new NotFoundException("Review not found"));
@@ -87,7 +99,9 @@ public class ReviewService {
   // Update a review
   // needs verification
   @Transactional
-  public ReviewDTO update(User user, Long reviewId, ReviewForm form) {
+  public ReviewDTO update(UserDetails userDetails, Long reviewId, ReviewForm form) {
+    User user = userRepository.findByEmail(userDetails.getUsername())
+        .orElseThrow(() -> new NotFoundException("User not found"));
     Review review = reviewRepository.findById(reviewId)
         .orElseThrow(() -> new NotFoundException("Review not found"));
 
@@ -121,7 +135,9 @@ public class ReviewService {
   // Delete a review
   // needs verification
   @Transactional
-  public void delete(User user, Long reviewId) {
+  public void delete(UserDetails userDetails, Long reviewId) {
+    User user = userRepository.findByEmail(userDetails.getUsername())
+        .orElseThrow(() -> new NotFoundException("User not found"));
     Review review = reviewRepository
         .findById(reviewId)
         .orElseThrow(() -> new NotFoundException("Review not found"));
