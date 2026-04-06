@@ -1,33 +1,33 @@
-/*
-import React from 'react';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import MainLayout from "@/layout/MainLayout";
 
-const App: React.FC = () => {
-  return (
-    <div className="h-screen flex flex-col items-center justify-center bg-gray-100">
-      <h1 className="text-4xl font-bold text-blue-600 mb-6">
-        Tailwind CSS Test
-      </h1>
-      <p className="text-lg text-gray-700 mb-4">
-        Tailwind が正しく動作しています！
-      </p>
-      <button className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-        ボタンテスト
-      </button>
-      <div className="mt-6 w-32 h-32 bg-red-400 rounded-full animate-bounce"></div>
-    </div>
-  );
-};
-
-export default App;*/
-
-import { Button } from "@/components/ui/button";
+import RegisterPage from "@/pages/auth/RegisterPage";
+import LoginPage from "@/pages/auth/LoginPage";
+import HomePage from "@/pages/HomePage";
+import ReviewListPage from "@/pages/reviews/ReviewListPage";
+import ReviewCreatePage from "@/pages/reviews/ReviewCreatePage";
+import ReviewDetailsPage from "@/pages/reviews/ReviewDetailsPage";
+import WatchlistPage from "@/pages/watchlist/WatchlistPage";
 
 function App() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
-      <Button>Click me</Button>
-    </div>
-  );
+    <BrowserRouter>
+      <Routes>
+
+        <Route element={<MainLayout />}>
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<LoginPage />} />
+
+          <Route path="/" element={<HomePage />} />
+          <Route path="/reviews" element={<ReviewListPage />} />
+          <Route path="/reviews/edit" element={<ReviewCreatePage />} />
+          <Route path="/reviews/:movieId" element={<ReviewDetailsPage />} />
+          <Route path="/watchlist" element={<WatchlistPage />} />
+        </Route>
+
+      </Routes>
+    </BrowserRouter>
+  )
 }
 
 export default App;

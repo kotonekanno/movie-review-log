@@ -149,15 +149,17 @@
 
 ```JSON
 {
+  "movieId": 123,
   "jaTitle": "スター・ウォーズ",
   "originalTitle": "Star Wars",
-  "Integer": 1977,
+  "releaseYear": 1977,
   "posterPath": "/xxx.jpg"
 }
 ```
 
 | field         | type    | description         |
 | ------------- | ------- | ------------------- |
+| movieId       | Number  | DB上の映画ID        |
 | jaTitle       | String  | 日本語タイトル      |
 | originalTitle | String  | 原題                |
 | releaseYear   | Number  | 公開年              |
@@ -422,6 +424,7 @@
       "jaTitle": "スター・ウォーズ",
       "originalTitle": "Star Wars",
       "posterPath": "/xxx.jpg",
+      "isWatched": true,
       "priority": 90,
       "note": "見たい"
     }
@@ -436,6 +439,7 @@
 | jaTitle       | String  | 日本語タイトル      |
 | originalTitle | String  | 原題                |
 | posterPath    | String  | ポスター画像のパス  |
+| isWatched     | Boolean | 視聴済みならばtrue  |
 | priority      | Number  | 優先度 [%]          |
 | note          | String  | メモ                |
 

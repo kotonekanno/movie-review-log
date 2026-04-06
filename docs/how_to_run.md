@@ -10,6 +10,7 @@
   - [React](#react)
 - [Others](#others)
   - [How to use poster path](#how-to-use-poster-path)
+- [How to install shadcn components](#how-to-install-shadcn-components)
 
 
 ## Local
@@ -42,6 +43,11 @@ Access http://localhost:5173/login
 
 Append to this:
 
-```
 https://image.tmdb.org/t/p/w500/
+
+
+## How to install shadcn components
+
+```bash
+npx shadcn@latest add <component>
 ```

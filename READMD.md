@@ -10,7 +10,8 @@
 ## 使用技術
 
 - Spring Boot / Java：バックエンド
-- React / JavaScript：フロントエンド
+- React / TypeScript：フロントエンド
   - Vite
   - TailWind CSS
   - shadcn/ui
+  - lucide-react
