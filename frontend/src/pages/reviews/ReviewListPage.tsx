@@ -70,11 +70,11 @@ function ReviewListPage() {
         const data: ReviewListResponse = await res.json();
         setReviews(data.reviews);
         setTotalPages(data.totalPages);
-      } else {
-        console.error("Get reviews failed");
       }
+
+      return;
     } catch (e) {
-      console.error("Get reviews failed: " + e);
+      return;
     }
   };
 

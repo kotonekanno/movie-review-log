@@ -43,11 +43,11 @@ function ReviewDetailsPage() {
           releaseYear: data.releaseYear,
           posterPath: data.posterPath,
         }));
-      } else {
-        console.error("Get movie details failed");
       }
+      
+      return;
     } catch (e) {
-      console.error("Get movie details failed" + e);
+      return;
     }
   };
 
@@ -59,13 +59,12 @@ function ReviewDetailsPage() {
         credentials: "include",
       });
       if (res.ok) {
-        console.log("Delete succeeded");
         navigate("/reviews");
-      } else {
-        console.log("Delete failed")
       }
+
+      return;
     } catch (e) {
-      console.error("Delete failed: " + e);
+      return;
     }
   };
 

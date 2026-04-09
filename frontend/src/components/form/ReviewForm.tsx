@@ -44,7 +44,7 @@ function ReviewForm(props: ReviewFormProps) {
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!movieId) {
-      console.error("映画IDを取得できませんでした");
+      alert("映画IDを取得できませんでした");
       return;
     }
     props.onSubmit({ movieId, text, score, watchedAt });
@@ -62,12 +62,11 @@ function ReviewForm(props: ReviewFormProps) {
         const data: MovieDetails = await res.json();
         setMovie(data);
         setMovieId(data.movieId);
-        console.log("Movie fetch succeeded");
-      } else {
-        console.error("Movie fetch failed");
       }
+
+      return;
     } catch (e) {
-      console.error("Movie fetch failed: " + e);
+      return;
     }
   };
 

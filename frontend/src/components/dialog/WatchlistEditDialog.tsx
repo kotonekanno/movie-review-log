@@ -61,13 +61,11 @@ function WatchlistEditDialog (props: Props) {
           credentials: "include",
         });
 
-        const data: CreateWatchlistResponse = await res.json();
         if (res.status === 200) {
-          console.log("Watchlist item successfully editted: " + data.watchlistId);
           props.onSuccess();
           props.onOpenChange(false);
         } else {
-          console.error("Watchlist item edit failed")
+          return;
         }
       } else {
         const res: Response = await fetch(`${API_BASE_URL}/watchlist`, {
@@ -77,26 +75,24 @@ function WatchlistEditDialog (props: Props) {
           credentials: "include",
         });
 
-        const data: CreateWatchlistResponse = await res.json();
         if (res.status === 201) {
-          console.log("Watchlist item successfully created: " + data.watchlistId);
           props.onSuccess();
           props.onOpenChange(false);
         } else if (res.status === 409) {
-          alert("この作品はすでにウォッチリストにあります");
+          alert("この作品は既にウォッチリストにあります");
         } else {
-          console.error("Watchlist item creation failed");
+          return;
         }
       }
     } catch (e) {
-      console.error("Watchlist item creation failed: " + e);
+      return;
     }
   };
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!movieId) {
-        console.error("映画IDを取得できませんでした");
+        alert("映画IDを取得できませんでした");
         return;
       }
       onSubmit({ movieId, note, priority });
@@ -114,12 +110,11 @@ function WatchlistEditDialog (props: Props) {
           const data: MovieDetails = await res.json();
           setMovie(data);
           setMovieId(data.movieId);
-          console.log("Movie fetch succeeded");
-        } else {
-          console.error("Movie fetch failed");
         }
+
+        return;
       } catch (e) {
-        console.error("Movie fetch failed: " + e);
+        return;
       }
     };
   

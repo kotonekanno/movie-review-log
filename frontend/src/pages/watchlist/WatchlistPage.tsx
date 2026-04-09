@@ -26,11 +26,11 @@ function WatchlistPage() {
         const data: FetchWatchlistResponse = await res.json();
         setWatchlist(data.watchlist);
         setWatched(data.watched);
-      } else {
-        console.error("Get watchlist failed");
       }
+
+      return;
     } catch (e) {
-      console.error("Get watchlist failed: " + e);
+      return;
     }
   };
 
@@ -44,11 +44,11 @@ function WatchlistPage() {
 
       if (res.status === 204) {
         await fetchWatchlist();
-      } else {
-        console.error("Delete failed");
       }
+
+      return;
     } catch (e) {
-      console.error("Delete failed: " + e);
+      return;
     }
   }
 

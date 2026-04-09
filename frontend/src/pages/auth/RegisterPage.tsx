@@ -18,13 +18,12 @@ function RegisterPage() {
       });
 
       if (res.status === 204) {
-        console.log("Registration succeded!");
         navigate("/login");
-      } else {
-        console.error("Registration failed");
       }
+
+      return;
     } catch (e) {
-      console.error("Registration failed: " + e);
+      return;
     }
   };
 

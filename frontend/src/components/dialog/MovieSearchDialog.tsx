@@ -43,10 +43,10 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
         setMovies(data);
         setHasSearched(true);
       } else {
-        console.error("Movie search failed");
+        return;
       }
     } catch (e) {
-      console.error("Movie search failed: " + e);
+      return;
     } finally {
       setLoading(false);
     }

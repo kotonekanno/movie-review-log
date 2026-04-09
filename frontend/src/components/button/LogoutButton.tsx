@@ -13,13 +13,12 @@ function LogoutButton() {
       });
 
       if (res.status === 204) {
-        console.log("Logged out");
         navigate("/login");
-      } else {
-        console.error("Logout failed");
       }
+
+      return;
     } catch (e) {
-      console.error("Logout failed: " + e);
+      return;
     }
   };
 

@@ -25,13 +25,12 @@ function LoginPage() {
       });
 
       if (res.status === 204) {
-        console.log("Login succeeded!");
         navigate("/");
-      } else {
-        console.error("Login failed");
       }
+      
+      return;
     } catch (e) {
-      console.error("Login failed: " + e);
+      return;
     }
   };
 

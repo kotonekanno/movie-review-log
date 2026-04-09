@@ -35,11 +35,10 @@ function ReviewFormContainer(props: Props) {
         });
 
         if (res.status === 200) {
-          console.log("Review successfully edited");
           navigate("/reviews")
-        } else {
-          console.error("Review patch failed");
         }
+
+        return;
       } else {
         const res = await fetch(`${API_BASE_URL}/reviews`, {
           method: "POST",
@@ -49,15 +48,13 @@ function ReviewFormContainer(props: Props) {
         });
         
         if (res.status === 201) {
-          const data: CreateReviewResponse = await res.json();
-          console.log("Review successfully created: " + data.reviewId);
           navigate("/reviews");
-        } else {
-          console.error("Review creation failed");
         }
+
+        return;
       }
     } catch (e) {
-      console.error("Submit failed: " + e);
+      return;
     }
   };
 
@@ -90,7 +87,7 @@ function ReviewFormContainer(props: Props) {
           posterPath: data.posterPath,
         })
       } catch (e) {
-        console.error("Failed to fetch review:", e);
+        return;
       }
     };
 

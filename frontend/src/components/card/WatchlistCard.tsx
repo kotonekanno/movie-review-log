@@ -48,12 +48,12 @@ function WatchlistCard({ item, onSuccess }: Props) {
       });
 
       if (res.status === 204) {
-        console.log("isWatched updated successfully");
-      } else {
-        console.error("update failed");
+        return;
       }
+      
+      return;
     } catch(e) {
-      console.error("update failed: " + e)
+      return;
     }
   };
 
