@@ -1,68 +1,40 @@
-HELP.md
-.gradle
-application-local.yml
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+# =====================
+# 共通
+# =====================
+.env
+.env.*
+*.log
+.DS_Store
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
+# =====================
+# frontend (Vite + React)
+# =====================
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.env
 
-### IntelliJ IDEA ###
-.idea
-*.iws
+# =====================
+# backend (Spring Boot)
+# =====================
+backend/build/
+backend/.gradle/
+backend/application-local.yml
+backend/.env
+backend/.idea/compiler.xml
+.idea/
+
+# =====================
+# IDE
+# =====================
+.vscode/
+.idea/
 *.iml
 *.ipr
+*.iws
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.vscode/
-
-
-node_modules/
-
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# =====================
+# OS / misc
+# =====================
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-.env

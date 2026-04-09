@@ -30,7 +30,7 @@ dependencies {
 	implementation("com.squareup.okhttp3:okhttp:4.12.0")
 	implementation("jakarta.validation:jakarta.validation-api:3.0.2")
 	implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
-    implementation("org.postgresql:postgresql")
+	implementation("org.postgresql:postgresql")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
