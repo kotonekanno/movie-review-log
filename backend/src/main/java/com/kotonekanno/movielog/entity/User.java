@@ -26,4 +26,7 @@ public class User {
   private LocalDateTime createdAt;
 
   private LocalDateTime deletedAt;
+
+  @Column(name = "is_active", nullable = false)
+  private Boolean isActive = false;
 }

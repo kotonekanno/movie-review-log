@@ -17,7 +17,7 @@ public class Movie {
   @Column(name = "tmdb_id", nullable = false, unique = true)
   private Long tmdbId;
 
-  @Column(name = "ja_title")
+  @Column(name = "ja_title", nullable = false)
   private String jaTitle;
 
   @Column(name = "original_title", nullable = false)

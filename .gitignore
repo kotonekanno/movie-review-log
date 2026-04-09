@@ -20,6 +20,8 @@ frontend/.env
 backend/build/
 backend/.gradle/
 backend/application-local.yml
+backend/application-prod.yml
+backend/application.yml
 backend/.env
 backend/.idea/compiler.xml
 .idea/

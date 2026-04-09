@@ -27,7 +27,7 @@ psql -U postgres -W movie_review_app_dev
 ./gradlew bootRun
 ```
 
-Access http://localhost:8080/
+Access http://localhost:8080/login
 
 ### React
 

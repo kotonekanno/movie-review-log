@@ -30,18 +30,8 @@ public class WatchlistItem {
   private String note;
 
   @Column(nullable = false)
-  private Boolean isWatched;
+  private Boolean isWatched = false;
 
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
-
-  @PrePersist
-  public void prePersist() {
-    if (this.createdAt == null) {
-      this.createdAt = LocalDateTime.now();
-    }
-    if (this.isWatched == null) {
-      this.isWatched = false;
-    }
-  }
 }
