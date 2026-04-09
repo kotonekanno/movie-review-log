@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 
 import type { ReviewFormValues } from "@/types/review";
-import type { MovieDetails } from "@/types/movie";
-import type { Movie } from "@/types/movie";
+import type { MovieDetails, Movie } from "@/types/movie";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,39 +18,43 @@ import { Separator } from "@/components/ui/separator";
 import MovieSearchDialog from "@/components/dialog/MovieSearchDialog";
 import MovieDetailsCard from "@/components/card/MovieDetailsCard";
 
-interface ReviewFormProps {
-  onSubmit: (values: ReviewFormValues) => void | Promise<void>;
-  prevReview?: ReviewFormValues;
-}
+type ReviewFormProps =
+  | {
+      mode: "create";
+      onSubmit: (values: ReviewFormValues) => void | Promise<void>;
+    }
+  | {
+      mode: "edit";
+      onSubmit: (values: ReviewFormValues) => void | Promise<void>;
+      prevReview: ReviewFormValues;
+      prevMovie: MovieDetails;
+    };
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-function ReviewForm({ onSubmit, prevReview }: ReviewFormProps) {
-  const [tmdbId, setTmdbId] = useState<number | undefined>();
-  const [movieId, setMovieId] = useState<number | undefined>(prevReview?.movieId);
+function ReviewForm(props: ReviewFormProps) {
+  const [movieId, setMovieId] = useState<number | undefined>();
   const [movie, setMovie] = useState<MovieDetails>();
-  const [text, setText] = useState<string>(prevReview?.text || "");
-  const [score, setScore] = useState<number>(prevReview?.score ?? 2.5);
+  const [text, setText] = useState<string>("");
+  const [score, setScore] = useState<number>(2.5);
   const [watchedAt, setWatchedAt] = useState<string>(
-    prevReview?.watchedAt || new Date().toISOString().slice(0, 10)
+    new Date().toLocaleDateString("sv-SE")
   );
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!movieId) {
-      alert("映画IDを取得できませんでした");
+      console.error("映画IDを取得できませんでした");
       return;
     }
-    onSubmit({ movieId, text, score, watchedAt });
+    props.onSubmit({ movieId, text, score, watchedAt });
   };
 
   const fetchMovieDetails = async (tmdbId: number) => {
     try {
       const res: Response = await fetch(`${API_BASE_URL}/movies/${tmdbId}`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
 
@@ -69,16 +72,20 @@ function ReviewForm({ onSubmit, prevReview }: ReviewFormProps) {
   };
 
   useEffect(() => {
-    if (tmdbId !== undefined) {
-      fetchMovieDetails(tmdbId);
+    if (props.mode === "edit") {
+      setMovieId(props.prevReview.movieId);
+      setText(props.prevReview.text);
+      setScore(props.prevReview.score);
+      setWatchedAt(props.prevReview.watchedAt);
+      setMovie(props.prevMovie);
     }
-  }, [tmdbId]);
+  }, [props]);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-[48rem] p-4 mx-auto">
       
       <MovieSearchDialog
-        onSelectMovie={(movie: Movie) => setTmdbId(movie.tmdbId)}
+        onSelectMovie={(movie: Movie) => fetchMovieDetails(movie.tmdbId)}
       />
 
       {movie && <MovieDetailsCard movie={movie} />}
@@ -123,7 +130,7 @@ function ReviewForm({ onSubmit, prevReview }: ReviewFormProps) {
               variant="outline"
               className="w-full text-left"
             >
-              {watchedAt || "鑑賞日を選択"}
+              {watchedAt}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
@@ -131,7 +138,7 @@ function ReviewForm({ onSubmit, prevReview }: ReviewFormProps) {
               mode="single"
               selected={watchedAt ? new Date(watchedAt) : undefined}
               onSelect={(date) => {
-                if (date) setWatchedAt(date.toISOString().slice(0, 10));
+                if (date) setWatchedAt(date.toLocaleDateString("sv-SE"));
               }}
             />
           </PopoverContent>

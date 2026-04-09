@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 
 import SearchResultCard from "@/components/card/SearchResultCard";
 
@@ -26,9 +26,12 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSearch = async () => {
     try {
+      setLoading(true);
+
       const res: Response = await fetch(`${API_BASE_URL}/movies?query=${encodeURIComponent(query)}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -44,6 +47,8 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
       }
     } catch (e) {
       console.error("Movie search failed: " + e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -80,7 +85,11 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          {hasSearched && movies.length === 0 ? (
+          {loading ? (
+            <div className="flex justify-center items-center h-full">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : hasSearched && movies.length === 0 ? (
             <p className="text-center text-muted-foreground mt-8">
               検索結果がありません
             </p>

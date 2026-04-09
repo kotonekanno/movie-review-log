@@ -3,6 +3,7 @@ package com.kotonekanno.movielog.service;
 import com.kotonekanno.movielog.dto.*;
 import com.kotonekanno.movielog.entity.Movie;
 import com.kotonekanno.movielog.exception.ExternalApiException;
+import com.kotonekanno.movielog.exception.NotFoundException;
 import com.kotonekanno.movielog.repository.MovieRepository;
 import org.springframework.stereotype.Service;
 
@@ -83,30 +84,6 @@ public class MovieService {
       movie.getPosterPath()
     );
   }
-  /*public MovieDetailsDTO fetchDetails(Long tmdbId) {
-    Optional<MovieDetailsDTO> optionalDto = movieRepository.findMovieDetailsDTOByTmdbId(tmdbId);
-
-    if (optionalDto.isPresent()) {
-      return optionalDto.get();
-    }
-
-    TmdbMovieDetailsDTO response;
-    try {
-      response = tmdbApi.getDetails(tmdbId);
-    } catch (IOException e) {
-      throw new ExternalApiException("TMDB API error", e);
-    }
-
-    Movie movie = cache(tmdbId, response);
-
-    return new MovieDetailsDTO(
-        movie.getId(),
-        movie.getJaTitle(),
-        movie.getOriginalTitle(),
-        movie.getReleaseYear(),
-        movie.getPosterPath()
-    );
-  }*/
 
   // Cache a movie
   private Movie cache(Long tmdbId, TmdbMovieDetailsDTO res) {

@@ -24,7 +24,7 @@ function LoginPage() {
         credentials: "include",
       });
 
-      if (res.ok) {
+      if (res.status === 204) {
         console.log("Login succeeded!");
         navigate("/");
       } else {

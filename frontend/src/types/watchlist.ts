@@ -1,5 +1,6 @@
 export interface WatchlistItem {
   watchlistId: number;
+  movieId: number;
   jaTitle: string;
   originalTitle: string;
   posterPath: string;
@@ -17,6 +18,7 @@ export interface WatchlistFormValues {
 
 export interface FetchWatchlistResponse {
   watchlist: WatchlistItem[];
+  watched: number;
 }
 
 

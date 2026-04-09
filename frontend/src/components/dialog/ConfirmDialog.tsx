@@ -11,22 +11,30 @@ import {
 } from "@/components/ui/dialog";
 
 interface ConfirmDialogProps {
+  title: string;
+  text: string;
+  buttonText: string;
   rightOnClick?: () => void;
   leftOnClick: () => void;
 }
 
-export default function ConfirmDialog({ rightOnClick, leftOnClick }: ConfirmDialogProps) {
+export default function ConfirmDialog({ title, text, buttonText, rightOnClick, leftOnClick }: ConfirmDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="px-6">削除</Button>
+        <Button
+          variant="destructive"
+          className="px-6"
+        >
+          {buttonText}
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>レビューを削除しますか？</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            この操作は取り消せません。削除するとレビューは完全に消去されます。
+            {text}
           </DialogDescription>
         </DialogHeader>
 

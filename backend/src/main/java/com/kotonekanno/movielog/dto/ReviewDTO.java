@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 public record ReviewDTO (
     Long reviewId,
+    Long movieId,
     String jaTitle,
     String originalTitle,
     Integer releaseYear,

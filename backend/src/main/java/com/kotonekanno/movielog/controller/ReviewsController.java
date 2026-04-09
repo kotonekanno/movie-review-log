@@ -1,17 +1,16 @@
 package com.kotonekanno.movielog.controller;
 
 import com.kotonekanno.movielog.dto.ReviewDTO;
-import com.kotonekanno.movielog.dto.ReviewListItemDTO;
 import com.kotonekanno.movielog.dto.ReviewListResponseDTO;
-import com.kotonekanno.movielog.entity.User;
+import com.kotonekanno.movielog.dto.ReviewSort;
 import com.kotonekanno.movielog.form.ReviewForm;
 import com.kotonekanno.movielog.service.ReviewService;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -41,9 +40,11 @@ public class ReviewsController {
   @GetMapping
   public ResponseEntity<ReviewListResponseDTO> getAll(
       @AuthenticationPrincipal UserDetails userDetails,
-      @RequestParam int page
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "createdAt") ReviewSort sort,
+      @RequestParam(defaultValue = "desc") Sort.Direction order
   ) {
-    return ResponseEntity.ok(reviewService.getAll(userDetails, page));
+    return ResponseEntity.ok(reviewService.getAll(userDetails, page, sort, order));
   }
 
   // Get details of a review

@@ -3,6 +3,7 @@ package com.kotonekanno.movielog.service;
 import com.kotonekanno.movielog.dto.ReviewDTO;
 import com.kotonekanno.movielog.dto.ReviewListItemDTO;
 import com.kotonekanno.movielog.dto.ReviewListResponseDTO;
+import com.kotonekanno.movielog.dto.ReviewSort;
 import com.kotonekanno.movielog.entity.Movie;
 import com.kotonekanno.movielog.entity.Review;
 import com.kotonekanno.movielog.entity.User;
@@ -56,7 +57,12 @@ public class ReviewService {
 
   // Get a list of reviews
   @Transactional(readOnly = true)
-  public ReviewListResponseDTO getAll(UserDetails userDetails, int page) {
+  public ReviewListResponseDTO getAll(
+      UserDetails userDetails,
+      int page,
+      ReviewSort sort,
+      Sort.Direction order
+  ) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
 
@@ -66,7 +72,7 @@ public class ReviewService {
     Pageable pageable = PageRequest.of(
         safePage - 1,
         pageSize,
-        Sort.by(Sort.Direction.DESC, "createdAt")   // 選択肢化
+        Sort.by(order, sort.getJpaField())
     );
 
     Page<ReviewListItemDTO> result = reviewRepository.findReviewListDTOs(user.getId(), pageable);
@@ -85,7 +91,7 @@ public class ReviewService {
         .orElseThrow(() -> new NotFoundException("User not found"));
 
     Review review = reviewRepository
-        .findById(reviewId)
+        .findByIdAndDeletedAtIsNull(reviewId)
         .orElseThrow(() -> new NotFoundException("Review not found"));
 
     if (!review.getUser().equals(user)) {
@@ -94,6 +100,7 @@ public class ReviewService {
 
     return new ReviewDTO(
         review.getId(),
+        review.getMovie().getId(),
         review.getMovie().getJaTitle(),
         review.getMovie().getOriginalTitle(),
         review.getMovie().getReleaseYear(),
@@ -131,6 +138,7 @@ public class ReviewService {
 
     return new ReviewDTO(
         updated.getId(),
+        updated.getMovie().getId(),
         updated.getMovie().getJaTitle(),
         updated.getMovie().getOriginalTitle(),
         updated.getMovie().getReleaseYear(),

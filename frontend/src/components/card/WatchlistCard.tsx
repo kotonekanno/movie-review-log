@@ -10,6 +10,12 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import WatchlistEditDialog from "@/components/dialog/WatchlistEditDialog";
 
@@ -18,74 +24,105 @@ const POSTER_BASE_URL = import.meta.env.VITE_POSTER_BASE_URL;
 
 interface Props {
   item: WatchlistItem;
+  onSuccess: () => void;
 }
 
-function WatchlistCard({ item }: Props) {
+function WatchlistCard({ item, onSuccess }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [checked, setChecked] = useState(!!item.isWatched);
-  const [formValues, setFormValues] = useState({
-    jaTitle: item.jaTitle,
-    priority: item.priority,
-    note: item.note,
-  });  
+  const [isWatched, setIsWatched] = useState(!!item.isWatched);
 
-  const handleChange = async (value: boolean) => {
-    setChecked(value);
-    await fetch(`${API_BASE_URL}/watchlist`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ watchlistId: item.watchlistId, isWatched: value }),
-      credentials: "include",
-    });
+  const [prevItem, setPrevItem] = useState<WatchlistItem>();
+
+  const handleWatchedChange = async (value: boolean) => {
+    setIsWatched(value);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/watchlist`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          watchlistId: item.watchlistId,
+          isWatched: value,
+        }),
+        credentials: "include",
+      });
+
+      if (res.status === 204) {
+        console.log("isWatched updated successfully");
+      } else {
+        console.error("update failed");
+      }
+    } catch(e) {
+      console.error("update failed: " + e)
+    }
   };
 
-  const payload: Partial<WatchlistItem> = { watchlistId: item.watchlistId };
-
-  if (formValues.jaTitle !== item.jaTitle) payload.jaTitle = formValues.jaTitle;
-  if (formValues.priority !== item.priority) payload.priority = formValues.priority;
-  if (formValues.note !== item.note) payload.note = formValues.note;
-
   useEffect(() => {
-    setChecked(!!item.isWatched);
-    setFormValues;
-  }, [item.isWatched]);
+    setIsWatched(!!item.isWatched);
+  }, [item]);
 
   return (
-    <div className="w-[450px] mx-auto gap-4 p-1 border rounded-md">
+    <div className="w-[600px] mx-auto gap-4 p-1 border rounded-md">
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1">
-          <AccordionTrigger className="h-14 flex items-center justify-between px-4 hover:no-underline">
-            <div className="flex items-center gap-4 flex-1 + min-w-0">
+          <div className="flex items-center justify-between px-4 h-14">
+
+            <div className="flex items-center gap-4 flex-1 min-w-0">
               <Checkbox
-                checked={checked}
-                onCheckedChange={(v) => handleChange(!!v)}
-                onClick={(e) => e.stopPropagation()}
+                checked={isWatched}
+                onCheckedChange={(isWatched) => {
+                  const value = !!isWatched;
+                  handleWatchedChange(value);
+                }}
               />
-              <span className={`truncate ${checked ? "line-through text-muted-foreground" : ""}`}>
-                {item.jaTitle}
-              </span>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span
+                      className={`relative block max-w-full overflow-hidden whitespace-nowrap
+                        ${isWatched ? "line-through text-muted-foreground" : ""}`}
+                    >
+                      <span className="pr-6">
+                        {item.jaTitle}
+                      </span>
+                      <span className="absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-background to-transparent" />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {item.jaTitle}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
 
-            <div className="flex items-center gap-6 mr-4">
+            <div className="flex items-center gap-4 ml-4">
               <span className="w-16 text-right text-sm text-muted-foreground">
                 {item.priority}%
               </span>
-              <div onClick={(e) => e.stopPropagation()}>
-                <Button
-                  onClick={() => setIsOpen(true)}
-                  disabled={checked}
-                  className="my-auto"
-                >
-                  編集
-                </Button>
-                <WatchlistEditDialog
-                  buttonText="編集"
-                  isOpen={isOpen}
-                  onOpenChange={setIsOpen}
-                />
-              </div>
+
+              <Button
+                onClick={() => {
+                  setPrevItem(item);
+                  setIsOpen(true);
+                }}
+                disabled={isWatched}
+                className="my-auto"
+              >
+                編集
+              </Button>
+
+              <WatchlistEditDialog
+                mode="edit"
+                isOpen={isOpen}
+                onOpenChange={setIsOpen}
+                onSuccess={onSuccess}
+                prevItem={prevItem!}
+              />
+
+              <AccordionTrigger className="px-2 hover:no-underline" />
             </div>
-          </AccordionTrigger>
+          </div>
 
           <AccordionContent className="px-4 pt-2 pb-4">
             <div className="flex gap-4">
@@ -99,6 +136,7 @@ function WatchlistCard({ item }: Props) {
               </div>
             </div>
           </AccordionContent>
+
         </AccordionItem>
       </Accordion>
     </div>

@@ -1,7 +1,7 @@
 package com.kotonekanno.movielog.controller;
 
 import com.kotonekanno.movielog.dto.WatchlistItemDTO;
-import com.kotonekanno.movielog.entity.User;
+import com.kotonekanno.movielog.dto.WatchlistResponseDTO;
 import com.kotonekanno.movielog.form.WatchlistForm;
 import com.kotonekanno.movielog.service.WatchlistService;
 import org.springframework.http.ResponseEntity;
@@ -37,12 +37,10 @@ public class WatchlistController {
   // Get a watchlist
   // return 200 OK
   @GetMapping
-  public ResponseEntity<Map<String, List<WatchlistItemDTO>>> getAll(
+  public ResponseEntity<WatchlistResponseDTO> getAll(
       @AuthenticationPrincipal UserDetails userDetails
   ) {
-    List<WatchlistItemDTO> watchlist = watchlistService.getAll(userDetails);
-
-    return ResponseEntity.ok(Map.of("watchlist", watchlist));
+    return ResponseEntity.ok(watchlistService.getAll(userDetails));
   }
 
   // Update a watchlist item
@@ -84,13 +82,9 @@ public class WatchlistController {
 
   // Delete all watched watchlist items
   // returns 204 No Content
-  @DeleteMapping
-  public ResponseEntity<Void> deleteIsWatched(
-      @AuthenticationPrincipal UserDetails userDetails,
-      @RequestBody Map<String, List<Long>> body
-  ) {
-    List<Long> watchlistIds = body.get("watchlistIds");
-    watchlistService.deleteIsWatched(userDetails, watchlistIds);
+  @DeleteMapping("/bulk-delete")
+  public ResponseEntity<Void> deleteIsWatched(@AuthenticationPrincipal UserDetails userDetails) {
+    watchlistService.deleteIsWatched(userDetails);
     return ResponseEntity.noContent().build();
   }
 }

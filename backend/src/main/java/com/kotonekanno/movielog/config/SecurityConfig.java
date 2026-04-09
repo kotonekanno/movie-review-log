@@ -44,20 +44,13 @@ public class SecurityConfig {
         .formLogin(form -> form
             .loginProcessingUrl("/login")
             .successHandler((req, res, auth) -> {
-              res.setContentType("application/json");
-              res.getWriter().write("{\"status\":\"ok\"}");
-            })
-            .failureHandler((req, res, ex) -> {
-              res.setContentType("application/json");
-              res.setStatus(401);
-              res.getWriter().write("{\"status\":\"error\",\"message\":\"Invalid credentials\"}");
+              res.setStatus(204);
             })
         )
         .logout(logout -> logout
             .logoutUrl("/logout")
             .logoutSuccessHandler((req, res, auth) -> {
-              res.setContentType("application/json");
-              res.getWriter().write("{\"status\":\"logged out\"}");
+              res.setStatus(204);
             })
         );
 

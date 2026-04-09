@@ -6,9 +6,9 @@ export interface Movie {
 }
 
 export interface MovieDetails {
-  movieId?: number;
+  movieId: number;
   jaTitle: string;
   originalTitle: string;
-  releaseYear: number;
+  releaseYear?: number;
   posterPath: string;
 }

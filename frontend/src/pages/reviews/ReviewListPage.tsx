@@ -12,9 +12,21 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { ArrowUp, ArrowDown } from "lucide-react";
 
 import ReviewCard from "@/components/card/ReviewCard";
 import AddButton from "@/components/button/AddButton";
+
+type SortKey = "jaTitle" | "releaseYear" | "createdAt" | "updatedAt" | "score" | "watchedAt";
+type Order = "ASC" | "DESC";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -23,6 +35,8 @@ function ReviewListPage() {
   const location = useLocation();
 
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [sortKey, setSortKey] = useState<SortKey>("createdAt");
+  const [order, setOrder] = useState<Order>("DESC");
   const [totalPages, setTotalPages] = useState<number>(1);
 
   const pageParam = new URLSearchParams(location.search).get("page");
@@ -42,9 +56,9 @@ function ReviewListPage() {
     (_, i) => startPage + i
   );
 
-  const fetchReviews = async () => {
+  const fetchReviews = async (page: number, sortKey: SortKey, order: Order) => {
     try {
-      const res: Response = await fetch(`${API_BASE_URL}/reviews?page=${page}`, {
+      const res: Response = await fetch(`${API_BASE_URL}/reviews?page=${page}&sort=${sortKey}&order=${order}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -64,19 +78,55 @@ function ReviewListPage() {
     }
   };
 
+  const toggleOrder = () => {
+    setOrder((prev) => (prev === "ASC" ? "DESC" : "ASC"));
+  };
+
   useEffect(() => {
-    fetchReviews();
+    const params = new URLSearchParams(location.search);
+    const page = parseInt(params.get("page") || "1", 10);
+    const sort = (params.get("sort") as SortKey) || "createdAt";
+    const order = (params.get("order") as Order) || "DESC";
+
+    fetchReviews(page, sort, order);
   }, [location.search]);
 
   return (
     <div>
       <h1 className="text-3xl font-bold text-gray-800 text-center my-6">レビュー一覧</h1>
 
+      <div className="flex items-center gap-2 justify-end mx-auto">
+        <Select value={sortKey} onValueChange={(value: SortKey) => setSortKey(value)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="createdAt">作成日時</SelectItem>
+            <SelectItem value="updatedAt">更新日時</SelectItem>
+            <SelectItem value="score">点数</SelectItem>
+            <SelectItem value="watchedAt">視聴日</SelectItem>
+            <SelectItem value="jaTitle">タイトル</SelectItem>
+            <SelectItem value="releaseYear">公開年</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Button variant="outline" size="icon" onClick={toggleOrder}>
+          {order === "DESC"
+            ? <ArrowDown className="h-4 w-4" />
+            : <ArrowUp className="h-4 w-4" />
+          }
+        </Button>
+
+        <Button onClick={() => navigate(`/reviews?page=1&sort=${sortKey}&order=${order}`)}>
+          並べ替え
+        </Button>
+      </div>
+
       <Pagination>
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
-              onClick={() => page > 1 && navigate(`/reviews?page=${page - 1}`)}
+              onClick={() => page > 1 && navigate(`/reviews?page=${page - 1}&sort=${sortKey}&order=${order}`)}
               className={page <= 1 ? "pointer-events-none opacity-50" : ""}
             />
           </PaginationItem>
@@ -84,7 +134,7 @@ function ReviewListPage() {
           {startPage > 1 && (
             <>
               <PaginationItem>
-                <PaginationLink onClick={() => navigate(`/reviews?page=1`)}>1</PaginationLink>
+                <PaginationLink onClick={() => navigate(`/reviews?page=1&sort=${sortKey}&order=${order}`)}>1</PaginationLink>
               </PaginationItem>
               <PaginationItem>
                 <PaginationEllipsis />
@@ -94,7 +144,7 @@ function ReviewListPage() {
 
           {pageNumbers.map(p => (
             <PaginationItem key={p}>
-              <PaginationLink onClick={() => navigate(`/reviews?page=${p}`)} isActive={p === page}>
+              <PaginationLink onClick={() => navigate(`/reviews?page=${p}&sort=${sortKey}&order=${order}`)} isActive={p === page}>
                 {p}
               </PaginationLink>
             </PaginationItem>
@@ -106,7 +156,7 @@ function ReviewListPage() {
                 <PaginationEllipsis />
               </PaginationItem>
               <PaginationItem>
-                <PaginationLink onClick={() => navigate(`/reviews?page=${totalPages}`)}>
+                <PaginationLink onClick={() => navigate(`/reviews?page=${totalPages}&sort=${sortKey}&order=${order}`)}>
                   {totalPages}
                 </PaginationLink>
               </PaginationItem>
@@ -115,7 +165,7 @@ function ReviewListPage() {
 
           <PaginationItem>
             <PaginationNext
-              onClick={() => page < totalPages && navigate(`/reviews?page=${page + 1}`)}
+              onClick={() => page < totalPages && navigate(`/reviews?page=${page + 1}&sort=${sortKey}&order=${order}`)}
               className={page >= totalPages ? "pointer-events-none opacity-50" : ""}
             />
           </PaginationItem>

@@ -1,10 +1,12 @@
 package com.kotonekanno.movielog.service;
 
 import com.kotonekanno.movielog.dto.WatchlistItemDTO;
+import com.kotonekanno.movielog.dto.WatchlistResponseDTO;
 import com.kotonekanno.movielog.entity.Movie;
 import com.kotonekanno.movielog.entity.User;
 import com.kotonekanno.movielog.entity.WatchlistItem;
 import com.kotonekanno.movielog.exception.AccessDeniedException;
+import com.kotonekanno.movielog.exception.AlreadyExistsException;
 import com.kotonekanno.movielog.exception.NotFoundException;
 import com.kotonekanno.movielog.form.WatchlistForm;
 import com.kotonekanno.movielog.repository.MovieRepository;
@@ -38,6 +40,10 @@ public class WatchlistService {
     Movie movie = movieRepository.findById(form.getMovieId())
         .orElseThrow(() -> new NotFoundException("Movie not found"));
 
+    if (watchlistItemRepository.existsByUserIdAndMovieId(user.getId(), movie.getId())) {
+      throw new AlreadyExistsException("Watchlist item already exists");
+    }
+
     watchlistItem.setUser(user);
     watchlistItem.setMovie(movie);
     watchlistItem.setPriority(form.getPriority());
@@ -48,11 +54,17 @@ public class WatchlistService {
 
   // Get a watchlist
   @Transactional(readOnly = true)
-  public List<WatchlistItemDTO> getAll(UserDetails userDetails) {
+  public WatchlistResponseDTO getAll(UserDetails userDetails) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
 
-    return watchlistItemRepository.findWatchlistItemDTOs(user.getId());
+    List<WatchlistItemDTO> items = watchlistItemRepository.findWatchlistItemDTOs(user.getId());
+
+    int watched = (int) items.stream()
+        .filter(WatchlistItemDTO::isWatched)
+        .count();
+
+    return new WatchlistResponseDTO(items, watched);
   }
 
   // Update a watchlist item
@@ -68,6 +80,23 @@ public class WatchlistService {
       throw new AccessDeniedException("You do not have permission to update this watchlist item");
     }
 
+    if (form.getMovieId() != null &&
+        !form.getMovieId().equals(watchlistItem.getMovie().getId())) {
+
+      if (watchlistItemRepository.existsByUserIdAndMovieIdAndIdNot(
+          user.getId(),
+          form.getMovieId(),
+          watchlistItem.getId()
+      )) {
+        throw new AlreadyExistsException("Watchlist item already exists");
+      }
+
+      Movie movie = movieRepository.findById(form.getMovieId())
+          .orElseThrow(() -> new NotFoundException("Movie not found"));
+
+      watchlistItem.setMovie(movie);
+    }
+
     if (form.getNote() != null) {
       watchlistItem.setNote(form.getNote());
     }
@@ -79,6 +108,7 @@ public class WatchlistService {
 
     return new WatchlistItemDTO(
         updated.getId(),
+        updated.getMovie().getId(),
         updated.getMovie().getJaTitle(),
         updated.getMovie().getOriginalTitle(),
         updated.getMovie().getPosterPath(),
@@ -102,10 +132,6 @@ public class WatchlistService {
     }
 
     watchlistItem.setIsWatched(isWatched);
-
-    if (isWatched) {
-      watchlistItem.setPriority(0);
-    }
   }
 
   // Delete a watchlist item
@@ -126,23 +152,11 @@ public class WatchlistService {
   }
 
   // Delete all watched watchlist items
-  // needs verification
   @Transactional
-  public void deleteIsWatched(UserDetails userDetails, List<Long> watchlistIds) {
+  public void deleteIsWatched(UserDetails userDetails) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
-    List<WatchlistItem> items = watchlistItemRepository.findAllById(watchlistIds);
 
-    for (WatchlistItem item : items) {
-      if (!item.getUser().equals(user)) {
-        throw new AccessDeniedException("You do not have permission to delete this watchlist item");
-      }
-
-      if (Boolean.TRUE.equals(item.getIsWatched())) {
-        continue;
-      }
-
-      watchlistItemRepository.delete(item);
-    }
+    watchlistItemRepository.deleteAllWatchedByUserId(user.getId());
   }
 }

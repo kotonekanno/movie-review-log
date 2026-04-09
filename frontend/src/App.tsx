@@ -7,7 +7,8 @@ import RegisterPage from "@/pages/auth/RegisterPage";
 import LoginPage from "@/pages/auth/LoginPage";
 import HomePage from "@/pages/HomePage";
 import ReviewListPage from "@/pages/reviews/ReviewListPage";
-import ReviewCreatePage from "@/pages/reviews/ReviewEditPage";
+import ReviewCreatePage from "@/pages/reviews/ReviewCreatePage";
+import ReviewEditPage from "@/pages/reviews/ReviewEditPage";
 import ReviewDetailsPage from "@/pages/reviews/ReviewDetailsPage";
 import WatchlistPage from "@/pages/watchlist/WatchlistPage";
 
@@ -24,7 +25,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/reviews" element={<ReviewListPage />} />
             <Route path="/reviews/edit" element={<ReviewCreatePage />} />
-            <Route path="/reviews/edit/:reviewId" element={<ReviewCreatePage />} />
+            <Route path="/reviews/edit/:reviewId" element={<ReviewEditPage />} />
             <Route path="/reviews/:reviewId" element={<ReviewDetailsPage />} />
             <Route path="/watchlist" element={<WatchlistPage />} />
           </Route>

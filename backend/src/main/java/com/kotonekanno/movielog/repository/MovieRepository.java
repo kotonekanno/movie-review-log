@@ -21,7 +21,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
         m.posterPath
       )
       FROM Movie m
-      WHERE m.id = :tmdbId
+      WHERE m.tmdbId = :tmdbId
       """)
   Optional<MovieDetailsDTO> findMovieDetailsDTOByTmdbId(@Param("tmdbId") Long tmdbId);
 

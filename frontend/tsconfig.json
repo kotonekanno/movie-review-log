@@ -7,7 +7,7 @@
   "compilerOptions": {
     /* ===== Path Alias ===== */
     "paths": {
-      "@/*": ["./frontend/src/*"]
+      "@/*": ["./src/*"]
     },
 
     /* ===== Strict Mode (ガチ勢) ===== */

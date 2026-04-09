@@ -18,6 +18,7 @@ function ReviewDetailsPage() {
   const { reviewId } = useParams<{ reviewId: string }>();
   const [review, setReview] = useState<ReviewDetails>();
   const [movie, setMovie] = useState<MovieDetails>({
+    movieId: 0,
     jaTitle: "",
     originalTitle: "",
     releaseYear: 0,
@@ -72,7 +73,7 @@ function ReviewDetailsPage() {
     fetchReview();
   }, [reviewId]);
 
-  if (!review) return <div>読み込み中...</div>;
+  if (!review) return <div className="text-center">レビューがありません</div>;
 
   return (
   <div className="max-w-4xl mx-auto space-y-6">
@@ -104,7 +105,12 @@ function ReviewDetailsPage() {
       >
         編集
       </Button>
-      <ConfirmDialog leftOnClick={handleDelete} />
+      <ConfirmDialog
+        title="レビューを削除しますか？"
+        text="この操作は取り消せません。削除するとレビューは完全に消去されます。"
+        buttonText="削除"
+        leftOnClick={handleDelete}
+      />
     </div>
 
   </div>
