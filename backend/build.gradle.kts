@@ -4,6 +4,10 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
+springBoot {
+    mainClass = "com.kotonekanno.movielog.MovieReviewApplication"
+}
+
 group = "com.kotonekanno"
 version = "0.0.1-SNAPSHOT"
 

@@ -1,4 +1,4 @@
-// users
+-- users
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -8,7 +8,7 @@ CREATE TABLE users (
     is_active BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-// movies
+-- movies
 CREATE TABLE movies (
     id SERIAL PRIMARY KEY,
     tmdb_id BIGINT NOT NULL UNIQUE,
@@ -18,7 +18,7 @@ CREATE TABLE movies (
     poster_path VARCHAR(255)
 );
 
-// reviews
+-- reviews
 CREATE TABLE reviews (
     id SERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE reviews (
     CONSTRAINT fk_reviews_movie FOREIGN KEY(movie_id) REFERENCES movies(id)
 );
 
-// watchlist_items
+-- watchlist_items
 CREATE TABLE watchlist_items (
     id SERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,

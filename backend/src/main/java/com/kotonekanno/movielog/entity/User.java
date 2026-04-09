@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "users")
@@ -23,6 +24,7 @@ public class User {
   private String passwordHash;
 
   @Column(nullable = false, updatable = false)
+  @CreationTimestamp
   private LocalDateTime createdAt;
 
   private LocalDateTime deletedAt;

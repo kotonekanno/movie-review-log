@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -33,5 +34,6 @@ public class WatchlistItem {
   private Boolean isWatched = false;
 
   @Column(name = "created_at", nullable = false, updatable = false)
+  @CreationTimestamp
   private LocalDateTime createdAt;
 }

@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: movie-review
+
+  profiles:
+    active: local
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+    baseline-on-migrate: true

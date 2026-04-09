@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,16 +36,13 @@ public class Review {
   private LocalDate watchedAt;
 
   @Column(name = "created_at", updatable = false, nullable = false)
+  @CreationTimestamp
   private LocalDateTime createdAt;
 
   @Column(name = "updated_at", nullable = false)
+  @UpdateTimestamp
   private LocalDateTime updatedAt;
 
   @Column(name = "deleted_at")
   private LocalDateTime deletedAt;
-
-  @PreUpdate
-  public void preUpdate() {
-    this.updatedAt = LocalDateTime.now();
-  }
 }
