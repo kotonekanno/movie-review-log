@@ -8,7 +8,7 @@ import ReviewForm from "@/components/form/ReviewForm";
 
 type Props =
   | { mode: "create" }
-  | { mode: "edit"; reviewId: number };
+  | { mode: "edit"; reviewId: string };
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 

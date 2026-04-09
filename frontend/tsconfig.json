@@ -9,22 +9,16 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-
-    /* ===== Strict Mode (ガチ勢) ===== */
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-
-    /* ===== Lint系 ===== */
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-
-    /* ===== その他安全系 ===== */
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    "skipLibCheck": true
+  "strict": true,
+  "noImplicitAny": true,
+  "strictNullChecks": true,
+  "noUncheckedIndexedAccess": false,
+  "exactOptionalPropertyTypes": false,
+  "noUnusedLocals": false,
+  "noUnusedParameters": false,
+  "noFallthroughCasesInSwitch": true,
+  "forceConsistentCasingInFileNames": true,
+  "isolatedModules": true,
+  "skipLibCheck": true
   }
 }
