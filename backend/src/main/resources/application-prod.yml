@@ -7,3 +7,10 @@ spring:
 app:
   frontend-url: ${SPRING_FRONTEND_URL}
   api-key: ${SPRING_API_KEY}
+
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: none
+        secure: true
