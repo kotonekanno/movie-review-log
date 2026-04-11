@@ -1,71 +1,97 @@
 <!-- omit in toc -->
 # データ設計
 
-DB name: `movie_review_app` / `movie_review_app_dev`
+v1.0.0  
+DB migration: [V1_innitial_schema.sql](/backend/src/main/resources/db/migration/V1_initial_schema.sql)
 
 <!-- omit in toc -->
 ### テーブル一覧
 
 - [users](#users)
 - [movies](#movies)
-- [movie\_genres](#movie_genres)
-- [genres](#genres)
 - [reviews](#reviews)
 - [watchlist\_items](#watchlist_items)
-
 
 ## users
 
 ユーザー情報
 
-| カラム名          | 型            | NULL      | 制約         | 説明                |
-| ----------------- | ------------- | --------- | ------------ | ------------------- |
-| id                | bigint        | NOT NULL  | PRIMARY KEY  | ユーザーID          |
-| email             | varchar(255)  | NOT NULL  | UNIQUE KEY   | メールアドレス      |
-| password_hash     | varchar(255)  | NOT NULL  |              | パスワードハッシュ  |
-| created_at        | timestamp     | NOT NULL  |              | 登録日時            |
-| deleted_at        | timestamp     | NULL      |              | 削除日時            |
+| カラム名       | 型           | 説明               |
+| -------------- | ------------ | ------------------ |
+| id             | SERIAL       | ユーザーID         |
+| email          | VARCHAR(255) | メールアドレス     |
+| password_hash  | VARCHAR(255) | パスワードのハッシュ値 |
+| created_at     | TIMESTAMP    | アカウント作成日時 |
+| deleted_at     | TIMESTAMP    | アカウント削除日時 |
+| is_active      | BOOLEAN      | アカウントの有効性 |
+
+- email
+    - UNIQUE
+- deleted_at
+    - NULLでない場合は論理削除扱い
+- is_active
+    - DEFAULT FALSE
+    - TRUEの場合のみログイン可能
 
 ## movies
 
 外部APIキャッシュ
 
-| カラム名          | 型            | NULL      | 制約         | 説明                |
-| ----------------- | ------------- | --------- | ------------ | ------------------- |
-| id                | bigint        | NOT NULL  | PRIMARY KEY  |                     |
-| tmdb_id           | bigint        | NULL      | UNIQUE KEY   | TMDB内のID          |
-| ja_title          | varchar(255)  | NULL      |              | 日本語タイトル      |
-| original_title    | varchar(255)  | NOT NULL  |              | 原題                |
-| release_year      | int           | NULL      |              | 公開年              |
-| poster_path       | varchar(255)  | NULL      |              | ポスターのURL       |
+| カラム名       | 型           | 説明           |
+| -------------- | ------------ | -------------- |
+| id             | SERIAL       | 映画ID         |
+| tmdb_id        | BIGINT       | TMDB内のID     |
+| ja_title       | VARCHAR(255) | 日本語タイトル |
+| original_title | VARCHAR(255) | 原題           |
+| release_year   | INT          | 公開年         |
+| poster_path    | VARCHAR(255) | ポスターURL    |
 
-## movie_genres
-
-## genres
+- tmdb_id
+    - UNIQUE
+- poster_path
+    - [https://image.tmdb.org/t/p/w500/](https://image.tmdb.org/t/p/w500/) ＋ poster_path
 
 ## reviews
 
-| カラム名          | 型            | NULL      | 制約                    | 説明                 |
-| ----------------- | ------------- | --------- | ----------------------- | -------------------- |
-| id                | bigint        | NOT NULL  | PRIMARY KEY             |                      |
-| user_id           | bitint        | NOT NULL  | REFERENCES user(id)     | ユーザーID           |
-| tmdb_id           | bigint        | NOT NULL  | REFERENCES movie(id)    | TMDB内のID           |
-| score             | double        | NOT NULL  | CHECK(0 < score < 5)    | 点数（0.0-5.0）      |
-| text              | varchar(255)  | NULL      |                         | レビュー             |
-| watched_at        | date          | NULL      |                         | 視聴日               |
-| created_at        | timestamp     | NULL      |                         | レビュー作成日時     |
-| updated_at        | timestamp     | NULL      |                         | レビュー最終更新日時 |
-| deleted_at        | timestamp     | NULL      |                         | レビュー削除日時     |
+| カラム名   | 型           | 説明                 |
+| ---------- | ------------ | -------------------- |
+| id         | SERIAL       | レビューID           |
+| user_id    | BIGINT       | ユーザーID           |
+| movie_id   | BIGINT       | 映画ID               |
+| score      | NUMERIC(2,1) | 点数                 |
+| text       | TEXT         | レビュー本文         |
+| watched_at | DATE         | 視聴日               |
+| created_at | TIMESTAMP    | レビュー作成日時     |
+| updated_at | TIMESTAMP    | レビュー最終更新日時 |
+| deleted_at | TIMESTAMP    | レビュー削除日時     |
+
+- user_id
+    - FOREIGN: users.id(ONDELETE CASCADE)
+- movie_id
+    - FOREIGN: movie.id(ONDELETE SET NULL)
+- score
+    - 星5評価（0.0〜5.0）
+- deleted_at
+    - NULLでない場合は論理削除扱い
 
 ## watchlist_items
 
-| カラム名          | 型            | NULL      | 制約                       | 説明                 |
-| ----------------- | ------------- | --------- | -------------------------- | -------------------- |
-| id                | bigint        | NOT NULL  | PRIMARY KEY                |                      |
-| user_id           | bitint        | NOT NULL  | REFERENCES user(id)        | ユーザーID           |
-| tmdb_id           | bigint        | NOT NULL  | REFERENCES movie(id)       | TMDB内のID           |
-| priority          | int           | NOT NULL  | CHECK(0 < priority < 100)  | 優先度（%）          |
-| note              | varchar(255)  | NULL      |                            | メモ                 |
-| is_watched        | boolean       | NOT NULL  |                            | 視聴済みならばtrue   |
-| created_at        | timestamp     | NULL      |                            | 作成日時             |
-| deleted_at        | timestamp     | NULL      |                            | 削除日時             |
+| カラム名   | 型        | 説明                   |
+| ---------- | --------- | ---------------------- |
+| id         | SERIAL    | ウォッチリストID       |
+| user_id    | BIGINT    | ユーザーID             |
+| movie_id   | BIGINT    | 映画ID                 |
+| priority   | INT       | 優先度（%）            |
+| note       | TEXT      | メモ                   |
+| is_watched | BOOLEAN   | 視聴済みフラグ         |
+| created_at | TIMESTAMP | ウォッチリスト追加日時 |
+
+- user_id
+    - FOREIGN: users.id(ONDELETE CASCADE)
+- movie_id
+    - FOREIGN: movie.id(ONDELETE SET NULL)
+- priority
+    - 0〜100の整数[%]
+- is_watched
+    - DEFAULT FALSE
+    - TRUEならば視聴済み
