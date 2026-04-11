@@ -13,6 +13,8 @@
 - [Others](#others)
   - [How to use poster path](#how-to-use-poster-path)
 - [How to install shadcn components](#how-to-install-shadcn-components)
+- [How to write CHANGELOG.md](#how-to-write-changelogmd)
+  - [Category](#category)
 
 
 ## Local
@@ -71,3 +73,24 @@ https://image.tmdb.org/t/p/w500/
 ```bash
 npx shadcn@latest add <component>
 ```
+
+## How to write CHANGELOG.md
+
+```
+MAJOR.MINOR.PATCH
+```
+
+| 項目    | 修正                  |
+| ----- | ------------------- |
+| MAJOR | APIだけじゃなく“全部の破壊的変更” |
+| MINOR | API変わってもOK（壊さなければ）  |
+| PATCH | 「バグってた」より「仕様に戻す」    |
+
+### Category
+
+- Added: New feature
+- Changed: Change of existing feature
+- Fixed: Debug
+- Removed: Removal of a feature or stale API
+- Breaking Changes
+- Notes (optional)
