@@ -27,7 +27,7 @@ function WatchlistPage() {
         const data: FetchWatchlistResponse = await res.json();
         setWatchlist(data.watchlist);
         setWatched(data.watched);
-      } {
+      } else {
         toast.error("ウォッチリストの取得に失敗しました");
       }
     } catch (e) {

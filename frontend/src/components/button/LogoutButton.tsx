@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -24,12 +25,14 @@ function LogoutButton() {
     }
   };
 
-  return <button
+  return <Button
     onClick={handleLogout}
-    className="cursor-pointer"
+    variant="ghost"
+    className="cursor-pointer text-base"
+    style={{ fontFamily: "kaisotai" }}
   >
     ログアウト
-  </button>
+  </Button>
 }
 
 export default LogoutButton;

@@ -131,3 +131,14 @@
     @apply min-h-screen items-center justify-center;
     }
 }
+
+@font-face {
+  font-family: "kaisotai";
+  src: url("/fonts/Kaisotai-Next-UP-B.ttf") format("truetype");
+  font-display: swap;
+}
+
+
+h1, h2 {
+  font-family: kaisotai;
+}

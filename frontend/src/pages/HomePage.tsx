@@ -11,7 +11,7 @@ function HomePage() {
         <Link to="/reviews">
           <Card className="hover:bg-muted transition cursor-pointer">
             <CardContent className="p-6">
-              <h2 className="text-lg font-semibold">
+              <h2 className="text-2xl font-semibold">
                 レビューを見る
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
@@ -24,7 +24,7 @@ function HomePage() {
         <Link to="/watchlist">
           <Card className="hover:bg-muted transition cursor-pointer">
             <CardContent className="p-6">
-              <h2 className="text-lg font-semibold">
+              <h2 className="text-2xl font-semibold">
                 ウォッチリスト
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
