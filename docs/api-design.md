@@ -8,6 +8,7 @@
   - [POST /register](#post-register)
   - [POST /login](#post-login)
   - [POST /logout](#post-logout)
+  - [GET /me](#get-me)
 - [映画](#映画)
   - [GET /movies](#get-movies)
   - [GET /movies/{tmdb\_id}](#get-moviestmdb_id)
@@ -23,7 +24,7 @@
   - [PATCH /watchlist/{watchlist\_id}](#patch-watchlistwatchlist_id)
   - [PATCH /watchlist](#patch-watchlist)
   - [DELETE /watchlist/{watchlist\_id}](#delete-watchlistwatchlist_id)
-  - [DELETE /watchlist](#delete-watchlist)
+  - [DELETE /watchlist/bulk-delete](#delete-watchlistbulk-delete)
 - [外部API: The Movie Database API](#外部api-the-movie-database-api)
   - [検索](#検索)
   - [詳細取得](#詳細取得)
@@ -37,28 +38,24 @@
 <!-- omit in toc -->
 #### Request
 
-`application/x-www-form-urlencoded`
-
-| name     | type   | required | description |
-|----------|--------|----------|-------------|
-| email    | string | yes      | メールアドレス |
-| password | string | yes      | パスワード |
+- Content-Type: `application/x-www-form-urlencoded`
+- Body:
+  | name     | type   | required | description    |
+  | -------- | ------ | -------- | -------------- |
+  | email    | string | yes      | メールアドレス |
+  | password | string | yes      | パスワード     |
 
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-#### 204 Created
+- `201 Created`
+- Content-Type: `application/json`
+- Body:
+  | field  | type    | description |
+  | ------ | ------- | ----------- |
+  | userId | integer | ユーザーID  |
 
-```JSON
-{
-  "userId": 1
-}
-```
-
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| userId        | String  | ユーザーID          |
+---
 
 ### POST /login
 
@@ -67,18 +64,19 @@
 <!-- omit in toc -->
 #### Request
 
-`application/x-www-form-urlencoded`
-
-| name     | type   | required | description |
-|----------|--------|----------|-------------|
-| email    | string | yes      | メールアドレス |
-| password | string | yes      | パスワード |
+- Content-Type: `application/x-www-form-urlencoded`
+- Body:
+  | name     | type   | required | description    |
+  | -------- | ------ | -------- | -------------- |
+  | email    | string | yes      | メールアドレス |
+  | password | string | yes      | パスワード     |
 
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 200 OK
+- `204 No Content`
+
+---
 
 ### POST /logout
 
@@ -87,84 +85,100 @@
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 204 No Content
+- `204 No Content`
 
+---
+
+### GET /me
+
+ログイン中であることを確かめる
+
+<!-- omit in toc -->
+#### Response
+
+- `200 OK`
+
+---
 
 ## 映画
 
 ### GET /movies
 
-映画をTMDBでタイトル検索し、20件取得する
+TMDBで映画をタイトル検索し、20件取得する
 
 <!-- omit in toc -->
-#### クエリパラメータ
+#### Request
 
-| name  | type   | required | description |
-|-------|--------|----------|-------------|
-| query | string | yes      | 検索キーワード |
+- Query Parameters: 
+  | name  | type   | required | description                |
+  | ----- | ------ | -------- | -------------------------- |
+  | query | string | yes      | 検索キーワード（タイトル） |
 
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 200 OK
+- `200 OK`
+- Content-Type: `application/json`
+- Body:
+  | field         | type    | description        |
+  | ------------- | ------- | ------------------ |
+  | tmdbId        | integer | TMDB内のID         |
+  | jaTitle       | string  | 日本語タイトル     |
+  | originalTitle | string  | 原題               |
+  | posterPath    | string  | ポスター画像のパス |
 
-```JSON
-{
-  [
-    {
-      "tmdbId": 123,
-      "jaTitle": "スター・ウォーズ",
-      "originalTitle": "Star Wars",
-      "posterPath": "/xxx.jpg"
-    }
-  ]
-}
-```
+- Example:
+  ```json
+  {
+    [
+      {
+        "tmdbId": 123,
+        "jaTitle": "スター・ウォーズ",
+        "originalTitle": "Star Wars",
+        "posterPath": "xxx.jpg"
+      }
+    ]
+  }
+  ```
 
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| results       | Array   |                     |
-| jaTitle       | String  | 日本語タイトル      |
-| originalTitle | String  | 原題                |
-| posterPath    | String  | ポスター画像のパス  |
+---
 
 ### GET /movies/{tmdb_id}
 
 映画の詳細情報をTMDBから取得する
 
 <!-- omit in toc -->
-#### パスパラメータ
+#### Request
 
-| name    | type   | description |
-|---------|--------|-------------|
-| tmdb_id | string | TMDB内の映画ID |
+- Path Parameters:
+  | name    | type    | required | description |
+  | ------- | ------- | -------- | ----------- |
+  | tmdb_id | integer | yes      | TMDB内のID  |
 
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 200 OK
+- `200 OK`
+- Content-Type: `application/json`
+- Body:
+  | field         | type    | description        |
+  | ------------- | ------- | ------------------ |
+  | movieId       | integer | DB上の映画ID       |
+  | jaTitle       | string  | 日本語タイトル     |
+  | originalTitle | string  | 原題               |
+  | releaseYear   | integer | 公開年             |
+  | posterPath    | string  | ポスター画像のパス |
 
-```JSON
-{
-  "movieId": 123,
-  "jaTitle": "スター・ウォーズ",
-  "originalTitle": "Star Wars",
-  "releaseYear": 1977,
-  "posterPath": "/xxx.jpg"
-}
-```
-
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| movieId       | Number  | DB上の映画ID        |
-| jaTitle       | String  | 日本語タイトル      |
-| originalTitle | String  | 原題                |
-| releaseYear   | Number  | 公開年              |
-| posterPath    | String  | ポスター画像のパス  |
-
+- Example:
+  ```json
+  {
+    "movieId": 123,
+    "jaTitle": "スター・ウォーズ",
+    "originalTitle": "Star Wars",
+    "releaseYear": 1977,
+    "posterPath": "xxx.jpg"
+  }
+  ```
 
 ## レビュー
 
@@ -175,191 +189,218 @@
 <!-- omit in toc -->
 #### Request
 
-```JSON
-{
-  "movieId": 123,
-  "text": "面白かった",
-  "score": 4.8,
-  "watchedAt": "2026-01-01"
-}
-```
+- Content-Type: `application/json`
+- Body:
+  | field     | type    | required | description      |
+  | --------- | ------- | -------- | ---------------- |
+  | movieId   | integer | yes      | DB上の映画ID     |
+  | text      | string  | no       | 感想文           |
+  | score     | number  | yes      | 点数（0.0〜5.0） |
+  | watchedAt | string  | yes      | 視聴日           |
 
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| movieId       | Number  | DB上の映画ID        |
-| text          | String  | 感想文              |
-| score         | Number  | 点数（0.0-5.0）     |
-| watchedAt     | String  | 視聴日              |
+- Example:
+  ```json
+  {
+    "movieId": 123,
+    "text": "面白かった",
+    "score": 4.8,
+    "watchedAt": "2026-01-01"
+  }
+  ```
 
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 201 Created
+- `201 Created`
+- Content-Type: `application/json`
+- Body:
+  | field    | type    | description |
+  | -------- | ------- | ----------- |
+  | reviewId | integer | レビューID  |
 
-```JSON
-{
-  "reviewId": 123
-}
-```
+- Example:
+  ```json
+  {
+    "reviewId": 123
+  }
+  ```
 
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| reviewId      | Number  | レビューID          |
+---
 
 ### GET /reviews
 
 レビュー一覧取得
 
 <!-- omit in toc -->
-#### クエリパラメータ
+#### Request
 
-| name  | type   | required | description |
-|-------|--------|----------|-------------|
-| page  | int    | yes      | ページ数 |
+- Query Parameters:
+  | name  | type    | required | default   | description  |
+  | ----- | ------- | -------- | --------- | ------------ |
+  | page  | integer | no       | 1         | ページ数     |
+  | sort  | string  | no       | createdAt | 並べ替えキー |
+  | order | string  | no       | desc      | 昇順／降順   |
 
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 200 OK
+- `200 OK`
+- Content-Type: `application/json`
+- Body:
+  | field         | type    | description           |
+  | ------------- | ------- | --------------------- |
+  | reviews       | array   | 最大12個のレビュー    |
+  | └ reviewId   | integer | レビューID            |
+  | └ title      | string  | 日本語タイトル        |
+  | └ posterPath | string  | ポスター画像のパス    |
+  | └ score      | number  | 点数（0.0〜5.0）      |
+  | totalPages    | integer | (レビュー数 / 12) + 1 |
 
-```JSON
-{
-  "reviews": [
-    {
-      "reviewId": 123,
-      "title": String,
-      "posterPath": String,
-      "score": Double
-    }
-  ]
-}
-```
+- Body:
+  ```json
+  {
+    "reviews": [
+      {
+        "reviewId": 123,
+        "title": "スター・ウォーズ",
+        "posterPath": "xxx.jpg",
+        "score": 4.8
+      }
+    ],
+    "totalPages": 3
+  }
+  ```
 
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| reviews       | Array   |                     |
-| reviewId      | Number  | レビューID          |
-| title         | String  | 日本語タイトル      |
-| posterPath    | String  | ポスター画像のパス  |
-| score         | Number  | 点数（0.0-5.0）     |
+---
 
 ### GET /reviews/{review_id}
 
 レビューの詳細取得
 
 <!-- omit in toc -->
-#### パスパラメータ
+#### Request
 
-| name       | type   | description |
-|------------|--------|-------------|
-| review_id  | int    | レビューID |
+- Path Parameters:
+  | name      | type    | required | description |
+  | --------- | ------- | -------- | ----------- |
+  | review_id | integer | yes      | レビューID  |
 
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 200 OK
+- `200 OK`
+- Content-Type: `application/json`
+- Body:
+  | field         | type    | description        |
+  | ------------- | ------- | ------------------ |
+  | reviewId      | integer | レビューID         |
+  | movieId       | integer | 映画ID             |
+  | jaTitle       | string  | 日本語タイトル     |
+  | originalTitle | string  | 原題               |
+  | releaseYear   | integer | 公開年             |
+  | posterPath    | string  | ポスター画像のパス |
+  | score         | number  | 点数（0.0〜5.0）   |
+  | text          | string  | 感想文             |
+  | watchedAt     | string  | 視聴日             |
 
-```JSON
-{
-  "reviewId": 123,
-  "jaTitle": "スター・ウォーズ",
-  "originalTitle": "Star Wars",
-  "releaseYear": 1997,
-  "posterPath": "/xxx.jpg",
-  "score": 5.0,
-  "text": "最高だった",
-  "watchedAt": "2026-01-01"
-}
-```
+- Example:
+  ```json
+  {
+    "reviewId": 123,
+    "movieId": 11,
+    "jaTitle": "スター・ウォーズ",
+    "originalTitle": "Star Wars",
+    "releaseYear": 1997,
+    "posterPath": "xxx.jpg",
+    "score": 5.0,
+    "text": "最高だった",
+    "watchedAt": "2026-01-01"
+  }
+  ```
 
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| reviewId      | Number  | レビューID          |
-| jaTitle       | String  | 日本語タイトル      |
-| originalTitle | String  | 原題                |
-| releaseYear   | Number  | 公開年              |
-| posterPath    | String  | ポスター画像のパス  |
-| score         | Number  | 点数（0.0-5.0）     |
-| text          | String  | 感想文              |
-| watchedAt     | String  | 視聴日              |
+---
 
 ### PATCH /reviews/{review_id}
 
 レビュー更新
 
 <!-- omit in toc -->
-#### パスパラメータ
-
-| name       | type   | description |
-|------------|--------|-------------|
-| review_id  | int    | レビューID |
-
-<!-- omit in toc -->
 #### Request
 
-```JSON
-{
-  "movieId": 123,
-  "text": "面白かった",
-  "score": 4.8,
-  "watchedAt": "2026-01-01"
-}
-```
+- Path Parameters:
+  | name      | type    | required | description |
+  | --------- | ------- | -------- | ----------- |
+  | review_id | integer | yes      | レビューID  |
+- Content-Type: `application/json`
+- Body:
+  | field     | type    | description     |
+  | --------- | ------- | --------------- |
+  | movieId   | integer | DB上の映画ID    |
+  | text      | string  | 感想文          |
+  | score     | number  | 点数（0.0-5.0） |
+  | watchedAt | string  | 視聴日          |
 
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| movieId       | Number  | DB上の映画ID        |
-| text          | String  | 感想文              |
-| score         | Number  | 点数（0.0-5.0）     |
-| watchedAt     | String  | 視聴日              |
+- Example:
+  ```json
+  {
+    "movieId": 123,
+    "text": "面白かった",
+    "score": 4.8,
+    "watchedAt": "2026-01-01"
+  }
+  ```
 
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 200 OK
+- 200 OK
+- Content-Type: `application/json`
+- Body:
+  | field         | type    | description        |
+  | ------------- | ------- | ------------------ |
+  | reviewId      | integer | レビューID         |
+  | movieId       | integer | 映画ID             |
+  | jaTitle       | string  | 日本語タイトル     |
+  | originalTitle | string  | 原題               |
+  | releaseYear   | integer | 公開年             |
+  | posterPath    | string  | ポスター画像のパス |
+  | score         | number  | 点数（0.0-5.0）    |
+  | text          | string  | 感想文             |
+  | watchedAt     | string  | 視聴日             |
 
-```JSON
-{
-  "jaTitle": "スター・ウォーズ",
-  "originalTitle": "Star Wars",
-  "releaseYear": 1997,
-  "posterPath": "/xxx.jpg",
-  "score": 5.0,
-  "text": "最高だった",
-  "watchedAt": "2026-01-01"
-}
-```
+- Example:
+  ```json
+  {
+    "reviewId": 123,
+    "movieId": 11,
+    "jaTitle": "スター・ウォーズ",
+    "originalTitle": "Star Wars",
+    "releaseYear": 1997,
+    "posterPath": "xxx.jpg",
+    "score": 5.0,
+    "text": "最高だった",
+    "watchedAt": "2026-01-01"
+  }
+  ```
 
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| jaTitle       | String  | 日本語タイトル      |
-| originalTitle | String  | 原題                |
-| releaseYear   | Number  | 公開年              |
-| posterPath    | String  | ポスター画像のパス  |
-| score         | Number  | 点数（0.0-5.0）     |
-| text          | String  | 感想文              |
-| watchedAt     | String  | 視聴日              |
+---
 
 ### DELETE /reviews/{review_id}
 
 レビュー削除
 
 <!-- omit in toc -->
-#### パスパラメータ
+#### Request
 
-| name       | type   | description |
-|------------|--------|-------------|
-| review_id  | int    | レビューID |
+- Path Parameters:
+  | name      | type    | required | description |
+  | --------- | ------- | -------- | ----------- |
+  | review_id | integer | yes      | レビューID  |
 
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 204 No Content
+- `204 No Content`
 
 
 ## ウォッチリスト
@@ -371,116 +412,138 @@
 <!-- omit in toc -->
 #### Request
 
-```JSON
-{
-  "movidId": 123,
-  "note": "面白そう",
-  "priority": 88
-}
-```
+- Content-Type: `application/json`
+- Body:
+  | field    | type    | required | description  |
+  | -------- | ------- | -------- | ------------ |
+  | movieId  | integer | yes      | DB上の映画ID |
+  | note     | string  | no       | メモ         |
+  | priority | integer | yes      | 優先度(%)    |
 
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| movieId       | Number  | DB上の映画ID        |
-| note          | String  | メモ                |
-| priority      | Number  | 優先度 [%]          |
+- Example:
+  ```json
+  {
+    "movidId": 123,
+    "note": "面白そう",
+    "priority": 88
+  }
+  ```
 
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 201 Created
+- `201 Created`
+- Content-Type: `application/json`
+- Body:
+  | field       | type    | description      |
+  | ----------- | ------- | ---------------- |
+  | watchlistId | integer | ウォッチリストID |
 
-```JSON
-{
-  "watchlistId": 123
-}
-```
+- Example:
+  ```json
+  {
+    "watchlistId": 123
+  }
+  ```
 
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| watchlistId   | Number  | ウォッチリストID    |
+---
 
 ### GET /watchlist
 
 ウォッチリスト取得
 
 <!-- omit in toc -->
-#### クエリパラメータ
+#### Request
 
-| name  | type   | required | description |
-|-------|--------|----------|-------------|
-| page  | int    | yes      | ページ数 |
+- Query Parameters:
+  | name | type    | required | description |
+  | ---- | ------- | -------- | ----------- |
+  | page | integer | yes      | ページ数    |
 
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 200 OK
+- `200 OK`
+- Content-Type: `application/json`
+- Body:
+  | field            | type    | description          |
+  | ---------------  | ------- | -------------------- |
+  | watchlist        | array   | 全てのウォッチリスト |
+  | └ watchlistId   | integer | ウォッチリストID     |
+  | └ movieId       | integer | 映画ID               |
+  | └ jaTitle       | string  | 日本語タイトル       |
+  | └ originalTitle | string  | 原題                 |
+  | └ posterPath    | string  | ポスター画像のパス   |
+  | └ isWatched     | boolean | 視聴済みならばtrue   |
+  | └ priority      | integer | 優先度(%)            |
+  | └ note          | string  | メモ                 |
+  | watched          | integer | 視聴済み件数         |
 
-```JSON
-{
-  "watchlist": [
-    {
-      "watchlistId": 123,
-      "jaTitle": "スター・ウォーズ",
-      "originalTitle": "Star Wars",
-      "posterPath": "/xxx.jpg",
-      "isWatched": true,
-      "priority": 90,
-      "note": "見たい"
-    }
-  ]
-}
-```
+- Example:
+```json
+  {
+    "watchlist": [
+      {
+        "watchlistId": 123,
+        "movieId": 11,
+        "jaTitle": "スター・ウォーズ",
+        "originalTitle": "Star Wars",
+        "posterPath": "xxx.jpg",
+        "isWatched": true,
+        "priority": 90,
+        "note": "見たい"
+      }
+    ],
+    "watched": 10
+  }
+  ```
 
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| watchlist     | Array   |                     |
-| watchlistId   | Number  | ウォッチリストID    |
-| jaTitle       | String  | 日本語タイトル      |
-| originalTitle | String  | 原題                |
-| posterPath    | String  | ポスター画像のパス  |
-| isWatched     | Boolean | 視聴済みならばtrue  |
-| priority      | Number  | 優先度 [%]          |
-| note          | String  | メモ                |
+---
 
 ### PATCH /watchlist/{watchlist_id}
 
 ウォッチリストアイテム編集
 
 <!-- omit in toc -->
-#### パスパラメータ
+#### Request
 
-| name          | type   | description |
-|---------------|--------|-------------|
-| watchlist_id  | int    | ウォッチリストID |
+- Path Parameters:
+  | name         | type    | required | description      |
+  | ------------ | ------- | -------- | ---------------- |
+  | watchlist_id | integer | yes      | ウォッチリストID |
 
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 200 OK
+- `200 OK`
+- Content-Type: `application/json`
+- Body:
+  | field         | type    | description        |
+  | ------------- | ------- | ------------------ |
+  | watchlistId   | integer | ウォッチリストID   |
+  | movieId       | integer | 映画ID             |
+  | jaTitle       | string  | 日本語タイトル     |
+  | originalTitle | string  | 原題               |
+  | posterPath    | string  | ポスター画像のパス |
+  | isWatched     | boolean | 視聴済みならばtrue |
+  | priority      | integer | 優先度(%)          |
+  | note          | string  | メモ               |
 
-```JSON
-{
-  "watchlistId": 123,
-  "jaTitle": "スター・ウォーズ",
-  "originalTitle": "Star Wars",
-  "posterPath": "/xxx.jpg",
-  "priority": 90,
-  "note": "見たい"
-}
-```
+- Example:
+  ```json
+  {
+    "watchlistId": 123,
+    "movieId": 11,
+    "jaTitle": "スター・ウォーズ",
+    "originalTitle": "Star Wars",
+    "posterPath": "xxx.jpg",
+    "isWatched": true,
+    "priority": 90,
+    "note": "見たい"
+  }
+  ```
 
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| watchlistId   | Number  | ウォッチリストID    |
-| jaTitle       | String  | 日本語タイトル      |
-| originalTitle | String  | 原題                |
-| posterPath    | String  | ポスター画像のパス  |
-| priority      | Number  | 優先度 [%]          |
-| note          | String  | メモ                |
+---
 
 ### PATCH /watchlist
 
@@ -489,110 +552,142 @@
 <!-- omit in toc -->
 #### Request
 
-```JSON
-{
-  "watchlistId": 123,
-  "isWatched": true
-}
-```
+- Content-Type: `application/json`
+- Body:
+  | field       | type    | required | description        |
+  | ----------- | ------- | -------- | ------------------ |
+  | watchlistId | integer | yes      | ウォッチリストID   |
+  | isWatched   | boolean | yes      | 視聴済みならばtrue |
 
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| watchlistId   | Number  | ウォッチリストID    |
-| isWatched     | Boolean | 視聴済みならばtrue  |
+- Example:
+  ```json
+  {
+    "watchlistId": 123,
+    "isWatched": true
+  }
+  ```
 
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 204 No Content
+- `204 No Content`
+
+---
 
 ### DELETE /watchlist/{watchlist_id}
 
 ウォッチリストアイテム削除
 
 <!-- omit in toc -->
-#### パスパラメータ
+#### Request
 
-| name          | type   | description |
-|---------------|--------|-------------|
-| watchlist_id  | int    | ウォッチリストID |
+- Path Parameter
+  | name         | type    | required | description      |
+  | ------------ | ------- | -------- | ---------------- |
+  | watchlist_id | integer | yes      | ウォッチリストID |
 
 <!-- omit in toc -->
 #### Response
 
+- `204 No Content`
+
+---
+
+### DELETE /watchlist/bulk-delete
+
+視聴済み作品をウォッチリストから一括削除
+
 <!-- omit in toc -->
-##### 204 No Content
+#### Response
 
-### DELETE /watchlist
-
-<!-- omit in toc -->
-#### Request
-
-```JSON
-{
-  "watchlistIds": [
-    123
-  ]
-}
-```
-
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| watchlistIds  | Number  | 視聴済みのウォッチリストIDリスト    |
+- `204 No Content`
 
 
 ## 外部API: The Movie Database API
 
 ### 検索
 
+タイトルから映画検索
+
+https://api.themoviedb.org/3/search/movie
+
+<!-- omit in toc -->
+#### Request
+
+- Query Parameters:
+  | name          | type    | description             |
+  | ------------- | ------- | ----------------------- |
+  | query         | string  | 検索ワード（タイトル）  |
+  | include_adult | boolean | 成人向け作品を含むか    |
+  | language      | string  | 言語（ロケールID）      |
+  | page          | integer | ページ数（1ページ20件） |
+
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 200 OK
+- `200 OK`
+- Body:
+  | field          | type    | description        |
+  | -------------- | ------- | ------------------ |
+  | id             | integer | TMDB内の映画ID     |
+  | title          | string  | 日本語タイトル     |
+  | original_title | string  | 原題               |
+  | poster_path    | string  | ポスター画像のパス |
 
-```JSON
-{
-  "page": 1,
-  "results": [
-    {
-      "id": 123,
-      "title": "スター・ウォーズ",
-      "original_title": "Star Wars",
-      "poster_path": "/xxx.jpg"
-    }
-  ]
-}
-```
+- Example:
+  ```json
+  {
+    "page": 1,
+    "results": [
+      {
+        "id": 123,
+        "title": "スター・ウォーズ",
+        "original_title": "Star Wars",
+        "poster_path": "xxx.jpg"
+      }
+    ]
+  }
+  ```
 
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| id            | Number  | TMDB内の映画ID      |
-| title         | String  | 日本語タイトル      |
-| original_title| String  | 原題                |
-| poster_path   | String  | ポスター画像のパス  |
+---
 
 ### 詳細取得
 
+TMDB IDから映画の詳細情報を取得
+
+https://api.themoviedb.org/3/movie/{id}
+
+<!-- omit in toc -->
+#### Request
+
+- Path Parameters:
+  | name | type    | description    |
+  | ---- | ------- | -------------- |
+  | id   | integer | TMDB内の映画ID |
+
+- Query Parameters:
+  | name     | type   | description        |
+  | -------- | ------ | ------------------ |
+  | language | string | 言語（ロケールID） |
+
 <!-- omit in toc -->
 #### Response
 
-<!-- omit in toc -->
-##### 200 OK
+- `200 OK`
+- Body:
+  | field          | type   | description        |
+  | -------------- | ------ | ------------------ |
+  | title          | string | 日本語タイトル     |
+  | original_title | string | 原題               |
+  | release_date   | string | 公開年月日         |
+  | poster_path    | string | ポスター画像のパス |
 
-```JSON
-{
-  "title": "スター・ウォーズ",
-  "original_title": "Star Wars",
-  "release_date": "2026-01-01"
-  "poster_path": "/xxx.jpg"
-}
-```
-
-| field         | type    | description         |
-| ------------- | ------- | ------------------- |
-| title         | String  | 日本語タイトル      |
-| original_title| String  | 原題                |
-| release_date  | String  | 公開年月日          |
-| poster_path   | String  | ポスター画像のパス  |
+- Example:
+  ```json
+  {
+    "title": "スター・ウォーズ",
+    "original_title": "Star Wars",
+    "release_date": "2026-01-01"
+    "poster_path": "xxx.jpg"
+  }
+  ```
