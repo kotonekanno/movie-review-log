@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import type { AuthFormValues } from "@/types/auth";
 
+import { toast } from "sonner";
+
 import AuthForm from "@/components/form/AuthForm"
 import LoadingOverlay from "@/components/others/LoadingOverlay";
 
@@ -13,7 +15,7 @@ function RegisterPage() {
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleRegister = async ({ email, password }: AuthFormValues) => {
+  /*const handleRegister = async ({ email, password }: AuthFormValues) => {
     setLoading(true);
     
     try {
@@ -33,11 +35,20 @@ function RegisterPage() {
     } finally {
       setLoading(false);
     }
-  };
+  };*/
+
+  // デモ用
+  const handleRegister = () => {
+    toast.warning("新規登録はできません");
+  }
 
   return (
     <>
       {loading && <LoadingOverlay open={true}/>}
+
+      <p className="text-red-500 text-center py-3">
+        ※指定されたテストアカウントでのみログインできます
+      </p>
 
       <AuthForm
         onSubmit={handleRegister}

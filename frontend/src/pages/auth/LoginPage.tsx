@@ -55,6 +55,10 @@ function LoginPage() {
     <>
       {loading && <LoadingOverlay open={true} />}
 
+      <p className="text-red-500 text-center py-3">
+        ※指定されたテストアカウントでのみログインできます
+      </p>
+
       <AuthForm
         onSubmit={handleLogin}
         upperButtonText="ログイン"
