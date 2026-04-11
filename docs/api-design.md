@@ -132,7 +132,7 @@ TMDBで映画をタイトル検索し、20件取得する
 - Example:
   ```json
   {
-    [
+    "results": [
       {
         "tmdbId": 123,
         "jaTitle": "スター・ウォーズ",
