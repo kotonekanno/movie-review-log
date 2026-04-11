@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator";
 
 import MovieSearchDialog from "@/components/dialog/MovieSearchDialog";
 import MovieDetailsCard from "@/components/card/MovieDetailsCard";
+import { toast } from "sonner";
 
 type ReviewFormProps =
   | {
@@ -44,7 +45,7 @@ function ReviewForm(props: ReviewFormProps) {
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!movieId) {
-      alert("映画IDを取得できませんでした");
+      toast.error("映画IDを取得できませんでした");
       return;
     }
     props.onSubmit({ movieId, text, score, watchedAt });
@@ -62,11 +63,11 @@ function ReviewForm(props: ReviewFormProps) {
         const data: MovieDetails = await res.json();
         setMovie(data);
         setMovieId(data.movieId);
+      } else {
+        toast.error("情報の取得に失敗しました");
       }
-
-      return;
     } catch (e) {
-      return;
+      toast.error("情報の取得に失敗しました");
     }
   };
 

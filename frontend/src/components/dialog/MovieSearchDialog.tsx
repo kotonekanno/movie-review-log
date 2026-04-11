@@ -14,6 +14,7 @@ import {
 import { Search, Loader2 } from "lucide-react";
 
 import SearchResultCard from "@/components/card/SearchResultCard";
+import { toast } from "sonner";
 
 interface MovieSearchDialogProps {
   onSelectMovie: (movie: Movie) => void;
@@ -43,10 +44,10 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
         setMovies(data);
         setHasSearched(true);
       } else {
-        return;
+        toast.error("エラーが起きました");
       }
     } catch (e) {
-      return;
+      toast.error("エラーが起きました");
     } finally {
       setLoading(false);
     }

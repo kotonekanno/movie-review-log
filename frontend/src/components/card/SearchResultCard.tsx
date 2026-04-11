@@ -12,7 +12,7 @@ function SearchResultCard({ movie, onClick }: Props) {
     <div
       onClick={onClick}
       style={{ border: "1px solid #ccc", margin: 5, padding: 5 }}
-      className="cursor-pointer"
+      className="cursor-pointer transition hover:-translate-y-1 hover:shadow-lg"
     >
       <div style={{ display: "flex" }}>
         <div style={{ flex: 3 }}>

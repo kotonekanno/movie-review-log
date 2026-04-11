@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/dialog/ConfirmDialog";
 import MovieDetailsCard from "@/components/card/MovieDetailsCard";
 import ScoreStars from "@/components/others/ScoreStars";
+import { toast } from "sonner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -33,7 +34,7 @@ function ReviewDetailsPage() {
         credentials: "include",
       });
 
-      if (res.ok) {
+      if (res.status === 200) {
         const data = await res.json();
         setReview(data);
         setMovie(prev => ({
@@ -43,11 +44,11 @@ function ReviewDetailsPage() {
           releaseYear: data.releaseYear,
           posterPath: data.posterPath,
         }));
+      } else {
+        toast.error("レビューの取得に失敗しました");
       }
-      
-      return;
     } catch (e) {
-      return;
+      toast.error("レビューの取得に失敗しました");
     }
   };
 
@@ -58,13 +59,14 @@ function ReviewDetailsPage() {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
-      if (res.ok) {
+      if (res.status === 204) {
         navigate("/reviews");
+        toast.success("レビューを削除しました");
+      } else {
+        toast.error("レビューの削除に失敗しました");
       }
-
-      return;
     } catch (e) {
-      return;
+      toast.error("レビューの削除に失敗しました");
     }
   };
 

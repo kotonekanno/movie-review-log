@@ -35,11 +35,11 @@ function LoginPage() {
 
       if (res.status === 204) {
         navigate("/");
+      } else {
+        toast.error("ログインに失敗しました");
       }
-      
-      return;
     } catch (e) {
-      return;
+      toast.error("ログインに失敗しました");
     } finally {
       setLoading(false);
     }
@@ -47,7 +47,7 @@ function LoginPage() {
 
   useEffect(() => {
     if (location.state?.message) {
-      toast(location.state.message);
+      toast.warning(location.state.message);
     }
   }, [location.state]);
 

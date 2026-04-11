@@ -20,6 +20,7 @@ import MovieSearchDialog from "./MovieSearchDialog";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
 
 type Props =
   | {
@@ -64,8 +65,9 @@ function WatchlistEditDialog (props: Props) {
         if (res.status === 200) {
           props.onSuccess();
           props.onOpenChange(false);
+          toast.success("更新しました");
         } else {
-          return;
+          toast.error("更新できませんでした");
         }
       } else {
         const res: Response = await fetch(`${API_BASE_URL}/watchlist`, {
@@ -79,13 +81,13 @@ function WatchlistEditDialog (props: Props) {
           props.onSuccess();
           props.onOpenChange(false);
         } else if (res.status === 409) {
-          alert("この作品は既にウォッチリストにあります");
+          toast.warning("この作品は既にウォッチリストにあります");
         } else {
-          return;
+          toast.error("追加できませんでした");
         }
       }
     } catch (e) {
-      return;
+      toast.error("追加できませんでした");
     }
   };
 
@@ -110,11 +112,11 @@ function WatchlistEditDialog (props: Props) {
           const data: MovieDetails = await res.json();
           setMovie(data);
           setMovieId(data.movieId);
+        } else {
+          toast.error("情報の取得に失敗しました");
         }
-
-        return;
       } catch (e) {
-        return;
+        toast.error("情報の取得に失敗しました");
       }
     };
   

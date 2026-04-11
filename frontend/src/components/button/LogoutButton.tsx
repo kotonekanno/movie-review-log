@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
+import { toast } from "sonner";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function LogoutButton() {
@@ -14,11 +16,11 @@ function LogoutButton() {
 
       if (res.status === 204) {
         navigate("/login");
+      } else {
+        toast.error("ログアウトに失敗しました");
       }
-
-      return;
     } catch (e) {
-      return;
+      toast.error("ログアウトに失敗しました");
     }
   };
 

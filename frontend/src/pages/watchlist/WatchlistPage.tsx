@@ -6,6 +6,7 @@ import WatchlistCard from "@/components/card/WatchlistCard";
 import AddButton from "@/components/button/AddButton";
 import WatchlistEditDialog from "@/components/dialog/WatchlistEditDialog";
 import ConfirmDialog from "@/components/dialog/ConfirmDialog";
+import { toast } from "sonner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -22,15 +23,15 @@ function WatchlistPage() {
         credentials: "include",
       });
 
-      if (res.ok) {
+      if (res.status === 200) {
         const data: FetchWatchlistResponse = await res.json();
         setWatchlist(data.watchlist);
         setWatched(data.watched);
+      } {
+        toast.error("ウォッチリストの取得に失敗しました");
       }
-
-      return;
     } catch (e) {
-      return;
+      toast.error("ウォッチリストの取得に失敗しました");
     }
   };
 
@@ -43,12 +44,13 @@ function WatchlistPage() {
       });
 
       if (res.status === 204) {
+        toast.success("視聴済み作品を全て削除しました");
         await fetchWatchlist();
+      } else {
+        toast.error("削除できませんでした");
       }
-
-      return;
     } catch (e) {
-      return;
+      toast.error("削除できませんでした");
     }
   }
 

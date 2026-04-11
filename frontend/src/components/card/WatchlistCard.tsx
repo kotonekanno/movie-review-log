@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import WatchlistEditDialog from "@/components/dialog/WatchlistEditDialog";
+import { toast } from "sonner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const POSTER_BASE_URL = import.meta.env.VITE_POSTER_BASE_URL;
@@ -49,11 +50,11 @@ function WatchlistCard({ item, onSuccess }: Props) {
 
       if (res.status === 204) {
         return;
+      } else {
+        toast.error("更新できませんでした");
       }
-      
-      return;
     } catch(e) {
-      return;
+      toast.error("更新できませんでした");
     }
   };
 

@@ -5,6 +5,7 @@ import type { ReviewFormValues, CreateReviewResponse } from "@/types/review";
 import type { MovieDetails } from "@/types/movie";
 
 import ReviewForm from "@/components/form/ReviewForm";
+import { toast } from "sonner";
 
 type Props =
   | { mode: "create" }
@@ -35,10 +36,11 @@ function ReviewFormContainer(props: Props) {
         });
 
         if (res.status === 200) {
-          navigate("/reviews")
+          navigate("/reviews");
+          toast.success("レビューを更新しました");
+        } else {
+          toast.error("レビューの更新に失敗しました");
         }
-
-        return;
       } else {
         const res = await fetch(`${API_BASE_URL}/reviews`, {
           method: "POST",
@@ -49,12 +51,13 @@ function ReviewFormContainer(props: Props) {
         
         if (res.status === 201) {
           navigate("/reviews");
+          toast.success("レビューを作成しました");
+        } else {
+          toast.error("レビューの作成に失敗しました");
         }
-
-        return;
       }
     } catch (e) {
-      return;
+      toast.error("エラーが起きました");
     }
   };
 
@@ -68,7 +71,10 @@ function ReviewFormContainer(props: Props) {
           credentials: "include",
         });
 
-        if (!res.ok) throw new Error("Fetch failed");
+        if (res.status !== 200) {
+          toast.error("エラーが起きました");
+          return;
+        }
 
         const data = await res.json();
         
@@ -87,7 +93,7 @@ function ReviewFormContainer(props: Props) {
           posterPath: data.posterPath,
         })
       } catch (e) {
-        return;
+        toast.error("エラーが起きました");
       }
     };
 

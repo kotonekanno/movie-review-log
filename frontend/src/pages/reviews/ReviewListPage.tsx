@@ -24,6 +24,7 @@ import { ArrowUp, ArrowDown } from "lucide-react";
 
 import ReviewCard from "@/components/card/ReviewCard";
 import AddButton from "@/components/button/AddButton";
+import { toast } from "sonner";
 
 type SortKey = "jaTitle" | "releaseYear" | "createdAt" | "updatedAt" | "score" | "watchedAt";
 type Order = "ASC" | "DESC";
@@ -66,15 +67,15 @@ function ReviewListPage() {
         credentials: "include"
       });
 
-      if (res.ok) {
+      if (res.status === 200) {
         const data: ReviewListResponse = await res.json();
         setReviews(data.reviews);
         setTotalPages(data.totalPages);
+      } else {
+        toast.error("レビュー一覧の取得に失敗しました");
       }
-
-      return;
     } catch (e) {
-      return;
+      toast.error("レビュー一覧の取得に失敗しました");
     }
   };
 

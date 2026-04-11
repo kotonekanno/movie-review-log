@@ -27,11 +27,11 @@ function RegisterPage() {
 
       if (res.status === 204) {
         navigate("/login");
+      } else if (res.status === 409) {
+        toast.warning("このメールアドレスは既に登録されています");
       }
-
-      return;
     } catch (e) {
-      return;
+      toast.error("登録に失敗しました");
     } finally {
       setLoading(false);
     }
