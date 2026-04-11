@@ -21,9 +21,9 @@ function MovieDetailsCard({ movie }: Props) {
         </div>
 
         <div className="flex flex-col gap-2 justify-start">
-          <h1 className="text-3xl font-bold leading-tight">
+          <p className="text-3xl font-bold leading-tight">
             {movie? movie.jaTitle : "不明なタイトル"}
-          </h1>
+          </p>
 
           <p className="text-xl text-muted-foreground">
             {movie? movie.originalTitle : "不明なタイトル"}
