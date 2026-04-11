@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 
+import LoadingOverlay from "@/components/others/LoadingOverlay";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ProtectedLayout() {
@@ -18,10 +20,15 @@ function ProtectedLayout() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return null;
+  if (loading) return <LoadingOverlay open={true}/>;
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ message: "ログインしてください" }}
+      />);
   }
 
   return <Outlet />;

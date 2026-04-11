@@ -1,6 +1,8 @@
 <!-- omit in toc -->
 # 機能一覧
 
+v1.0.0
+
 <!-- omit in toc -->
 ### 目次
 

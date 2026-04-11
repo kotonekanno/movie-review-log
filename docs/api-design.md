@@ -1,6 +1,8 @@
 <!-- omit in toc -->
 # API設計
 
+v1.0.0
+
 <!-- omit in toc -->
 ### 一覧
 

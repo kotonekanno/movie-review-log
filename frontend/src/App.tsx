@@ -11,28 +11,33 @@ import ReviewCreatePage from "@/pages/reviews/ReviewCreatePage";
 import ReviewEditPage from "@/pages/reviews/ReviewEditPage";
 import ReviewDetailsPage from "@/pages/reviews/ReviewDetailsPage";
 import WatchlistPage from "@/pages/watchlist/WatchlistPage";
+import { Toaster } from "sonner";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <>
+      <Toaster position="top-center" />
 
-        <Route element={<MainLayout />}>
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/login" element={<LoginPage />} />
+      <BrowserRouter>
+        <Routes>
 
-          <Route element={<ProtectedLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/reviews" element={<ReviewListPage />} />
-            <Route path="/reviews/edit" element={<ReviewCreatePage />} />
-            <Route path="/reviews/edit/:reviewId" element={<ReviewEditPage />} />
-            <Route path="/reviews/:reviewId" element={<ReviewDetailsPage />} />
-            <Route path="/watchlist" element={<WatchlistPage />} />
+          <Route element={<MainLayout />}>
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={<LoginPage />} />
+
+            <Route element={<ProtectedLayout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/reviews" element={<ReviewListPage />} />
+              <Route path="/reviews/edit" element={<ReviewCreatePage />} />
+              <Route path="/reviews/edit/:reviewId" element={<ReviewEditPage />} />
+              <Route path="/reviews/:reviewId" element={<ReviewDetailsPage />} />
+              <Route path="/watchlist" element={<WatchlistPage />} />
+            </Route>
           </Route>
-        </Route>
 
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </>
   )
 }
 
