@@ -293,30 +293,33 @@ TMDBで映画をタイトル検索し、20件取得する
 - `200 OK`
 - Content-Type: `application/json`
 - Body:
-  | field         | type    | description        |
-  | ------------- | ------- | ------------------ |
-  | reviewId      | integer | レビューID         |
-  | movieId       | integer | 映画ID             |
-  | jaTitle       | string  | 日本語タイトル     |
-  | originalTitle | string  | 原題               |
-  | releaseYear   | integer | 公開年             |
-  | posterPath    | string  | ポスター画像のパス |
-  | score         | number  | 点数（0.0〜5.0）   |
-  | text          | string  | 感想文             |
-  | watchedAt     | string  | 視聴日             |
+  | field            | type    | description        |
+  | ---------------- | ------- | ------------------ |
+  | reviewId         | integer | レビューID         |
+  | score            | number  | 点数（0.0〜5.0）   |
+  | text             | string  | 感想文             |
+  | watchedAt        | string  | 視聴日             |
+  | movie            | object  | 映画詳細情報       |
+  | └ movieId       | integer | 映画ID             |
+  | └ jaTitle       | string  | 日本語タイトル     |
+  | └ originalTitle | string  | 原題               |
+  | └ releaseYear   | integer | 公開年             |
+  | └ posterPath    | string  | ポスター画像のパス |
 
 - Example:
   ```json
   {
     "reviewId": 123,
-    "movieId": 11,
-    "jaTitle": "スター・ウォーズ",
-    "originalTitle": "Star Wars",
-    "releaseYear": 1997,
-    "posterPath": "xxx.jpg",
     "score": 5.0,
     "text": "最高だった",
-    "watchedAt": "2026-01-01"
+    "watchedAt": "2026-01-01",
+    "movie": {
+      "movieId": 11,
+      "jaTitle": "スター・ウォーズ",
+      "originalTitle": "Star Wars",
+      "releaseYear": 1997,
+      "posterPath": "xxx.jpg"
+    }
   }
   ```
 
@@ -335,12 +338,12 @@ TMDBで映画をタイトル検索し、20件取得する
   | review_id | integer | yes      | レビューID  |
 - Content-Type: `application/json`
 - Body:
-  | field     | type    | description     |
-  | --------- | ------- | --------------- |
-  | movieId   | integer | DB上の映画ID    |
-  | text      | string  | 感想文          |
-  | score     | number  | 点数（0.0-5.0） |
-  | watchedAt | string  | 視聴日          |
+  | field     | type    | required | description     |
+  | --------- | ------- | -------- | --------------- |
+  | movieId   | integer | no       | DB上の映画ID    |
+  | text      | string  | no       | 感想文          |
+  | score     | number  | no       | 点数（0.0-5.0） |
+  | watchedAt | string  | no       | 視聴日          |
 
 - Example:
   ```json
@@ -355,35 +358,7 @@ TMDBで映画をタイトル検索し、20件取得する
 <!-- omit in toc -->
 #### Response
 
-- 200 OK
-- Content-Type: `application/json`
-- Body:
-  | field         | type    | description        |
-  | ------------- | ------- | ------------------ |
-  | reviewId      | integer | レビューID         |
-  | movieId       | integer | 映画ID             |
-  | jaTitle       | string  | 日本語タイトル     |
-  | originalTitle | string  | 原題               |
-  | releaseYear   | integer | 公開年             |
-  | posterPath    | string  | ポスター画像のパス |
-  | score         | number  | 点数（0.0-5.0）    |
-  | text          | string  | 感想文             |
-  | watchedAt     | string  | 視聴日             |
-
-- Example:
-  ```json
-  {
-    "reviewId": 123,
-    "movieId": 11,
-    "jaTitle": "スター・ウォーズ",
-    "originalTitle": "Star Wars",
-    "releaseYear": 1997,
-    "posterPath": "xxx.jpg",
-    "score": 5.0,
-    "text": "最高だった",
-    "watchedAt": "2026-01-01"
-  }
-  ```
+- `204 No Content`
 
 ---
 
@@ -468,18 +443,20 @@ TMDBで映画をタイトル検索し、20件取得する
 - `200 OK`
 - Content-Type: `application/json`
 - Body:
-  | field            | type    | description          |
-  | ---------------  | ------- | -------------------- |
-  | watchlist        | array   | 全てのウォッチリスト |
-  | └ watchlistId   | integer | ウォッチリストID     |
-  | └ movieId       | integer | 映画ID               |
-  | └ jaTitle       | string  | 日本語タイトル       |
-  | └ originalTitle | string  | 原題                 |
-  | └ posterPath    | string  | ポスター画像のパス   |
-  | └ isWatched     | boolean | 視聴済みならばtrue   |
-  | └ priority      | integer | 優先度(%)            |
-  | └ note          | string  | メモ                 |
-  | watched          | integer | 視聴済み件数         |
+  | field              | type    | description          |
+  | ------------------ | ------- | -------------------- |
+  | watchlist          | array   | 全てのウォッチリスト |
+  | └ watchlistId     | integer | ウォッチリストID     |
+  | └ isWatched       | boolean | 視聴済みならばtrue   |
+  | └ priority        | integer | 優先度(%)            |
+  | └ note            | string  | メモ                 |
+  | └ movie           | object  | 映画詳細情報         |
+  | │└ movieId       | integer | 映画ID               |
+  | │└ jaTitle       | string  | 日本語タイトル       |
+  | │└ originalTitle | string  | 原題                 |
+  | │└ releaseYear   | integer | 公開年               |
+  | │└ posterPath    | string  | ポスター画像のパス   |
+  | watched            | integer | 視聴済み件数         |
 
 - Example:
 ```json
@@ -487,13 +464,15 @@ TMDBで映画をタイトル検索し、20件取得する
     "watchlist": [
       {
         "watchlistId": 123,
-        "movieId": 11,
-        "jaTitle": "スター・ウォーズ",
-        "originalTitle": "Star Wars",
-        "posterPath": "xxx.jpg",
         "isWatched": true,
         "priority": 90,
-        "note": "見たい"
+        "note": "見たい",
+        "movie": {
+          "movieId": 11,
+          "jaTitle": "スター・ウォーズ",
+          "originalTitle": "Star Wars",
+          "posterPath": "xxx.jpg"
+        }
       }
     ],
     "watched": 10
@@ -517,33 +496,7 @@ TMDBで映画をタイトル検索し、20件取得する
 <!-- omit in toc -->
 #### Response
 
-- `200 OK`
-- Content-Type: `application/json`
-- Body:
-  | field         | type    | description        |
-  | ------------- | ------- | ------------------ |
-  | watchlistId   | integer | ウォッチリストID   |
-  | movieId       | integer | 映画ID             |
-  | jaTitle       | string  | 日本語タイトル     |
-  | originalTitle | string  | 原題               |
-  | posterPath    | string  | ポスター画像のパス |
-  | isWatched     | boolean | 視聴済みならばtrue |
-  | priority      | integer | 優先度(%)          |
-  | note          | string  | メモ               |
-
-- Example:
-  ```json
-  {
-    "watchlistId": 123,
-    "movieId": 11,
-    "jaTitle": "スター・ウォーズ",
-    "originalTitle": "Star Wars",
-    "posterPath": "xxx.jpg",
-    "isWatched": true,
-    "priority": 90,
-    "note": "見たい"
-  }
-  ```
+- `204 No Content`
 
 ---
 

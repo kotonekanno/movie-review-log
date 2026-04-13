@@ -37,13 +37,7 @@ function ReviewDetailsPage() {
       if (res.status === 200) {
         const data = await res.json();
         setReview(data);
-        setMovie(prev => ({
-          ...prev!,
-          jaTitle: data.jaTitle,
-          originalTitle: data.originalTitle,
-          releaseYear: data.releaseYear,
-          posterPath: data.posterPath,
-        }));
+        setMovie(data.movie);
       } else {
         toast.error("レビューの取得に失敗しました");
       }

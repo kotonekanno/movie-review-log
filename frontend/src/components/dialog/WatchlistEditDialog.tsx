@@ -53,7 +53,7 @@ function WatchlistEditDialog (props: Props) {
       const patchData: Partial<WatchlistFormValues> = {};
       if (item.priority !== props.prevItem.priority) patchData.priority = item.priority;
       if (item.note !== props.prevItem.note) patchData.note = item.note;
-      if (item.movieId !== props.prevItem.movieId) patchData.movieId = item.movieId;
+      if (item.movieId !== props.prevItem.movie.movieId) patchData.movieId = item.movieId;
 
         const res: Response = await fetch(`${API_BASE_URL}/watchlist/${props.prevItem.watchlistId}`, {
           method: "PATCH",
@@ -62,7 +62,7 @@ function WatchlistEditDialog (props: Props) {
           credentials: "include",
         });
 
-        if (res.status === 200) {
+        if (res.status === 204) {
           props.onSuccess();
           props.onOpenChange(false);
           toast.success("更新しました");
@@ -128,14 +128,14 @@ function WatchlistEditDialog (props: Props) {
 
     useEffect(() => {
       if (props.mode === "edit" && props.prevItem) {
-        setMovieId(props.prevItem.movieId);
+        setMovieId(props.prevItem.movie.movieId);
         setPriority(props.prevItem.priority);
         setNote(props.prevItem.note);
         setMovie({
-           movieId: props.prevItem.movieId,
-          jaTitle: props.prevItem.jaTitle,
-          originalTitle: props.prevItem.originalTitle,
-          posterPath: props.prevItem.posterPath,
+           movieId: props.prevItem.movie.movieId,
+          jaTitle: props.prevItem.movie.jaTitle,
+          originalTitle: props.prevItem.movie.originalTitle,
+          posterPath: props.prevItem.movie.posterPath,
         })
       } else {
         setPriority(50);
@@ -173,9 +173,9 @@ function WatchlistEditDialog (props: Props) {
                     </div>
 
                     <div className="flex flex-col gap-2 justify-start">
-                      <h1 className="text-xl font-bold leading-tight">
+                      <p className="text-xl font-bold leading-tight">
                         {movie? movie.jaTitle : "不明なタイトル"}
-                      </h1>
+                      </p>
 
                       <p className="text-sm text-muted-foreground">
                         {movie ? movie.originalTitle : "不明なタイトル"}

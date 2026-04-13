@@ -12,9 +12,10 @@
   - [Docker](#docker)
 - [Others](#others)
   - [How to use poster path](#how-to-use-poster-path)
-- [How to install shadcn components](#how-to-install-shadcn-components)
-- [How to write CHANGELOG.md](#how-to-write-changelogmd)
-  - [Category](#category)
+  - [How to install shadcn components](#how-to-install-shadcn-components)
+  - [How to write CHANGELOG.md](#how-to-write-changelogmd)
+    - [Category](#category)
+  - [Git Branch naming rule](#git-branch-naming-rule)
 
 
 ## Local
@@ -68,13 +69,13 @@ Append to this:
 https://image.tmdb.org/t/p/w500/
 
 
-## How to install shadcn components
+### How to install shadcn components
 
 ```bash
 npx shadcn@latest add <component>
 ```
 
-## How to write CHANGELOG.md
+### How to write CHANGELOG.md
 
 ```
 MAJOR.MINOR.PATCH
@@ -86,7 +87,7 @@ MAJOR.MINOR.PATCH
 | MINOR | API変わってもOK（壊さなければ）  |
 | PATCH | 「バグってた」より「仕様に戻す」    |
 
-### Category
+#### Category
 
 - Added: New feature
 - Changed: Change of existing feature
@@ -94,3 +95,14 @@ MAJOR.MINOR.PATCH
 - Removed: Removal of a feature or stale API
 - Breaking Changes
 - Notes (optional)
+
+### Git Branch naming rule
+
+- `feature/`: New feature
+- `fix/`: Debug
+- `refactor/`: Refactoring
+- `style/`: UI / format update
+- `test/`: Test update
+- `docs/`: Documentation update
+- `chore/`: Dependencies or settings update
+- `hotfix/`: Urgent debug
