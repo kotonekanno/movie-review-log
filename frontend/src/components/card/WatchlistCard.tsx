@@ -85,13 +85,13 @@ function WatchlistCard({ item, onSuccess }: Props) {
                         ${isWatched ? "line-through text-muted-foreground" : ""}`}
                     >
                       <span className="pr-6">
-                        {item.jaTitle}
+                        {item.movie.jaTitle}
                       </span>
                       <span className="absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-background to-transparent" />
                     </span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    {item.jaTitle}
+                    {item.movie.jaTitle}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -128,7 +128,7 @@ function WatchlistCard({ item, onSuccess }: Props) {
           <AccordionContent className="px-4 pt-2 pb-4">
             <div className="flex gap-4">
               <img
-                src={POSTER_BASE_URL + item.posterPath}
+                src={POSTER_BASE_URL + item.movie.posterPath}
                 alt="poster"
                 className="w-[100px] aspect-[2/3] object-cover rounded-md bg-black"
               />

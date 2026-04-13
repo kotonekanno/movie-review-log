@@ -1,7 +1,7 @@
 package com.kotonekanno.movielog.service;
 
 import com.kotonekanno.movielog.dto.WatchlistItemDTO;
-import com.kotonekanno.movielog.dto.WatchlistResponseDTO;
+import com.kotonekanno.movielog.dto.WatchlistDTO;
 import com.kotonekanno.movielog.entity.Movie;
 import com.kotonekanno.movielog.entity.User;
 import com.kotonekanno.movielog.entity.WatchlistItem;
@@ -54,7 +54,7 @@ public class WatchlistService {
 
   // Get a watchlist
   @Transactional(readOnly = true)
-  public WatchlistResponseDTO getAll(UserDetails userDetails) {
+  public WatchlistDTO getAll(UserDetails userDetails) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
 
@@ -64,13 +64,13 @@ public class WatchlistService {
         .filter(WatchlistItemDTO::isWatched)
         .count();
 
-    return new WatchlistResponseDTO(items, watched);
+    return new WatchlistDTO(items, watched);
   }
 
   // Update a watchlist item
   // needs verification
   @Transactional
-  public WatchlistItemDTO update(UserDetails userDetails, Long watchlistId, WatchlistForm form) {
+  public void update(UserDetails userDetails, Long watchlistId, WatchlistForm form) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
     WatchlistItem watchlistItem = watchlistItemRepository.findById(watchlistId)
@@ -104,18 +104,7 @@ public class WatchlistService {
       watchlistItem.setPriority(form.getPriority());
     }
 
-    WatchlistItem updated = watchlistItemRepository.save(watchlistItem);
-
-    return new WatchlistItemDTO(
-        updated.getId(),
-        updated.getMovie().getId(),
-        updated.getMovie().getJaTitle(),
-        updated.getMovie().getOriginalTitle(),
-        updated.getMovie().getPosterPath(),
-        updated.getIsWatched(),
-        updated.getPriority(),
-        updated.getNote()
-    );
+    watchlistItemRepository.save(watchlistItem);
   }
 
   // Update isWatched of a watchlist item

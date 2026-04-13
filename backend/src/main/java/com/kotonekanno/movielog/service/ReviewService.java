@@ -1,9 +1,6 @@
 package com.kotonekanno.movielog.service;
 
-import com.kotonekanno.movielog.dto.ReviewDTO;
-import com.kotonekanno.movielog.dto.ReviewListItemDTO;
-import com.kotonekanno.movielog.dto.ReviewListResponseDTO;
-import com.kotonekanno.movielog.dto.ReviewSort;
+import com.kotonekanno.movielog.dto.*;
 import com.kotonekanno.movielog.entity.Movie;
 import com.kotonekanno.movielog.entity.Review;
 import com.kotonekanno.movielog.entity.User;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class ReviewService {
@@ -86,7 +82,7 @@ public class ReviewService {
   // Get details of a review
   // needs verification
   @Transactional(readOnly = true)
-  public ReviewDTO getDetails(UserDetails userDetails, Long reviewId) {
+  public ReviewDetailsDTO getDetails(UserDetails userDetails, Long reviewId) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
 
@@ -98,23 +94,27 @@ public class ReviewService {
       throw new AccessDeniedException("You do not have permission to view this review");
     }
 
-    return new ReviewDTO(
-        review.getId(),
+    MovieDetailsDTO movie = new MovieDetailsDTO(
         review.getMovie().getId(),
         review.getMovie().getJaTitle(),
         review.getMovie().getOriginalTitle(),
         review.getMovie().getReleaseYear(),
-        review.getMovie().getPosterPath(),
+        review.getMovie().getPosterPath()
+    );
+
+    return new ReviewDetailsDTO(
+        review.getId(),
         review.getScore(),
         review.getText(),
-        review.getWatchedAt()
+        review.getWatchedAt(),
+        movie
     );
   }
 
   // Update a review
   // needs verification
   @Transactional
-  public ReviewDTO update(UserDetails userDetails, Long reviewId, ReviewForm form) {
+  public void update(UserDetails userDetails, Long reviewId, ReviewForm form) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
     Review review = reviewRepository.findById(reviewId)
@@ -134,19 +134,7 @@ public class ReviewService {
       review.setWatchedAt(form.getWatchedAt());
     }
 
-    Review updated = reviewRepository.save(review);
-
-    return new ReviewDTO(
-        updated.getId(),
-        updated.getMovie().getId(),
-        updated.getMovie().getJaTitle(),
-        updated.getMovie().getOriginalTitle(),
-        updated.getMovie().getReleaseYear(),
-        updated.getMovie().getPosterPath(),
-        updated.getScore(),
-        updated.getText(),
-        updated.getWatchedAt()
-    );
+    reviewRepository.save(review);
   }
 
   // Delete a review

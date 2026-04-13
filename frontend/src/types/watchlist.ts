@@ -1,12 +1,11 @@
+import type { MovieDetails } from "./movie";
+
 export interface WatchlistItem {
   watchlistId: number;
-  movieId: number;
-  jaTitle: string;
-  originalTitle: string;
-  posterPath: string;
   isWatched: boolean;
   priority: number;
   note: string;
+  movie: MovieDetails;
 }
 
 

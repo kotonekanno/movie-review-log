@@ -35,7 +35,7 @@ function ReviewFormContainer(props: Props) {
           credentials: "include",
         });
 
-        if (res.status === 200) {
+        if (res.status === 204) {
           navigate("/reviews");
           toast.success("レビューを更新しました");
         } else {
@@ -85,13 +85,7 @@ function ReviewFormContainer(props: Props) {
           watchedAt: data.watchedAt,
         });
 
-        setPrevMovie({
-          movieId: data.movieId,
-          jaTitle: data.jaTitle,
-          originalTitle: data.originalTitle,
-          releaseYear: data.releaseYear,
-          posterPath: data.posterPath,
-        })
+        setPrevMovie(data.movie);
       } catch (e) {
         toast.error("エラーが起きました");
       }

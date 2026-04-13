@@ -40,8 +40,8 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
       });
 
       if (res.ok) {
-        const data: Movie[] = await res.json();
-        setMovies(data);
+        const data = await res.json();
+        setMovies(data.results);
         setHasSearched(true);
       } else {
         toast.error("エラーが起きました");

@@ -1,3 +1,5 @@
+import type { MovieDetails } from "./movie";
+
 export interface Review {
   reviewId: number;
   title: string;
@@ -7,13 +9,10 @@ export interface Review {
 
 export interface ReviewDetails {
   reviewId: number;
-  jaTitle: string;
-  originalTitle: string;
-  releaseYear: number;
-  posterPath: string;
   score: number;
   text: string;
   watchedAt: string;
+  movie: MovieDetails;
 }
 
 export interface ReviewFormValues {

@@ -1,6 +1,6 @@
 package com.kotonekanno.movielog.controller;
 
-import com.kotonekanno.movielog.dto.ReviewDTO;
+import com.kotonekanno.movielog.dto.ReviewDetailsDTO;
 import com.kotonekanno.movielog.dto.ReviewListResponseDTO;
 import com.kotonekanno.movielog.dto.ReviewSort;
 import com.kotonekanno.movielog.form.ReviewForm;
@@ -50,7 +50,7 @@ public class ReviewsController {
   // Get details of a review
   // returns 200 OK
   @GetMapping("/{review_id}")
-  public ResponseEntity<ReviewDTO> getDetails(
+  public ResponseEntity<ReviewDetailsDTO> getDetails(
       @AuthenticationPrincipal UserDetails userDetails,
       @PathVariable("review_id") Long reviewId
   ) {
@@ -58,15 +58,15 @@ public class ReviewsController {
   }
 
   // Update a review
-  // returns 200 OK
+  // returns 204 No Content
   @PatchMapping("/{review_id}")
-  public ResponseEntity<ReviewDTO> update(
+  public ResponseEntity<Void> update(
       @AuthenticationPrincipal UserDetails userDetails,
       @PathVariable("review_id") Long reviewId,
       @RequestBody ReviewForm form
   ) {
-    ReviewDTO updatedReview = reviewService.update(userDetails, reviewId, form);
-    return ResponseEntity.ok(updatedReview);
+    reviewService.update(userDetails, reviewId, form);
+    return ResponseEntity.noContent().build();
   }
 
   // Delete a review

@@ -1,7 +1,7 @@
 package com.kotonekanno.movielog.controller;
 
 import com.kotonekanno.movielog.dto.WatchlistItemDTO;
-import com.kotonekanno.movielog.dto.WatchlistResponseDTO;
+import com.kotonekanno.movielog.dto.WatchlistDTO;
 import com.kotonekanno.movielog.form.WatchlistForm;
 import com.kotonekanno.movielog.service.WatchlistService;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +9,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,22 +36,22 @@ public class WatchlistController {
   // Get a watchlist
   // return 200 OK
   @GetMapping
-  public ResponseEntity<WatchlistResponseDTO> getAll(
+  public ResponseEntity<WatchlistDTO> getAll(
       @AuthenticationPrincipal UserDetails userDetails
   ) {
     return ResponseEntity.ok(watchlistService.getAll(userDetails));
   }
 
   // Update a watchlist item
-  // returns 200 OK
+  // returns 204 OK
   @PatchMapping("/{watchlist_id}")
-  public ResponseEntity<WatchlistItemDTO> update(
+  public ResponseEntity<Void> update(
       @AuthenticationPrincipal UserDetails userDetails,
       @PathVariable("watchlist_id") Long watchlistId,
       @RequestBody WatchlistForm form
   ) {
-    WatchlistItemDTO updatedWatchlistItem = watchlistService.update(userDetails, watchlistId, form);
-    return ResponseEntity.ok(updatedWatchlistItem);
+    watchlistService.update(userDetails, watchlistId, form);
+    return ResponseEntity.noContent().build();
   }
 
   // Update isWatched of a watchlist item

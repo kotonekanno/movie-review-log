@@ -14,16 +14,20 @@ import java.util.List;
 @Repository
 public interface WatchlistItemRepository extends JpaRepository<WatchlistItem, Long> {
 
+  // これ直す
   @Query("""
       SELECT new com.kotonekanno.movielog.dto.WatchlistItemDTO(
         w.id,
-        m.id,
-        m.jaTitle,
-        m.originalTitle,
-        m.posterPath,
         w.isWatched,
         w.priority,
-        w.note
+        w.note,
+        new com.kotonekanno.movielog.dto.MovieDetailsDTO(
+          m.id,
+          m.jaTitle,
+          m.originalTitle,
+          m.releaseYear,
+          m.posterPath
+        )
       )
       FROM WatchlistItem w
       JOIN w.movie m

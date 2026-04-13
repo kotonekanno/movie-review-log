@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/movies")
@@ -21,8 +22,8 @@ public class MovieController {
   // Search movies by query
   // returns 200 OK
   @GetMapping
-  public ResponseEntity<List<MovieSearchResultDTO>> search(@RequestParam String query) {
-    return ResponseEntity.ok(movieService.search(query));
+  public ResponseEntity<Map<String, List<MovieSearchResultDTO>>> search(@RequestParam String query) {
+    return ResponseEntity.ok(Map.of("results", movieService.search(query)));
   }
   
   // Get details of a movie
