@@ -1,7 +1,7 @@
 <!-- omit in toc -->
 # API設計
 
-v1.0.0
+v1.2.0
 
 <!-- omit in toc -->
 ### 一覧
