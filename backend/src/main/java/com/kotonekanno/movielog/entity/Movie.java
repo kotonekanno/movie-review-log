@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "movies")
 @Getter
@@ -16,6 +18,9 @@ public class Movie {
 
   @Column(name = "tmdb_id", nullable = false, unique = true)
   private Long tmdbId;
+
+  @Column(name = "last_used_at", nullable = false)
+  private LocalDateTime lastUsedAt;
 
   @Column(name = "ja_title", nullable = false)
   private String jaTitle;

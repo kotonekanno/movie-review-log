@@ -41,6 +41,7 @@ DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration
 | -------------- | ------------ | -------------- |
 | id             | SERIAL       | 映画ID         |
 | tmdb_id        | BIGINT       | TMDB内のID     |
+| last_used_at   | TIMESTAMP    | 最終利用日時   |
 | ja_title       | VARCHAR(255) | 日本語タイトル |
 | original_title | VARCHAR(255) | 原題           |
 | release_year   | INT          | 公開年         |
@@ -49,7 +50,9 @@ DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration
 - tmdb_id
     - UNIQUE
 - poster_path
-    - [https://image.tmdb.org/t/p/w500/](https://image.tmdb.org/t/p/w500/) ＋ poster_path
+    - https://image.tmdb.org/t/p/w500/ ＋ poster_path
+- last_user_at
+    - キャッシュが最後に使われた日時から7日が経過すると、キャッシュを削除する
 
 ## reviews
 
@@ -58,6 +61,7 @@ DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration
 | id         | SERIAL       | レビューID           |
 | user_id    | BIGINT       | ユーザーID           |
 | movie_id   | BIGINT       | 映画ID               |
+| tmdb_id    | BIGINT       | TMDB内の映画ID       |
 | score      | NUMERIC(2,1) | 点数                 |
 | text       | TEXT         | レビュー本文         |
 | watched_at | DATE         | 視聴日               |
@@ -68,7 +72,7 @@ DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration
 - user_id
     - FOREIGN: users.id(ON DELETE CASCADE)
 - movie_id
-    - FOREIGN: movie.id
+    - FOREIGN: movie.id(ON DELETE SET NULL)
 - score
     - 星5評価（0.0〜5.0）
 - deleted_at
@@ -81,6 +85,7 @@ DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration
 | id         | SERIAL    | ウォッチリストID       |
 | user_id    | BIGINT    | ユーザーID             |
 | movie_id   | BIGINT    | 映画ID                 |
+| tmdb_id    | BIGINT    | TMDB内の映画ID         |
 | priority   | INT       | 優先度（%）            |
 | note       | TEXT      | メモ                   |
 | is_watched | BOOLEAN   | 視聴済みフラグ         |
@@ -89,7 +94,7 @@ DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration
 - user_id
     - FOREIGN: users.id(ON DELETE CASCADE)
 - movie_id
-    - FOREIGN: movie.id
+    - FOREIGN: movie.id(ON DELETE SET NULL)
 - priority
     - 0〜100の整数[%]
 - is_watched

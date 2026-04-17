@@ -27,6 +27,9 @@ public class Review {
   @JoinColumn(name = "movie_id", nullable = false)
   private Movie movie;
 
+  @Column(name = "tmdb_id", nullable = false)
+  private Long tmdbId;
+
   @Column(nullable = false)
   private Double score;
 

@@ -9,7 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "watchlist_items", uniqueConstraints = { @UniqueConstraint(columnNames = {"user_id", "movie_id"})})
+@Table(name = "watchlist_items", uniqueConstraints = { @UniqueConstraint(columnNames = {"user_id", "tmdb_id"})})
 @Getter
 @Setter
 public class WatchlistItem {
@@ -24,6 +24,9 @@ public class WatchlistItem {
   @ManyToOne
   @JoinColumn(name = "movie_id", nullable = false)
   private Movie movie;
+
+  @Column(name = "tmdb_id", nullable = false)
+  private Long tmdbId;
 
   @Column(nullable = false)
   private Integer priority;
