@@ -29,7 +29,7 @@ CREATE TABLE reviews (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP,
-    CONSTRAINT fk_reviews_user FOREIGN KEY(user_id) REFERENCES users(id),
+    CONSTRAINT fk_reviews_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_reviews_movie FOREIGN KEY(movie_id) REFERENCES movies(id)
 );
 
@@ -43,6 +43,6 @@ CREATE TABLE watchlist_items (
     is_watched BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uq_user_movie UNIQUE (user_id, movie_id),
-    CONSTRAINT fk_watchlist_user FOREIGN KEY(user_id) REFERENCES users(id),
+    CONSTRAINT fk_watchlist_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_watchlist_movie FOREIGN KEY(movie_id) REFERENCES movies(id)
 );
