@@ -1,8 +1,8 @@
 <!-- omit in toc -->
 # データ設計
 
-v1.0.0  
-DB migration: [V1_innitial_schema.sql](/backend/src/main/resources/db/migration/V1_initial_schema.sql)
+v1.3.0  
+DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration/V1__initial_schema.sql)
 
 <!-- omit in toc -->
 ### テーブル一覧
@@ -66,9 +66,9 @@ DB migration: [V1_innitial_schema.sql](/backend/src/main/resources/db/migration/
 | deleted_at | TIMESTAMP    | レビュー削除日時     |
 
 - user_id
-    - FOREIGN: users.id(ONDELETE CASCADE)
+    - FOREIGN: users.id(ON DELETE CASCADE)
 - movie_id
-    - FOREIGN: movie.id(ONDELETE SET NULL)
+    - FOREIGN: movie.id
 - score
     - 星5評価（0.0〜5.0）
 - deleted_at
@@ -87,9 +87,9 @@ DB migration: [V1_innitial_schema.sql](/backend/src/main/resources/db/migration/
 | created_at | TIMESTAMP | ウォッチリスト追加日時 |
 
 - user_id
-    - FOREIGN: users.id(ONDELETE CASCADE)
+    - FOREIGN: users.id(ON DELETE CASCADE)
 - movie_id
-    - FOREIGN: movie.id(ONDELETE SET NULL)
+    - FOREIGN: movie.id
 - priority
     - 0〜100の整数[%]
 - is_watched
