@@ -19,8 +19,10 @@ import { Label } from "@/components/ui/label";
 import MovieSearchDialog from "./MovieSearchDialog";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
+
+import MovieDetailsCardForWatchlist from "@/components/card/MovieDetailsCardForWatchlist";
+import MovieDetailsCardForWatchlistSkeleton from "@/components/skeleton/MovieDetailsCardForWatchlistSkeleton";
 
 type Props =
   | {
@@ -38,13 +40,13 @@ type Props =
     };
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const POSTER_BASE_URL = import.meta.env.VITE_POSTER_BASE_URL;
 
 function WatchlistEditDialog (props: Props) {
   const [tmdbId, setTmdbId] = useState<number>();
   const [movie, setMovie] = useState<MovieDetails>();
   const [priority, setPriority] = useState<number>(50);
   const [note, setNote] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const onSubmit = async (item: WatchlistFormValues) => {
     try {
@@ -101,6 +103,8 @@ function WatchlistEditDialog (props: Props) {
 
     const fetchMovieDetails = async (tmdbId: number) => {
       try {
+        setLoading(true);
+
         const res = await fetch(`${API_BASE_URL}/movies/${tmdbId}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -116,6 +120,8 @@ function WatchlistEditDialog (props: Props) {
         }
       } catch (e) {
         toast.error("情報の取得に失敗しました");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -152,7 +158,9 @@ function WatchlistEditDialog (props: Props) {
     <Dialog open={props.isOpen} onOpenChange={() => props.onOpenChange(false)}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{props.mode === "edit" ? "編集" : "作成"}</DialogTitle>
+          <DialogTitle className="text-center text-lg">
+            {props.mode === "edit" ? "編集" : "作成"}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -162,34 +170,9 @@ function WatchlistEditDialog (props: Props) {
                 onSelectMovie={(movie: Movie) => setTmdbId(movie.tmdbId)}
               />
 
-              {movie && 
-                <Card className="p-6">
-                  <CardContent className="flex gap-6 p-0">
-                    <div className="w-[100px] shrink-0">
-                      {movie?.posterPath && (
-                        <img
-                          src={POSTER_BASE_URL + movie.posterPath}
-                          alt="poster"
-                          className="w-full aspect-[2/3] object-cover rounded-md bg-black"
-                        />
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2 justify-start">
-                      <p className="text-xl font-bold leading-tight">
-                        {movie? movie.jaTitle : "不明なタイトル"}
-                      </p>
-
-                      <p className="text-sm text-muted-foreground">
-                        {movie ? movie.originalTitle : "不明なタイトル"}
-                      </p>
-
-                      <p className="text-xs text-muted-foreground">
-                        {movie.releaseYear ? movie.releaseYear : "???"}年
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+              {loading
+                ? <MovieDetailsCardForWatchlistSkeleton />
+                : movie && <MovieDetailsCardForWatchlist movie={movie} />
               }
 
             </Field>

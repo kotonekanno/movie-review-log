@@ -20,11 +20,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { ArrowUp, ArrowDown } from "lucide-react";
 
 import ReviewCard from "@/components/card/ReviewCard";
 import AddButton from "@/components/button/AddButton";
-import { toast } from "sonner";
+import ReviewCardSkeleton from "@/components/skeleton/ReviewCardSkeleton";
 
 type SortKey = "jaTitle" | "releaseYear" | "createdAt" | "updatedAt" | "score" | "watchedAt";
 type Order = "ASC" | "DESC";
@@ -34,6 +35,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 function ReviewListPage() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [reviews, setReviews] = useState<Review[]>([]);
   const [sortKey, setSortKey] = useState<SortKey>("createdAt");
@@ -59,6 +62,8 @@ function ReviewListPage() {
 
   const fetchReviews = async (page: number, sortKey: SortKey, order: Order) => {
     try {
+      setLoading(true);
+
       const res: Response = await fetch(`${API_BASE_URL}/reviews?page=${page}&sort=${sortKey}&order=${order}`, {
         method: "GET",
         headers: {
@@ -76,6 +81,8 @@ function ReviewListPage() {
       }
     } catch (e) {
       toast.error("レビュー一覧の取得に失敗しました");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -173,20 +180,30 @@ function ReviewListPage() {
         </PaginationContent>
       </Pagination>
 
-      {reviews.length === 0
-        ? <p className="text-center text-gray-500 mt-4">レビューがありません</p>
-        : (
-          <div className="grid grid-cols-4 gap-4">
-            {reviews.map((r, idx) => (
-              <ReviewCard
-                key={idx}
-                review={r}
-                onClick={() => navigate(`/reviews/${r.reviewId}`)}
-              />
-            ))}
-        </div>
-        )
-      }
+      <div className="grid grid-cols-4 gap-4">
+        {loading
+          ? (
+            Array.from({ length: 8 }).map((_, idx) => (
+              <div key={idx} className="space-y-2">
+                <ReviewCardSkeleton key={idx} />
+              </div>
+            ))
+          )
+          : reviews.length === 0
+            ? (
+              <p className="text-center text-gray-500">レビューがありません</p>
+            )
+            : (
+              reviews.map((r, idx) => (
+                <ReviewCard
+                  key={idx}
+                  review={r}
+                  onClick={() => navigate(`/reviews/${r.reviewId}`)}
+                />
+              ))
+            )
+        }
+      </div>
 
       <AddButton onClick={() => navigate("/reviews/edit")} />
     </div>
