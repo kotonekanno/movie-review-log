@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import type { ReviewFormValues, CreateReviewResponse } from "@/types/review";
+import type { ReviewFormValues, CreateReviewResponse, ReviewDetails } from "@/types/review";
 import type { MovieDetails } from "@/types/movie";
 
 import ReviewForm from "@/components/form/ReviewForm";
@@ -23,7 +23,7 @@ function ReviewFormContainer(props: Props) {
     try {
       if (props.mode === "edit") {
         const payload: Partial<ReviewFormValues> = {};
-        if (review.movieId !== prevReview?.movieId) payload.movieId = review.movieId;
+        if (review.tmdbId !== prevReview?.tmdbId) payload.tmdbId = review.tmdbId;
         if (review.text !== prevReview?.text) payload.text = review.text;
         if (review.score !== prevReview?.score) payload.score = review.score;
         if (review.watchedAt !== prevReview?.watchedAt) payload.watchedAt = review.watchedAt;
@@ -76,10 +76,10 @@ function ReviewFormContainer(props: Props) {
           return;
         }
 
-        const data = await res.json();
+        const data: ReviewDetails = await res.json();
         
         setPrevReview({
-          movieId: data.movieId,
+          tmdbId: data.movie.tmdbId,
           text: data.text,
           score: data.score,
           watchedAt: data.watchedAt,

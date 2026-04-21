@@ -19,7 +19,7 @@ public class AuthController {
   }
 
   @PostMapping("/register")
-  public ResponseEntity<Map<String, Long>> register(
+  public ResponseEntity<Map<String, Integer>> register(
       @RequestParam String email,
       @RequestParam String password
   ) {

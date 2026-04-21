@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public class ReviewForm {
 
   @NotNull
-  private Long movieId;
+  private Long tmdbId;
 
   private String text;
 

@@ -11,7 +11,7 @@ import lombok.Setter;
 public class WatchlistForm {
 
   @NotNull
-  private Long movieId;
+  private Long tmdbId;
 
   private String note;
 

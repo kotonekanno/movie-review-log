@@ -1,9 +1,12 @@
 package com.kotonekanno.movielog.dto;
 
 public record MovieDetailsDTO (
-    Long movieId,
+    Long tmdbId,
     String jaTitle,
     String originalTitle,
+    String posterPath,
+    String[] genres,
+    String[] productionCountries,
     Integer releaseYear,
-    String posterPath
+    Integer runtime
 ) {}

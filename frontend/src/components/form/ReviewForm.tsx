@@ -34,8 +34,8 @@ type ReviewFormProps =
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ReviewForm(props: ReviewFormProps) {
-  const [movieId, setMovieId] = useState<number | undefined>();
   const [movie, setMovie] = useState<MovieDetails>();
+  const [tmdbId, setTmdbId] = useState<number | undefined>();
   const [text, setText] = useState<string>("");
   const [score, setScore] = useState<number>(2.5);
   const [watchedAt, setWatchedAt] = useState<string>(
@@ -44,11 +44,11 @@ function ReviewForm(props: ReviewFormProps) {
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!movieId) {
+    if (!tmdbId) {
       toast.error("映画IDを取得できませんでした");
       return;
     }
-    props.onSubmit({ movieId, text, score, watchedAt });
+    props.onSubmit({ tmdbId, text, score, watchedAt });
   };
 
   const fetchMovieDetails = async (tmdbId: number) => {
@@ -62,7 +62,7 @@ function ReviewForm(props: ReviewFormProps) {
       if (res.ok) {
         const data: MovieDetails = await res.json();
         setMovie(data);
-        setMovieId(data.movieId);
+        setTmdbId(data.tmdbId);
       } else {
         toast.error("情報の取得に失敗しました");
       }
@@ -73,7 +73,7 @@ function ReviewForm(props: ReviewFormProps) {
 
   useEffect(() => {
     if (props.mode === "edit") {
-      setMovieId(props.prevReview.movieId);
+      setTmdbId(props.prevReview.tmdbId);
       setText(props.prevReview.text);
       setScore(props.prevReview.score);
       setWatchedAt(props.prevReview.watchedAt);

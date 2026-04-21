@@ -1,7 +1,7 @@
 package com.kotonekanno.movielog.dto;
 
 public record ReviewListItemDTO(
-    Long reviewId,
+    Integer reviewId,
     String title,
     String posterPath,
     Double score

@@ -10,17 +10,21 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface MovieRepository extends JpaRepository<Movie, Long> {
+public interface MovieRepository extends JpaRepository<Movie, Integer> {
 
   @Query("""
       SELECT new com.kotonekanno.movielog.dto.MovieDetailsDTO(
-        m.id,
+        m.tmdbId,
         m.jaTitle,
         m.originalTitle,
-        m.releaseYear,
-        m.posterPath
+        m.posterPath,
+        d.genres,
+        d.productionCountries,
+        d.releaseYear,
+        d.runtime
       )
-      FROM Movie m
+      FROM MovieDetails d
+      JOIN d.movie m
       WHERE m.tmdbId = :tmdbId
       """)
   Optional<MovieDetailsDTO> findMovieDetailsDTOByTmdbId(@Param("tmdbId") Long tmdbId);

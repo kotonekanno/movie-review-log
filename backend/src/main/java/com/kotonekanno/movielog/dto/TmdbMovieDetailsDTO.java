@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public record TmdbMovieDetailsDTO (
     String title,
     String original_title,
+    String poster_path,
+    TmdbGenresDTO[] genres,
+    TmdbProductionCountriesDTO[] production_countries,
     String release_date,
-    String poster_path
+    Integer runtime
 ) {}

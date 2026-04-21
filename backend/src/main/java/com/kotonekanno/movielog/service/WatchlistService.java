@@ -2,14 +2,12 @@ package com.kotonekanno.movielog.service;
 
 import com.kotonekanno.movielog.dto.WatchlistItemDTO;
 import com.kotonekanno.movielog.dto.WatchlistDTO;
-import com.kotonekanno.movielog.entity.Movie;
 import com.kotonekanno.movielog.entity.User;
 import com.kotonekanno.movielog.entity.WatchlistItem;
 import com.kotonekanno.movielog.exception.AccessDeniedException;
 import com.kotonekanno.movielog.exception.AlreadyExistsException;
 import com.kotonekanno.movielog.exception.NotFoundException;
 import com.kotonekanno.movielog.form.WatchlistForm;
-import com.kotonekanno.movielog.repository.MovieRepository;
 import com.kotonekanno.movielog.repository.UserRepository;
 import com.kotonekanno.movielog.repository.WatchlistItemRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,29 +21,28 @@ public class WatchlistService {
 
   private final WatchlistItemRepository watchlistItemRepository;
   private final UserRepository userRepository;
-  private final MovieRepository movieRepository;
 
-  public WatchlistService(WatchlistItemRepository watchlistItemRepository, UserRepository userRepository, MovieRepository movieRepository) {
+  public WatchlistService(
+      WatchlistItemRepository watchlistItemRepository,
+      UserRepository userRepository) {
     this.watchlistItemRepository = watchlistItemRepository;
     this.userRepository = userRepository;
-    this.movieRepository = movieRepository;
   }
 
   // Create a watchlist item
   @Transactional
-  public Long create(UserDetails userDetails, WatchlistForm form) {
+  public Integer create(UserDetails userDetails, WatchlistForm form) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
     WatchlistItem watchlistItem = new WatchlistItem();
-    Movie movie = movieRepository.findById(form.getMovieId())
-        .orElseThrow(() -> new NotFoundException("Movie not found"));
+    Long tmdbId = form.getTmdbId();
 
-    if (watchlistItemRepository.existsByUserIdAndMovieId(user.getId(), movie.getId())) {
+    if (watchlistItemRepository.existsByUserIdAndTmdbId(user.getId(), tmdbId)) {
       throw new AlreadyExistsException("Watchlist item already exists");
     }
 
     watchlistItem.setUser(user);
-    watchlistItem.setMovie(movie);
+    watchlistItem.setTmdbId(tmdbId);
     watchlistItem.setPriority(form.getPriority());
     watchlistItem.setNote(form.getNote());
 
@@ -70,7 +67,7 @@ public class WatchlistService {
   // Update a watchlist item
   // needs verification
   @Transactional
-  public void update(UserDetails userDetails, Long watchlistId, WatchlistForm form) {
+  public void update(UserDetails userDetails, Integer watchlistId, WatchlistForm form) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
     WatchlistItem watchlistItem = watchlistItemRepository.findById(watchlistId)
@@ -80,21 +77,20 @@ public class WatchlistService {
       throw new AccessDeniedException("You do not have permission to update this watchlist item");
     }
 
-    if (form.getMovieId() != null &&
-        !form.getMovieId().equals(watchlistItem.getMovie().getId())) {
+    Long tmdbId = form.getTmdbId();
 
-      if (watchlistItemRepository.existsByUserIdAndMovieIdAndIdNot(
+    if (tmdbId != null &&
+        tmdbId.equals(watchlistItem.getTmdbId())) {
+
+      if (watchlistItemRepository.existsByUserIdAndTmdbIdAndIdNot(
           user.getId(),
-          form.getMovieId(),
+          tmdbId,
           watchlistItem.getId()
       )) {
         throw new AlreadyExistsException("Watchlist item already exists");
       }
 
-      Movie movie = movieRepository.findById(form.getMovieId())
-          .orElseThrow(() -> new NotFoundException("Movie not found"));
-
-      watchlistItem.setMovie(movie);
+      watchlistItem.setTmdbId(tmdbId);
     }
 
     if (form.getNote() != null) {
@@ -110,7 +106,7 @@ public class WatchlistService {
   // Update isWatched of a watchlist item
   // needs verification
   @Transactional
-  public void updateIsWatched(UserDetails userDetails, Long watchlistId, boolean isWatched) {
+  public void updateIsWatched(UserDetails userDetails, Integer watchlistId, boolean isWatched) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
     WatchlistItem watchlistItem = watchlistItemRepository.findById(watchlistId)
@@ -126,7 +122,7 @@ public class WatchlistService {
   // Delete a watchlist item
   // needs verification
   @Transactional
-  public void delete(UserDetails userDetails, Long watchlistId) {
+  public void delete(UserDetails userDetails, Integer watchlistId) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
     WatchlistItem watchlistItem = watchlistItemRepository

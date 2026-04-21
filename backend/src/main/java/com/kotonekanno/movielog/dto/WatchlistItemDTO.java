@@ -1,9 +1,9 @@
 package com.kotonekanno.movielog.dto;
 
 public record WatchlistItemDTO (
-    Long watchlistId,
+    Integer watchlistId,
     Boolean isWatched,
     Integer priority,
     String note,
-    MovieDetailsDTO movie
+    MovieOverviewDTO movie
 ) {}

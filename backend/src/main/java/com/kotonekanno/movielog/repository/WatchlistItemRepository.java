@@ -12,35 +12,33 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface WatchlistItemRepository extends JpaRepository<WatchlistItem, Long> {
+public interface WatchlistItemRepository extends JpaRepository<WatchlistItem, Integer> {
 
-  // これ直す
   @Query("""
       SELECT new com.kotonekanno.movielog.dto.WatchlistItemDTO(
         w.id,
         w.isWatched,
         w.priority,
         w.note,
-        new com.kotonekanno.movielog.dto.MovieDetailsDTO(
-          m.id,
+        new com.kotonekanno.movielog.dto.MovieOverviewDTO(
+          m.tmdbId,
           m.jaTitle,
           m.originalTitle,
-          m.releaseYear,
           m.posterPath
         )
       )
       FROM WatchlistItem w
-      JOIN w.movie m
+      JOIN Movie m ON w.tmdbId = m.tmdbId
       WHERE w.user.id = :userId
       ORDER BY w.priority DESC
   """)
-  List<WatchlistItemDTO> findWatchlistItemDTOs(@Param("userId") Long userId);
+  List<WatchlistItemDTO> findWatchlistItemDTOs(@Param("userId") Integer userId);
 
   @Modifying
   @Query("DELETE FROM WatchlistItem w WHERE w.user.id = :userId AND w.isWatched = true")
-  void deleteAllWatchedByUserId(@Param("userId") Long userId);
+  void deleteAllWatchedByUserId(@Param("userId") Integer userId);
 
-  boolean existsByUserIdAndMovieId(Long id, Long id1);
+  boolean existsByUserIdAndTmdbId(Integer userId, Long tmdbId);
 
-  boolean existsByUserIdAndMovieIdAndIdNot(Long id, @NotNull Long movieId, Long id1);
+  boolean existsByUserIdAndTmdbIdAndIdNot(Integer id, @NotNull Long tmdbId, Integer id1);
 }

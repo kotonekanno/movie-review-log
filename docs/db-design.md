@@ -1,14 +1,12 @@
 <!-- omit in toc -->
 # データ設計
 
-v1.3.0  
-DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration/V1__initial_schema.sql)
-
 <!-- omit in toc -->
 ### テーブル一覧
 
 - [users](#users)
 - [movies](#movies)
+- [movie\_details](#movie_details)
 - [reviews](#reviews)
 - [watchlist\_items](#watchlist_items)
 
@@ -19,8 +17,8 @@ DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration
 | カラム名       | 型           | 説明               |
 | -------------- | ------------ | ------------------ |
 | id             | SERIAL       | ユーザーID         |
-| email          | VARCHAR(255) | メールアドレス     |
-| password_hash  | VARCHAR(255) | パスワードのハッシュ値 |
+| email          | TEXT         | メールアドレス     |
+| password_hash  | TEXT         | パスワードのハッシュ値 |
 | created_at     | TIMESTAMP    | アカウント作成日時 |
 | deleted_at     | TIMESTAMP    | アカウント削除日時 |
 | is_active      | BOOLEAN      | アカウントの有効性 |
@@ -35,21 +33,37 @@ DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration
 
 ## movies
 
-外部APIキャッシュ
+外部APIキャッシュ（永続化）
 
-| カラム名       | 型           | 説明           |
-| -------------- | ------------ | -------------- |
-| id             | SERIAL       | 映画ID         |
-| tmdb_id        | BIGINT       | TMDB内のID     |
-| ja_title       | VARCHAR(255) | 日本語タイトル |
-| original_title | VARCHAR(255) | 原題           |
-| release_year   | INT          | 公開年         |
-| poster_path    | VARCHAR(255) | ポスターURL    |
+| カラム名       | 型     | 説明           |
+| -------------- | ------ | -------------- |
+| id             | SERIAL | 映画ID         |
+| tmdb_id        | BIGINT | TMDB内のID     |
+| ja_title       | TEXT   | 日本語タイトル |
+| original_title | TEXT   | 原題           |
+| poster_path    | TEXT   | ポスターURL    |
 
-- tmdb_id
-    - UNIQUE
 - poster_path
-    - [https://image.tmdb.org/t/p/w500/](https://image.tmdb.org/t/p/w500/) ＋ poster_path
+    - https://image.tmdb.org/t/p/w500/ ＋ poster_path
+
+## movie_details
+
+外部APIキャッシュ（TTL）
+
+| カラム名             | 型           | 説明           |
+| -------------------- | ------------ | -------------- |
+| movie_id             | BIGINT       | 映画ID         |
+| expires_at           | TIMESTAMP    | 最終利用日時   |
+| genres               | TEXT[]       | ジャンル       |
+| production_countries | TEXT[]       | 製作国         |
+| release_year         | INT          | 公開年         |
+| runtime              | INT          | 上映時間       |
+
+- movie_id
+  - PRIMARY KEY
+  - FOREIGN: movies.id(ON DELETE CASCADE)
+- expires_at
+    - キャッシュが最後に使われた日時 + 7日
 
 ## reviews
 
@@ -57,7 +71,7 @@ DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration
 | ---------- | ------------ | -------------------- |
 | id         | SERIAL       | レビューID           |
 | user_id    | BIGINT       | ユーザーID           |
-| movie_id   | BIGINT       | 映画ID               |
+| tmdb_id    | BIGINT       | TMDB内の映画ID       |
 | score      | NUMERIC(2,1) | 点数                 |
 | text       | TEXT         | レビュー本文         |
 | watched_at | DATE         | 視聴日               |
@@ -67,8 +81,6 @@ DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration
 
 - user_id
     - FOREIGN: users.id(ON DELETE CASCADE)
-- movie_id
-    - FOREIGN: movie.id
 - score
     - 星5評価（0.0〜5.0）
 - deleted_at
@@ -80,7 +92,7 @@ DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration
 | ---------- | --------- | ---------------------- |
 | id         | SERIAL    | ウォッチリストID       |
 | user_id    | BIGINT    | ユーザーID             |
-| movie_id   | BIGINT    | 映画ID                 |
+| tmdb_id    | BIGINT    | TMDB内の映画ID         |
 | priority   | INT       | 優先度（%）            |
 | note       | TEXT      | メモ                   |
 | is_watched | BOOLEAN   | 視聴済みフラグ         |
@@ -88,8 +100,6 @@ DB migration: [V1__innitial_schema.sql](/backend/src/main/resources/db/migration
 
 - user_id
     - FOREIGN: users.id(ON DELETE CASCADE)
-- movie_id
-    - FOREIGN: movie.id
 - priority
     - 0〜100の整数[%]
 - is_watched

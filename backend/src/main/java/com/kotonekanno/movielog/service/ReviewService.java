@@ -26,24 +26,29 @@ public class ReviewService {
   private final ReviewRepository reviewRepository;
   private final UserRepository userRepository;
   private final MovieRepository movieRepository;
+  private final MovieService movieService;
 
-  public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, MovieRepository movieRepository) {
+  public ReviewService(
+      ReviewRepository reviewRepository,
+      UserRepository userRepository,
+      MovieRepository movieRepository,
+      MovieService movieService
+  ) {
     this.reviewRepository = reviewRepository;
     this.userRepository = userRepository;
     this.movieRepository = movieRepository;
+    this.movieService = movieService;
   }
 
   // Create a review
   @Transactional
-  public Long create(UserDetails userDetails, ReviewForm form) {
+  public Integer create(UserDetails userDetails, ReviewForm form) {
     Review review = new Review();
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
-    Movie movie = movieRepository.findById(form.getMovieId())
-        .orElseThrow(() -> new NotFoundException("Movie not found"));
 
     review.setUser(user);
-    review.setMovie(movie);
+    review.setTmdbId(form.getTmdbId());
     review.setText(form.getText());
     review.setScore(form.getScore());
     review.setWatchedAt(form.getWatchedAt());
@@ -82,7 +87,7 @@ public class ReviewService {
   // Get details of a review
   // needs verification
   @Transactional(readOnly = true)
-  public ReviewDetailsDTO getDetails(UserDetails userDetails, Long reviewId) {
+  public ReviewDetailsDTO getDetails(UserDetails userDetails, Integer reviewId) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
 
@@ -94,13 +99,7 @@ public class ReviewService {
       throw new AccessDeniedException("You do not have permission to view this review");
     }
 
-    MovieDetailsDTO movie = new MovieDetailsDTO(
-        review.getMovie().getId(),
-        review.getMovie().getJaTitle(),
-        review.getMovie().getOriginalTitle(),
-        review.getMovie().getReleaseYear(),
-        review.getMovie().getPosterPath()
-    );
+    MovieDetailsDTO movie = movieService.getDetails(review.getTmdbId());
 
     return new ReviewDetailsDTO(
         review.getId(),
@@ -114,7 +113,7 @@ public class ReviewService {
   // Update a review
   // needs verification
   @Transactional
-  public void update(UserDetails userDetails, Long reviewId, ReviewForm form) {
+  public void update(UserDetails userDetails, Integer reviewId, ReviewForm form) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
     Review review = reviewRepository.findById(reviewId)
@@ -122,6 +121,10 @@ public class ReviewService {
 
     if (!review.getUser().equals(user)) {
       throw new AccessDeniedException("You do not have permission to update this review");
+    }
+
+    if (form.getTmdbId() != null) {
+      review.setTmdbId(form.getTmdbId());
     }
 
     if (form.getText() != null) {
@@ -140,7 +143,7 @@ public class ReviewService {
   // Delete a review
   // needs verification
   @Transactional
-  public void delete(UserDetails userDetails, Long reviewId) {
+  public void delete(UserDetails userDetails, Integer reviewId) {
     User user = userRepository.findByEmail(userDetails.getUsername())
         .orElseThrow(() -> new NotFoundException("User not found"));
     Review review = reviewRepository

@@ -70,7 +70,7 @@
 ### インフラ
 
 - Render（Web service）: バックエンドのデプロイ先
-- Render (PostgreSQL): データベースのホスティング
+- Neon: データベースのホスティング
 - Vercel: フロントエンドのホスティング
 
 <!-- omit in toc -->
@@ -81,8 +81,8 @@
 
 ## 各種ドキュメント
 
-- [リリースノート](CHANGELOG.md)
-- [開発予定](docs/issues.md)
+- [リリースノート](CHANGELOG.md): バージョンごとの変更点
+- [開発予定](docs/issues.md): 今後開発予定の機能、改善予定など
 
 <br>
 

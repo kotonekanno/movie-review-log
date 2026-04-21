@@ -6,9 +6,12 @@ export interface Movie {
 }
 
 export interface MovieDetails {
-  movieId: number;
+  tmdbId: number;
   jaTitle: string;
   originalTitle: string;
-  releaseYear?: number;
   posterPath: string;
+  genres: Array<string>;
+  productionCountries: Array<string>;
+  releaseYear: number;
+  runtime: number;
 }

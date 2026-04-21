@@ -26,11 +26,11 @@ public class ReviewsController {
   // Create a review
   // returns 201 Created
   @PostMapping
-  public ResponseEntity<Map<String, Long>> create(
+  public ResponseEntity<Map<String, Integer>> create(
       @AuthenticationPrincipal UserDetails userDetails,
       @RequestBody ReviewForm form
   ) {
-    Long reviewId = reviewService.create(userDetails, form);
+    Integer reviewId = reviewService.create(userDetails, form);
     return ResponseEntity.status(201)
         .body(Map.of("reviewId", reviewId));
   }
@@ -52,7 +52,7 @@ public class ReviewsController {
   @GetMapping("/{review_id}")
   public ResponseEntity<ReviewDetailsDTO> getDetails(
       @AuthenticationPrincipal UserDetails userDetails,
-      @PathVariable("review_id") Long reviewId
+      @PathVariable("review_id") Integer reviewId
   ) {
     return ResponseEntity.ok(reviewService.getDetails(userDetails, reviewId));
   }
@@ -62,7 +62,7 @@ public class ReviewsController {
   @PatchMapping("/{review_id}")
   public ResponseEntity<Void> update(
       @AuthenticationPrincipal UserDetails userDetails,
-      @PathVariable("review_id") Long reviewId,
+      @PathVariable("review_id") Integer reviewId,
       @RequestBody ReviewForm form
   ) {
     reviewService.update(userDetails, reviewId, form);
@@ -74,7 +74,7 @@ public class ReviewsController {
   @DeleteMapping("/{review_id}")
   public ResponseEntity<Void> delete(
       @AuthenticationPrincipal UserDetails userDetails,
-      @PathVariable("review_id") Long reviewId
+      @PathVariable("review_id") Integer reviewId
   ) {
     reviewService.delete(userDetails, reviewId);
     return ResponseEntity.noContent().build();  // No content
