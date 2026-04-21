@@ -18,10 +18,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-  private final CustomUserDetailsService customUserDetailsService;
+  private final LoginSuccessHandler loginSuccessHandler;
 
-  public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
-    this.customUserDetailsService = customUserDetailsService;
+  public SecurityConfig(LoginSuccessHandler loginSuccessHandler) {
+    this.loginSuccessHandler = loginSuccessHandler;
   }
 
   @Bean
@@ -43,9 +43,7 @@ public class SecurityConfig {
         )
         .formLogin(form -> form
             .loginProcessingUrl("/login")
-            .successHandler((req, res, auth) -> {
-              res.setStatus(204);
-            })
+            .successHandler(loginSuccessHandler)
         )
         .logout(logout -> logout
             .logoutUrl("/logout")
