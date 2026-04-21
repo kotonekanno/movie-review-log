@@ -1,8 +1,8 @@
 package com.kotonekanno.movielog.controller;
 
-import com.kotonekanno.movielog.dto.WatchlistDTO;
-import com.kotonekanno.movielog.form.WatchlistForm;
-import com.kotonekanno.movielog.service.WatchlistService;
+import com.kotonekanno.movielog.dto.watchlist.WatchlistResponse;
+import com.kotonekanno.movielog.dto.watchlist.WatchlistForm;
+import com.kotonekanno.movielog.service.application.WatchlistService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,7 +35,7 @@ public class WatchlistController {
   // Get a watchlist
   // return 200 OK
   @GetMapping
-  public ResponseEntity<WatchlistDTO> getAll(
+  public ResponseEntity<WatchlistResponse> getAll(
       @AuthenticationPrincipal UserDetails userDetails
   ) {
     return ResponseEntity.ok(watchlistService.getAll(userDetails));
