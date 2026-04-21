@@ -1,8 +1,6 @@
 package com.kotonekanno.movielog.security;
 
-import com.kotonekanno.movielog.entity.User;
-import com.kotonekanno.movielog.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kotonekanno.movielog.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,12 +11,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.stereotype.Service;
 
 @Configuration
 @EnableWebSecurity
@@ -75,29 +69,5 @@ public class SecurityConfig {
     authProvider.setPasswordEncoder(passwordEncoder);
 
     return new ProviderManager(authProvider);
-  }
-
-  @Service
-  public static class CustomUserDetailsService implements UserDetailsService {
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Override
-    public UserDetails loadUserByUsername(String email) {
-      User user = userRepository.findByEmail(email)
-          .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-      if (!user.getIsActive()) {
-        throw new UsernameNotFoundException("This account is not activated");
-      }
-
-      return org.springframework.security.core.userdetails.User
-          .withUsername(user.getEmail())
-          .password(user.getPasswordHash())
-          .roles("USER")
-          .disabled(user.getDeletedAt() != null)
-          .build();
-    }
   }
 }
