@@ -72,6 +72,7 @@ frontend/
 │   │   ├── card/
 │   │   ├── dialog/
 │   │   ├── form/
+│   │   ├── skeleton/
 │   │   ├── others/
 │   │   └── ui/           # shadcn/uiのコンポーネント
 │   │

@@ -3,12 +3,15 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import LogoutButton from "@/components/button/LogoutButton";
 import movie from "@/assets/movie.png";
 
-const version = import.meta.env.VITE_APP_VERSION;
+import { BreadcrumbBasic } from "@/components/others/BreadcrumbBasic";
+import buildBreadcrumb from "@/routes/buildBreadcrumb";
 
 function MainLayout() {
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
+
+  const breadcrumbItems = buildBreadcrumb(location.pathname);
 
   return (
     <div className="flex flex-col min-h-screen overflow-x-auto">
@@ -54,6 +57,12 @@ function MainLayout() {
         </div>
       </header>
 
+      {breadcrumbItems.length > 1 && (
+        <div className="w-[72rem] mx-auto px-10 pt-5">
+          <BreadcrumbBasic items={breadcrumbItems} />
+        </div>
+      )}
+
       <main className="flex-1">
         <div className="w-[72rem] mx-auto px-4 py-6">
           <Outlet />
@@ -67,7 +76,7 @@ function MainLayout() {
       </footer>
 
     </div>
-  );
+  )
 }
 
 export default MainLayout;
