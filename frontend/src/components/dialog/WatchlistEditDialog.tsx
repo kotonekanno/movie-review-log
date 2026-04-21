@@ -43,7 +43,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function WatchlistEditDialog (props: Props) {
   const [tmdbId, setTmdbId] = useState<number>();
-  const [movieId, setMovieId] = useState<number | undefined>();
   const [movie, setMovie] = useState<MovieDetails>();
   const [priority, setPriority] = useState<number>(50);
   const [note, setNote] = useState<string>("");
@@ -55,7 +54,7 @@ function WatchlistEditDialog (props: Props) {
       const patchData: Partial<WatchlistFormValues> = {};
       if (item.priority !== props.prevItem.priority) patchData.priority = item.priority;
       if (item.note !== props.prevItem.note) patchData.note = item.note;
-      if (item.movieId !== props.prevItem.movie.movieId) patchData.movieId = item.movieId;
+      if (item.tmdbId !== props.prevItem.movie.tmdbId) patchData.tmdbId = item.tmdbId;
 
         const res: Response = await fetch(`${API_BASE_URL}/watchlist/${props.prevItem.watchlistId}`, {
           method: "PATCH",
@@ -95,13 +94,13 @@ function WatchlistEditDialog (props: Props) {
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (!movieId) {
-        alert("映画IDを取得できませんでした");
+      if (!tmdbId) {
+        toast.error("映画IDを取得できませんでした");
         return;
       }
-      onSubmit({ movieId, note, priority });
+      onSubmit({ tmdbId, note, priority });
     };
-  
+
     const fetchMovieDetails = async (tmdbId: number) => {
       try {
         setLoading(true);
@@ -111,11 +110,11 @@ function WatchlistEditDialog (props: Props) {
           headers: { "Content-Type": "application/json" },
           credentials: "include",
         });
-  
+
         if (res.ok) {
           const data: MovieDetails = await res.json();
           setMovie(data);
-          setMovieId(data.movieId);
+          setTmdbId(data.tmdbId);
         } else {
           toast.error("情報の取得に失敗しました");
         }
@@ -125,7 +124,7 @@ function WatchlistEditDialog (props: Props) {
         setLoading(false);
       }
     };
-  
+
     useEffect(() => {
       if (tmdbId !== undefined) {
         fetchMovieDetails(tmdbId);
@@ -134,19 +133,23 @@ function WatchlistEditDialog (props: Props) {
 
     useEffect(() => {
       if (props.mode === "edit" && props.prevItem) {
-        setMovieId(props.prevItem.movie.movieId);
+        setTmdbId(props.prevItem.movie.tmdbId);
         setPriority(props.prevItem.priority);
         setNote(props.prevItem.note);
         setMovie({
-           movieId: props.prevItem.movie.movieId,
+          tmdbId: props.prevItem.movie.tmdbId,
           jaTitle: props.prevItem.movie.jaTitle,
           originalTitle: props.prevItem.movie.originalTitle,
           posterPath: props.prevItem.movie.posterPath,
+          genres: props.prevItem.movie.genres,
+          productionCountries: props.prevItem.movie.productionCountries,
+          releaseYear: props.prevItem.movie.releaseYear,
+          runtime: props.prevItem.movie.runtime,
         })
       } else {
         setPriority(50);
         setNote("");
-        setMovieId(undefined);
+        setTmdbId(undefined);
         setMovie(undefined);
       }
     }, [props.mode, props.mode === "edit" ? props.prevItem : null]);

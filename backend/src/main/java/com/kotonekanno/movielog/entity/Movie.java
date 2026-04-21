@@ -12,7 +12,7 @@ import lombok.Setter;
 public class Movie {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Integer id;
 
   @Column(name = "tmdb_id", nullable = false, unique = true)
   private Long tmdbId;
@@ -22,9 +22,6 @@ public class Movie {
 
   @Column(name = "original_title", nullable = false)
   private String originalTitle;
-
-  @Column(name = "release_year")
-  private Integer releaseYear;
 
   @Column(name = "poster_path")
   private String posterPath;

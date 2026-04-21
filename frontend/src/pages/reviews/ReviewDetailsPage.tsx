@@ -20,11 +20,14 @@ function ReviewDetailsPage() {
   const { reviewId } = useParams<{ reviewId: string }>();
   const [review, setReview] = useState<ReviewDetails>();
   const [movie, setMovie] = useState<MovieDetails>({
-    movieId: 0,
+    tmdbId: 0,
     jaTitle: "",
     originalTitle: "",
-    releaseYear: 0,
     posterPath: "",
+    genres: [],
+    productionCountries: [],
+    releaseYear: 0,
+    runtime: 0,
   });
   const [loading, setLoading] = useState<boolean>(false);
 

@@ -1,10 +1,10 @@
 package com.kotonekanno.movielog.controller;
 
-import com.kotonekanno.movielog.dto.ReviewDetailsDTO;
-import com.kotonekanno.movielog.dto.ReviewListResponseDTO;
-import com.kotonekanno.movielog.dto.ReviewSort;
-import com.kotonekanno.movielog.form.ReviewForm;
-import com.kotonekanno.movielog.service.ReviewService;
+import com.kotonekanno.movielog.dto.review.ReviewDetailsResponse;
+import com.kotonekanno.movielog.dto.review.ReviewListResponse;
+import com.kotonekanno.movielog.enums.ReviewSort;
+import com.kotonekanno.movielog.dto.review.ReviewForm;
+import com.kotonekanno.movielog.service.application.ReviewService;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,11 +26,11 @@ public class ReviewsController {
   // Create a review
   // returns 201 Created
   @PostMapping
-  public ResponseEntity<Map<String, Long>> create(
+  public ResponseEntity<Map<String, Integer>> create(
       @AuthenticationPrincipal UserDetails userDetails,
       @RequestBody ReviewForm form
   ) {
-    Long reviewId = reviewService.create(userDetails, form);
+    Integer reviewId = reviewService.create(userDetails, form);
     return ResponseEntity.status(201)
         .body(Map.of("reviewId", reviewId));
   }
@@ -38,7 +38,7 @@ public class ReviewsController {
   // Get a list of reviews
   // return 200 OK
   @GetMapping
-  public ResponseEntity<ReviewListResponseDTO> getAll(
+  public ResponseEntity<ReviewListResponse> getAll(
       @AuthenticationPrincipal UserDetails userDetails,
       @RequestParam(defaultValue = "1") int page,
       @RequestParam(defaultValue = "createdAt") ReviewSort sort,
@@ -50,9 +50,9 @@ public class ReviewsController {
   // Get details of a review
   // returns 200 OK
   @GetMapping("/{review_id}")
-  public ResponseEntity<ReviewDetailsDTO> getDetails(
+  public ResponseEntity<ReviewDetailsResponse> getDetails(
       @AuthenticationPrincipal UserDetails userDetails,
-      @PathVariable("review_id") Long reviewId
+      @PathVariable("review_id") Integer reviewId
   ) {
     return ResponseEntity.ok(reviewService.getDetails(userDetails, reviewId));
   }
@@ -62,7 +62,7 @@ public class ReviewsController {
   @PatchMapping("/{review_id}")
   public ResponseEntity<Void> update(
       @AuthenticationPrincipal UserDetails userDetails,
-      @PathVariable("review_id") Long reviewId,
+      @PathVariable("review_id") Integer reviewId,
       @RequestBody ReviewForm form
   ) {
     reviewService.update(userDetails, reviewId, form);
@@ -74,7 +74,7 @@ public class ReviewsController {
   @DeleteMapping("/{review_id}")
   public ResponseEntity<Void> delete(
       @AuthenticationPrincipal UserDetails userDetails,
-      @PathVariable("review_id") Long reviewId
+      @PathVariable("review_id") Integer reviewId
   ) {
     reviewService.delete(userDetails, reviewId);
     return ResponseEntity.noContent().build();  // No content

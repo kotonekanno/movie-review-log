@@ -1,9 +1,8 @@
 package com.kotonekanno.movielog.controller;
 
-import com.kotonekanno.movielog.dto.WatchlistItemDTO;
-import com.kotonekanno.movielog.dto.WatchlistDTO;
-import com.kotonekanno.movielog.form.WatchlistForm;
-import com.kotonekanno.movielog.service.WatchlistService;
+import com.kotonekanno.movielog.dto.watchlist.WatchlistResponse;
+import com.kotonekanno.movielog.dto.watchlist.WatchlistForm;
+import com.kotonekanno.movielog.service.application.WatchlistService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,11 +23,11 @@ public class WatchlistController {
   // Create a watchlist item
   // returns 201 Created
   @PostMapping
-  public ResponseEntity<Map<String, Long>> create(
+  public ResponseEntity<Map<String, Integer>> create(
       @AuthenticationPrincipal UserDetails userDetails,
       @RequestBody WatchlistForm form
   ) {
-    Long watchlistId = watchlistService.create(userDetails, form);
+    Integer watchlistId = watchlistService.create(userDetails, form);
     return ResponseEntity.status(201)
         .body(Map.of("watchlistId", watchlistId));
   }
@@ -36,7 +35,7 @@ public class WatchlistController {
   // Get a watchlist
   // return 200 OK
   @GetMapping
-  public ResponseEntity<WatchlistDTO> getAll(
+  public ResponseEntity<WatchlistResponse> getAll(
       @AuthenticationPrincipal UserDetails userDetails
   ) {
     return ResponseEntity.ok(watchlistService.getAll(userDetails));
@@ -47,7 +46,7 @@ public class WatchlistController {
   @PatchMapping("/{watchlist_id}")
   public ResponseEntity<Void> update(
       @AuthenticationPrincipal UserDetails userDetails,
-      @PathVariable("watchlist_id") Long watchlistId,
+      @PathVariable("watchlist_id") Integer watchlistId,
       @RequestBody WatchlistForm form
   ) {
     watchlistService.update(userDetails, watchlistId, form);
@@ -61,7 +60,7 @@ public class WatchlistController {
       @AuthenticationPrincipal UserDetails userDetails,
       @RequestBody Map<String, Object> body
   ) {
-    Long watchlistId = ((Number) body.get("watchlistId")).longValue();
+    Integer watchlistId = (Integer) body.get("watchlistId");
     Boolean isWatched = (Boolean) body.get("isWatched");
 
     watchlistService.updateIsWatched(userDetails, watchlistId, isWatched);
@@ -73,7 +72,7 @@ public class WatchlistController {
   @DeleteMapping("/{watchlist_id}")
   public ResponseEntity<Void> delete(
       @AuthenticationPrincipal UserDetails userDetails,
-      @PathVariable("watchlist_id") Long watchlistId
+      @PathVariable("watchlist_id") Integer watchlistId
   ) {
     watchlistService.delete(userDetails, watchlistId);
     return ResponseEntity.noContent().build();

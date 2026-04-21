@@ -16,7 +16,7 @@ export interface ReviewDetails {
 }
 
 export interface ReviewFormValues {
-  movieId: number;
+  tmdbId: number;
   text: string;
   score: number;
   watchedAt: string;
