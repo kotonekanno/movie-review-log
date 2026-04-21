@@ -76,6 +76,8 @@ frontend/
 │   │   ├── others/
 │   │   └── ui/           # shadcn/uiのコンポーネント
 │   │
+│   ├── constants/         # 固定値
+│   │
 │   ├── layout/            # レイアウト
 │   │
 │   ├── lib/
