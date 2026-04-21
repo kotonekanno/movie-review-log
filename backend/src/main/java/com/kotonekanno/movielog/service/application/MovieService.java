@@ -151,7 +151,7 @@ public class MovieService {
         .toArray(String[]::new);
 
     String[] countries = Arrays.stream(res.production_countries())
-        .map(ProductionCountry::name)
+        .map(ProductionCountry::iso_3166_1)
         .toArray(String[]::new);
 
     com.kotonekanno.movielog.entity.MovieDetails movieDetails = new com.kotonekanno.movielog.entity.MovieDetails();
