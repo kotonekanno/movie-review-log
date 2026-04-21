@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 function ReviewCardSkeleton() {
   return (
-    <div className="relative mx-auto w-[240px] aspect-[2/3] flex flex-col overflow-hidden my-4">
+    <div className="relative mx-auto w-[240px] aspect-[2/3] flex flex-col overflow-hidden my-4 rounded-xl">
       
       <Skeleton className="flex-1 w-full h-full" />
 
