@@ -10,6 +10,61 @@
 - [reviews](#reviews)
 - [watchlist\_items](#watchlist_items)
 
+```mermaid
+erDiagram
+    USERS ||--o{ REVIEWS : has
+    USERS ||--o{ WATCHLIST_ITEMS : has
+    MOVIES ||--|| MOVIE_DETAILS : has
+    
+    USERS {
+        SERIAL id
+        TEXT email
+        TEXT password_hash
+        TIMESTAMP created_at
+        TIMESTAMP deleted_at
+        BOOLEAN is_active
+    }
+
+    MOVIES {
+        SERIAL id
+        BIGINT tmdb_id
+        TEXT ja_title
+        TEXT original_title
+        TEXT poster_path
+    }
+
+    MOVIE_DETAILS {
+        INT movie_id
+        TIMESTAMP expires_at
+        TEXT[] genres
+        TEXT[] production_countries
+        INT release_year
+        INT runtime
+    }
+
+    REVIEWS {
+        SERIAL id
+        INT user_id
+        INT tmdb_id
+        NUMERIC score
+        TEXT text
+        DATE watched_at
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        TIMESTAMP deleted_at
+    }
+
+    WATCHLIST_ITEMS {
+        SERIAL id
+        INT user_id
+        BIGINT tmdb_id
+        INT priority
+        TEXT note
+        BOOLEAN is_watched
+        TIMESTAMP created_at
+    }
+```
+
 ## users
 
 ユーザー情報
@@ -52,7 +107,7 @@
 
 | カラム名             | 型           | 説明           |
 | -------------------- | ------------ | -------------- |
-| movie_id             | BIGINT       | 映画ID         |
+| movie_id             | INT          | 映画ID         |
 | expires_at           | TIMESTAMP    | 最終利用日時   |
 | genres               | TEXT[]       | ジャンル       |
 | production_countries | TEXT[]       | 製作国         |
@@ -70,7 +125,7 @@
 | カラム名   | 型           | 説明                 |
 | ---------- | ------------ | -------------------- |
 | id         | SERIAL       | レビューID           |
-| user_id    | BIGINT       | ユーザーID           |
+| user_id    | INT          | ユーザーID           |
 | tmdb_id    | BIGINT       | TMDB内の映画ID       |
 | score      | NUMERIC(2,1) | 点数                 |
 | text       | TEXT         | レビュー本文         |
@@ -91,7 +146,7 @@
 | カラム名   | 型        | 説明                   |
 | ---------- | --------- | ---------------------- |
 | id         | SERIAL    | ウォッチリストID       |
-| user_id    | BIGINT    | ユーザーID             |
+| user_id    | INT       | ユーザーID             |
 | tmdb_id    | BIGINT    | TMDB内の映画ID         |
 | priority   | INT       | 優先度（%）            |
 | note       | TEXT      | メモ                   |
