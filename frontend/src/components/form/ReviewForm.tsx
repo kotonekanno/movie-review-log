@@ -14,10 +14,11 @@ import { Slider } from "@/components/ui/slider";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 import MovieSearchDialog from "@/components/dialog/MovieSearchDialog";
 import MovieDetailsCard from "@/components/card/MovieDetailsCard";
-import { toast } from "sonner";
+import MovieDetailsCardSkeleton from "@/components/skeleton/MovieDetailsCardSkeleton";
 
 type ReviewFormProps =
   | {
@@ -41,6 +42,7 @@ function ReviewForm(props: ReviewFormProps) {
   const [watchedAt, setWatchedAt] = useState<string>(
     new Date().toLocaleDateString("sv-SE")
   );
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,6 +55,8 @@ function ReviewForm(props: ReviewFormProps) {
 
   const fetchMovieDetails = async (tmdbId: number) => {
     try {
+      setLoading(true);
+
       const res: Response = await fetch(`${API_BASE_URL}/movies/${tmdbId}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -68,6 +72,8 @@ function ReviewForm(props: ReviewFormProps) {
       }
     } catch (e) {
       toast.error("情報の取得に失敗しました");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,7 +94,10 @@ function ReviewForm(props: ReviewFormProps) {
         onSelectMovie={(movie: Movie) => fetchMovieDetails(movie.tmdbId)}
       />
 
-      {movie && <MovieDetailsCard movie={movie} />}
+      {loading
+        ? <MovieDetailsCardSkeleton />
+        : movie && <MovieDetailsCard movie={movie} />
+      }
 
       <Separator />
 

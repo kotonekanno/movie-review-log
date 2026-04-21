@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import type { ReviewFormValues, CreateReviewResponse } from "@/types/review";
+import type { ReviewFormValues } from "@/types/review";
 import type { MovieDetails } from "@/types/movie";
 
 import ReviewForm from "@/components/form/ReviewForm";
 import { toast } from "sonner";
+
+import ReviewFormSkeleton from "@/components/skeleton/ReviewFormSkeleton";
 
 type Props =
   | { mode: "create" }
@@ -18,6 +20,7 @@ function ReviewFormContainer(props: Props) {
 
   const [prevReview, setPrevReview] = useState<ReviewFormValues>();
   const [prevMovie, setPrevMovie] = useState<MovieDetails>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async (review: ReviewFormValues) => {
     try {
@@ -66,8 +69,11 @@ function ReviewFormContainer(props: Props) {
 
     const fetchReview = async () => {
       try {
+        setLoading(true);
+
         const res = await fetch(`${API_BASE_URL}/reviews/${props.reviewId}`, {
           method: "GET",
+          headers: { "Content-Type": "application/json" },
           credentials: "include",
         });
 
@@ -88,6 +94,8 @@ function ReviewFormContainer(props: Props) {
         setPrevMovie(data.movie);
       } catch (e) {
         toast.error("エラーが起きました");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -100,21 +108,24 @@ function ReviewFormContainer(props: Props) {
         {(props.mode === "edit") ? "レビュー編集" : "レビュー作成"}
       </h1>
 
-      {props.mode === "edit" ? (
-        prevReview && prevMovie && (
+      {loading
+        ? <ReviewFormSkeleton />
+        : props.mode === "edit" ? (
+          prevReview && prevMovie && (
+            <ReviewForm
+              mode="edit"
+              onSubmit={handleSubmit}
+              prevReview={prevReview}
+              prevMovie={prevMovie}
+            />
+          )
+        ) : (
           <ReviewForm
-            mode="edit"
+            mode="create"
             onSubmit={handleSubmit}
-            prevReview={prevReview}
-            prevMovie={prevMovie}
           />
         )
-      ) : (
-        <ReviewForm
-          mode="create"
-          onSubmit={handleSubmit}
-        />
-      )}
+      }
       
     </div>
   );

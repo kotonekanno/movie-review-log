@@ -5,11 +5,12 @@ import type { ReviewDetails } from "@/types/review";
 import type { MovieDetails } from "@/types/movie";
 
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 import ConfirmDialog from "@/components/dialog/ConfirmDialog";
 import MovieDetailsCard from "@/components/card/MovieDetailsCard";
 import ScoreStars from "@/components/others/ScoreStars";
-import { toast } from "sonner";
+import ReviewDetailsPageSkeleton from "@/components/skeleton/ReviewDetailsPageSkeleton";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -25,9 +26,12 @@ function ReviewDetailsPage() {
     releaseYear: 0,
     posterPath: "",
   });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchReview = async () => {
     try {
+      setLoading(true);
+
       const res = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -43,6 +47,8 @@ function ReviewDetailsPage() {
       }
     } catch (e) {
       toast.error("レビューの取得に失敗しました");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,48 +74,53 @@ function ReviewDetailsPage() {
     fetchReview();
   }, [reviewId]);
 
-  if (!review) return <div className="text-center">レビューがありません</div>;
-
   return (
-  <div className="max-w-4xl mx-auto space-y-6">
+    <>
+      {loading
+        ? <ReviewDetailsPageSkeleton />
+        : review ? (
+          <div className="max-w-4xl mx-auto space-y-6">
 
-    <MovieDetailsCard movie={movie} />
+            {movie && <MovieDetailsCard movie={movie} />}
 
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <span className="text-xl font-semibold">
-          {review.score.toFixed(1)}
-        </span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-xl font-semibold">
+                  {review.score.toFixed(1)}
+                </span>
 
-        <ScoreStars score={review.score} />
-      </div>
+                <ScoreStars score={review.score} />
+              </div>
 
-      <div className="text-sm text-muted-foreground">
-        鑑賞日: {review.watchedAt}
-      </div>
-    </div>
+              <div className="text-sm text-muted-foreground">
+                鑑賞日: {review.watchedAt}
+              </div>
+            </div>
 
-    <div className="text-base leading-relaxed whitespace-pre-wrap">
-      {review.text}
-    </div>
+            <div className="text-base leading-relaxed whitespace-pre-wrap">
+              {review.text}
+            </div>
 
-    <div className="flex justify-end gap-2">
-      <Button
-        onClick={() => navigate(`/reviews/edit/${review.reviewId}`)}
-        className="px-6"
-      >
-        編集
-      </Button>
-      <ConfirmDialog
-        title="レビューを削除しますか？"
-        text="この操作は取り消せません。削除するとレビューは完全に消去されます。"
-        buttonText="削除"
-        leftOnClick={handleDelete}
-      />
-    </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                onClick={() => navigate(`/reviews/edit/${review.reviewId}`)}
+                className="px-6"
+              >
+                編集
+              </Button>
+              <ConfirmDialog
+                title="レビューを削除しますか？"
+                text="この操作は取り消せません。削除するとレビューは完全に消去されます。"
+                buttonText="削除"
+                leftOnClick={handleDelete}
+              />
+            </div>
 
-  </div>
-);
+          </div>
+        ) : <div className="text-center text-gray-500">レビューがありません</div>
+      }
+    </>
+  );
 }
 
 export default ReviewDetailsPage;
