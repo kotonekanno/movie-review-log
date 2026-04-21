@@ -17,15 +17,14 @@ import java.time.LocalDateTime;
 public class Review {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Integer id;
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
-  @ManyToOne
-  @JoinColumn(name = "movie_id", nullable = false)
-  private Movie movie;
+  @Column(name = "tmdb_id", nullable = false)
+  private Long tmdbId;
 
   @Column(nullable = false)
   private Double score;

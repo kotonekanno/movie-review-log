@@ -1,8 +1,6 @@
 <!-- omit in toc -->
 # API設計
 
-v1.2.0
-
 <!-- omit in toc -->
 ### 一覧
 
@@ -137,7 +135,7 @@ TMDBで映画をタイトル検索し、20件取得する
         "tmdbId": 123,
         "jaTitle": "スター・ウォーズ",
         "originalTitle": "Star Wars",
-        "posterPath": "xxx.jpg"
+        "posterPath": "/xxx.jpg"
       }
     ]
   }
@@ -163,22 +161,32 @@ TMDBで映画をタイトル検索し、20件取得する
 - `200 OK`
 - Content-Type: `application/json`
 - Body:
-  | field         | type    | description        |
-  | ------------- | ------- | ------------------ |
-  | movieId       | integer | DB上の映画ID       |
-  | jaTitle       | string  | 日本語タイトル     |
-  | originalTitle | string  | 原題               |
-  | releaseYear   | integer | 公開年             |
-  | posterPath    | string  | ポスター画像のパス |
+  | field               | type    | description        |
+  | ------------------- | ------- | ------------------ |
+  | tmdbId              | integer | TMDB内の映画ID     |
+  | jaTitle             | string  | 日本語タイトル     |
+  | originalTitle       | string  | 原題               |
+  | posterPath          | string  | ポスター画像のパス |
+  | genres              | array   | ジャンル           |
+  | productionCountries | array   | 製作国             |
+  | releaseYear         | integer | 公開年             |
+  | runtime             | integer | 上映時間[分]       |
 
 - Example:
   ```json
   {
-    "movieId": 123,
+    "tmdbId": 11,
     "jaTitle": "スター・ウォーズ",
     "originalTitle": "Star Wars",
+    "posterPath": "/xxx.jpg",
+    "genres": [
+      "SF"
+    ],
+    "productionCountries": [
+      "United States of America"
+    ],
     "releaseYear": 1977,
-    "posterPath": "xxx.jpg"
+    "runtime": 121
   }
   ```
 
@@ -195,7 +203,7 @@ TMDBで映画をタイトル検索し、20件取得する
 - Body:
   | field     | type    | required | description      |
   | --------- | ------- | -------- | ---------------- |
-  | movieId   | integer | yes      | DB上の映画ID     |
+  | tmdbId    | integer | yes      | TMDB内の映画ID   |
   | text      | string  | no       | 感想文           |
   | score     | number  | yes      | 点数（0.0〜5.0） |
   | watchedAt | string  | yes      | 視聴日           |
@@ -203,7 +211,7 @@ TMDBで映画をタイトル検索し、20件取得する
 - Example:
   ```json
   {
-    "movieId": 123,
+    "tmdbId": 11,
     "text": "面白かった",
     "score": 4.8,
     "watchedAt": "2026-01-01"
@@ -265,7 +273,7 @@ TMDBで映画をタイトル検索し、20件取得する
       {
         "reviewId": 123,
         "title": "スター・ウォーズ",
-        "posterPath": "xxx.jpg",
+        "posterPath": "/xxx.jpg",
         "score": 4.8
       }
     ],
@@ -293,18 +301,21 @@ TMDBで映画をタイトル検索し、20件取得する
 - `200 OK`
 - Content-Type: `application/json`
 - Body:
-  | field            | type    | description        |
-  | ---------------- | ------- | ------------------ |
-  | reviewId         | integer | レビューID         |
-  | score            | number  | 点数（0.0〜5.0）   |
-  | text             | string  | 感想文             |
-  | watchedAt        | string  | 視聴日             |
-  | movie            | object  | 映画詳細情報       |
-  | └ movieId       | integer | 映画ID             |
-  | └ jaTitle       | string  | 日本語タイトル     |
-  | └ originalTitle | string  | 原題               |
-  | └ releaseYear   | integer | 公開年             |
-  | └ posterPath    | string  | ポスター画像のパス |
+  | field                  | type    | description        |
+  | ---------------------- | ------- | ------------------ |
+  | reviewId               | integer | レビューID         |
+  | score                  | number  | 点数（0.0〜5.0）   |
+  | text                   | string  | 感想文             |
+  | watchedAt              | string  | 視聴日             |
+  | movie                  | object  | 映画詳細情報       |
+  | └ tmdbId              | integer | TMDB内の映画ID     |
+  | └ jaTitle             | string  | 日本語タイトル     |
+  | └ originalTitle       | string  | 原題               |
+  | └ posterPath          | string  | ポスター画像のパス |
+  | └ genres              | array   | ジャンル           |
+  | └ productionCountries | array   | 製作国             |
+  | └ releaseYear         | integer | 公開年             |
+  | └ runtime             | integer | 上映時間[分]       |
 
 - Example:
   ```json
@@ -314,11 +325,18 @@ TMDBで映画をタイトル検索し、20件取得する
     "text": "最高だった",
     "watchedAt": "2026-01-01",
     "movie": {
-      "movieId": 11,
+      "tmdbId": 11,
       "jaTitle": "スター・ウォーズ",
       "originalTitle": "Star Wars",
-      "releaseYear": 1997,
-      "posterPath": "xxx.jpg"
+      "posterPath": "/xxx.jpg",
+      "genres": [
+        "SF"
+      ],
+      "productionCountries": [
+        "The United States of America"
+      ],
+      "releaseYear": 1977,
+      "runtime": 121
     }
   }
   ```
@@ -340,7 +358,7 @@ TMDBで映画をタイトル検索し、20件取得する
 - Body:
   | field     | type    | required | description     |
   | --------- | ------- | -------- | --------------- |
-  | movieId   | integer | no       | DB上の映画ID    |
+  | tmdbId    | integer | no       | TMDB内の映画ID  |
   | text      | string  | no       | 感想文          |
   | score     | number  | no       | 点数（0.0-5.0） |
   | watchedAt | string  | no       | 視聴日          |
@@ -348,7 +366,7 @@ TMDBで映画をタイトル検索し、20件取得する
 - Example:
   ```json
   {
-    "movieId": 123,
+    "tmdbId": 11,
     "text": "面白かった",
     "score": 4.8,
     "watchedAt": "2026-01-01"
@@ -393,14 +411,14 @@ TMDBで映画をタイトル検索し、20件取得する
 - Body:
   | field    | type    | required | description  |
   | -------- | ------- | -------- | ------------ |
-  | movieId  | integer | yes      | DB上の映画ID |
+  | tmdbId   | integer | yes      | TMDB内の映画ID |
   | note     | string  | no       | メモ         |
   | priority | integer | yes      | 優先度(%)    |
 
 - Example:
   ```json
   {
-    "movidId": 123,
+    "tmdbId": 11,
     "note": "面白そう",
     "priority": 88
   }
@@ -451,10 +469,9 @@ TMDBで映画をタイトル検索し、20件取得する
   | └ priority        | integer | 優先度(%)            |
   | └ note            | string  | メモ                 |
   | └ movie           | object  | 映画詳細情報         |
-  | │└ movieId       | integer | 映画ID               |
+  | │└ tmdbId        | integer | TMDB内の映画ID       |
   | │└ jaTitle       | string  | 日本語タイトル       |
   | │└ originalTitle | string  | 原題                 |
-  | │└ releaseYear   | integer | 公開年               |
   | │└ posterPath    | string  | ポスター画像のパス   |
   | watched            | integer | 視聴済み件数         |
 
@@ -468,10 +485,10 @@ TMDBで映画をタイトル検索し、20件取得する
         "priority": 90,
         "note": "見たい",
         "movie": {
-          "movieId": 11,
+          "tmdbId": 11,
           "jaTitle": "スター・ウォーズ",
           "originalTitle": "Star Wars",
-          "posterPath": "xxx.jpg"
+          "posterPath": "/xxx.jpg"
         }
       }
     ],
@@ -598,7 +615,7 @@ https://api.themoviedb.org/3/search/movie
         "id": 123,
         "title": "スター・ウォーズ",
         "original_title": "Star Wars",
-        "poster_path": "xxx.jpg"
+        "poster_path": "/xxx.jpg"
       }
     ]
   }
@@ -630,19 +647,33 @@ https://api.themoviedb.org/3/movie/{id}
 
 - `200 OK`
 - Body:
-  | field          | type   | description        |
-  | -------------- | ------ | ------------------ |
-  | title          | string | 日本語タイトル     |
-  | original_title | string | 原題               |
-  | release_date   | string | 公開年月日         |
-  | poster_path    | string | ポスター画像のパス |
+  | field                | type    | description        |
+  | -------------------- | ------- | ------------------ |
+  | title                | string  | 日本語タイトル     |
+  | original_title       | string  | 原題               |
+  | poster_path          | string  | ポスター画像のパス |
+  | genres               | array   | ジャンル           |
+  | production_countries | array   | 製作国             |
+  | release_date         | string  | 公開年月日         |
+  | runtime              | integer | 上映時間[分]       |
 
 - Example:
   ```json
   {
     "title": "スター・ウォーズ",
     "original_title": "Star Wars",
-    "release_date": "2026-01-01"
-    "poster_path": "xxx.jpg"
+    "poster_path": "/xxx.jpg",
+    "genres": [
+      {
+        "name": "Science Fiction"
+      }
+    ],
+    "production_countries": [
+      {
+        "name": "United States of America"
+      }
+    ],
+    "release_date": "2026-01-01",
+    "runtime": 121
   }
   ```
