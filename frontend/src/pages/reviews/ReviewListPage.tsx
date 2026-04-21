@@ -173,19 +173,20 @@ function ReviewListPage() {
         </PaginationContent>
       </Pagination>
 
-      <div className="grid grid-cols-4 gap-4">
-          {reviews.length === 0 ? (
-            <p className="text-center text-gray-500">レビューがありません</p>
-          ) : (
-            reviews.map((r, idx) => (
+      {reviews.length === 0
+        ? <p className="text-center text-gray-500 mt-4">レビューがありません</p>
+        : (
+          <div className="grid grid-cols-4 gap-4">
+            {reviews.map((r, idx) => (
               <ReviewCard
                 key={idx}
                 review={r}
                 onClick={() => navigate(`/reviews/${r.reviewId}`)}
               />
-            ))
-          )}
+            ))}
         </div>
+        )
+      }
 
       <AddButton onClick={() => navigate("/reviews/edit")} />
     </div>

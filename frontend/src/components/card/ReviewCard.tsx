@@ -12,7 +12,7 @@ interface Props {
 function ReviewCard({ review, onClick }: Props) {
   return (
     <>
-      <Card className="relative mx-auto w-[240px] aspect-[2/3] pt-0 flex flex-col overflow-hidden my-4">
+      <Card className="relative mx-auto w-[240px] aspect-[2/3] pt-0 flex flex-col overflow-hidden my-4 transition hover:-translate-y-2 hover:shadow-2xl duration-300">
         <div onClick={onClick} className="flex-1 bg-gray-600 flex items-center justify-center cursor-pointer">
           <img
             src={`https://image.tmdb.org/t/p/w500${review.posterPath}`}
