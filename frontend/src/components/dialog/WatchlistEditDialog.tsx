@@ -158,7 +158,9 @@ function WatchlistEditDialog (props: Props) {
     <Dialog open={props.isOpen} onOpenChange={() => props.onOpenChange(false)}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{props.mode === "edit" ? "編集" : "作成"}</DialogTitle>
+          <DialogTitle className="text-center text-lg">
+            {props.mode === "edit" ? "編集" : "作成"}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
