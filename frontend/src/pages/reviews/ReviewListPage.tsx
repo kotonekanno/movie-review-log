@@ -180,30 +180,34 @@ function ReviewListPage() {
         </PaginationContent>
       </Pagination>
 
-      <div className="grid grid-cols-4 gap-4">
-        {loading
-          ? (
-            Array.from({ length: 8 }).map((_, idx) => (
+      {loading
+        ? (
+          <div className="grid grid-cols-4 gap-4">
+            {Array.from({ length: 8 }).map((_, idx) => (
               <div key={idx} className="space-y-2">
                 <ReviewCardSkeleton key={idx} />
               </div>
-            ))
-          )
-          : reviews.length === 0
+            ))}
+          </div>
+        )
+        : (
+          reviews.length === 0
             ? (
-              <p className="text-center text-gray-500">レビューがありません</p>
+              <p className="text-center text-gray-500 mt-6">レビューがありません</p>
             )
             : (
-              reviews.map((r, idx) => (
-                <ReviewCard
-                  key={idx}
-                  review={r}
-                  onClick={() => navigate(`/reviews/${r.reviewId}`)}
-                />
-              ))
+              <div className="grid grid-cols-4 gap-4">
+                {reviews.map((r, idx) => (
+                  <ReviewCard
+                    key={idx}
+                    review={r}
+                    onClick={() => navigate(`/reviews/${r.reviewId}`)}
+                  />
+                ))}
+              </div>
             )
-        }
-      </div>
+        )
+      }
 
       <AddButton onClick={() => navigate("/reviews/edit")} />
     </div>
