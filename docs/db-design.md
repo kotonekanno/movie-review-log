@@ -37,7 +37,7 @@ erDiagram
         INT movie_id
         TIMESTAMP expires_at
         TEXT[] genres
-        TEXT[] production_countries
+        VARCHAR(2)[] production_countries
         INT release_year
         INT runtime
     }
@@ -110,7 +110,7 @@ erDiagram
 | movie_id             | INT          | 映画ID         |
 | expires_at           | TIMESTAMP    | 最終利用日時   |
 | genres               | TEXT[]       | ジャンル       |
-| production_countries | TEXT[]       | 製作国         |
+| production_countries | VARCHAR(2)[] | 製作国（ISO国名コード）         |
 | release_year         | INT          | 公開年         |
 | runtime              | INT          | 上映時間       |
 

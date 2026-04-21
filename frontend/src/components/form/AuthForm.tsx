@@ -62,7 +62,7 @@ function AuthForm({ onSubmit, upperButtonText, bottomButtonText, bottomHref }: P
             </div>
           </div>
 
-          <CardFooter className="flex-col gap-2">
+          <CardFooter className="flex-col gap-2 mt-6">
             <Button type="submit" className="w-full">
               {upperButtonText}
             </Button>

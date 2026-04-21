@@ -1,3 +1,6 @@
+import { countryMap } from "@/constants/countries";
+
+type CountryCode = keyof typeof countryMap;
 export interface Movie {
   tmdbId: number;
   jaTitle: string;
@@ -11,7 +14,7 @@ export interface MovieDetails {
   originalTitle: string;
   posterPath: string;
   genres: Array<string>;
-  productionCountries: Array<string>;
+  productionCountries: Array<CountryCode>;
   releaseYear: number;
   runtime: number;
 }
