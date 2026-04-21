@@ -71,7 +71,7 @@ function MainLayout() {
 
       <footer className="w-full bg-gray-100 text-gray-700">
         <div className="w-[72rem] mx-auto p-4 text-center">
-          © 2026 映画記録 v1.4.0
+          © 2026 映画記録 v1.5.0
         </div>
       </footer>
 
