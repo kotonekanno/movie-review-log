@@ -131,9 +131,9 @@ function WatchlistEditDialog (props: Props) {
 
   return (
     <Dialog open={props.isOpen} onOpenChange={() => props.onOpenChange(false)}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle className="text-center text-lg">
+          <DialogTitle className="text-center text-xl">
             {props.mode === "edit" ? "編集" : "作成"}
           </DialogTitle>
         </DialogHeader>
@@ -153,7 +153,12 @@ function WatchlistEditDialog (props: Props) {
             </Field>
 
             <Field>
-              <Label>優先度</Label>
+              <Label
+                className="text-lg justify-center pb-2"
+                style={{ fontFamily: "kaisotai" }}
+              >
+                優先度
+              </Label>
               <div className="flex justify-center">
                 <Slider
                   value={[priority]}
@@ -168,7 +173,12 @@ function WatchlistEditDialog (props: Props) {
             </Field>
 
             <Field>
-              <Label>メモ</Label>
+              <Label
+                className="text-lg justify-center"
+                style={{ fontFamily: "kaisotai" }}
+              >
+                メモ
+              </Label>
               <Textarea
                 value={note}
                 onChange={e => setNote(e.target.value)}

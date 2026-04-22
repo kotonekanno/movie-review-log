@@ -12,7 +12,7 @@ function MovieDetailsCardForWatchlist({ movie }: Props) {
   return (
     <Card className="p-6">
       <CardContent className="flex gap-6 p-0">
-        <div className="w-[220px] shrink-0">
+        <div className="w-[110px] shrink-0">
           <img
             src={POSTER_BASE_URL + movie!.posterPath}
             alt="poster"
@@ -21,11 +21,11 @@ function MovieDetailsCardForWatchlist({ movie }: Props) {
         </div>
 
         <div className="flex flex-col gap-2 justify-start">
-          <p className="text-3xl font-bold leading-tight">
+          <p className="text-xl font-bold leading-tight">
             {movie? movie.jaTitle : "不明なタイトル"}
           </p>
 
-          <p className="text-xl text-muted-foreground">
+          <p className="text-lg text-muted-foreground">
             {movie? movie.originalTitle : "不明なタイトル"}
           </p>
 

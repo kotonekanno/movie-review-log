@@ -50,13 +50,13 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="w-full max-w-xl h-[90vh] flex flex-col">
+      <DialogContent className="w-full max-w-none sm:max-w-lg h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-xl text-center">映画検索</DialogTitle>
         </DialogHeader>
 
-        <div className="flex gap-2 mb-4">
-          <InputGroup className="max-w-xs">
+        <div className="flex gap-2 mb-4 mx-4">
+          <InputGroup className="w-full">
             <InputGroupInput
               value={query}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setQuery(e.target.value)}}
@@ -77,7 +77,7 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
         <div className="flex-1 overflow-y-auto">
           {loading ? (
             <div className="flex justify-center items-center h-full">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
             </div>
           ) : hasSearched && movies.length === 0 ? (
             <p className="text-center text-muted-foreground mt-8">
