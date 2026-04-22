@@ -9,7 +9,6 @@ import com.kotonekanno.movielog.exception.custom.NotFoundException;
 import com.kotonekanno.movielog.dto.watchlist.WatchlistForm;
 import com.kotonekanno.movielog.repository.UserRepository;
 import com.kotonekanno.movielog.repository.WatchlistItemRepository;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

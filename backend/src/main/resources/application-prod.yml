@@ -12,3 +12,7 @@ server:
       cookie:
         same-site: none
         secure: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}

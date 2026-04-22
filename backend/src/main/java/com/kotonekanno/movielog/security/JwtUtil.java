@@ -32,13 +32,13 @@ public class JwtUtil {
         .compact();
   }
 
-  public String extractUserId(String token) {
-    return Jwts.parserBuilder()
+  public Integer extractUserId(String token) {
+    return Integer.parseInt(Jwts.parserBuilder()
         .setSigningKey(getKey())
         .build()
         .parseClaimsJws(token)
         .getBody()
-        .getSubject();
+        .getSubject());
   }
 
   public boolean validate(String token) {

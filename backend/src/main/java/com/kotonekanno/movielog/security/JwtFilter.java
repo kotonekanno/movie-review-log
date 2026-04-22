@@ -32,11 +32,12 @@ public class JwtFilter extends OncePerRequestFilter {
     if (header != null && header.startsWith("Bearer ")) {
       String token = header.substring(7);
 
-      System.out.println("token valid = " + jwtUtil.validate(token));
-      System.out.println("auth = " + SecurityContextHolder.getContext().getAuthentication());
+      boolean valid = jwtUtil.validate(token);
+      System.out.println("token valid = " + valid);
 
-      if (jwtUtil.validate(token)) {
-        String userId = jwtUtil.extractUserId(token);
+      if (valid && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+        Integer userId = jwtUtil.extractUserId(token);
 
         var auth = new UsernamePasswordAuthenticationToken(
             userId,
