@@ -48,8 +48,11 @@ public class AuthController {
   // returns 200 OK
   @GetMapping("/me")
   public ResponseEntity<Void> getCurrentUser(
-      @AuthenticationPrincipal UserDetails user
+      @AuthenticationPrincipal Integer userId
   ) {
+    if (userId == null) {
+      return ResponseEntity.status(401).build();
+    }
     return ResponseEntity.ok().build();
   }
 }
