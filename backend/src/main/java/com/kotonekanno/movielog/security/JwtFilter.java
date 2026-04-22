@@ -33,7 +33,6 @@ public class JwtFilter extends OncePerRequestFilter {
       String token = header.substring(7);
 
       boolean valid = jwtUtil.validate(token);
-      System.out.println("token valid = " + valid);
 
       if (valid && SecurityContextHolder.getContext().getAuthentication() == null) {
 

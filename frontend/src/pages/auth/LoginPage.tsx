@@ -7,8 +7,8 @@ import { toast } from "sonner";
 
 import AuthForm from "@/components/form/AuthForm";
 import LoadingOverlay from "@/components/others/LoadingOverlay";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { login } from "@/api/auth";
+import { ApiError } from "@/errors/ApiError";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -16,37 +16,27 @@ function LoginPage() {
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleLogin = async ({ email, password }: AuthFormValues) => {
+  const handleLogin = async (form: AuthFormValues) => {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
+      const token = await login(form);
 
-      if (res.status === 200) {
-        const data = await res.json();
-        const token = data.token;
+      localStorage.setItem("token", token);
 
-        localStorage.setItem("token", token);
-
-        navigate("/");
-      } else if (res.status === 401) {
-        toast.error("パスワードが一致しません");
-      } else if (res.status === 404) {
-        toast.error("アカウントが見つかりません");
+      navigate("/");
+    } catch (e) {
+      if (e instanceof ApiError) {
+        if (e.status === 401) {
+          toast.error("パスワードが一致しません");
+        } else if (e.status === 404) {
+          toast.error("アカウントが見つかりません");
+        } else {
+          toast.error("ログインに失敗しました");
+        }
       } else {
         toast.error("ログインに失敗しました");
       }
-    } catch (e) {
-      toast.error("ログインに失敗しました");
     } finally {
       setLoading(false);
     }

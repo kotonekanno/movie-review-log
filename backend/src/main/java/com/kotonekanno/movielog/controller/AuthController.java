@@ -25,11 +25,8 @@ public class AuthController {
   // Register
   // returns 201 Created
   @PostMapping("/register")
-  public ResponseEntity<Map<String, Integer>> register(
-      @RequestParam String email,
-      @RequestParam String password
-  ) {
-    User user = authService.register(email, password);
+  public ResponseEntity<Map<String, Integer>> register(@RequestBody LoginRequest request) {
+    User user = authService.register(request.email(), request.password());
     return ResponseEntity.status(201)
         .body(Map.of("userId", user.getId()));
   }

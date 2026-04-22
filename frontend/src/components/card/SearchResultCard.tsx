@@ -1,7 +1,7 @@
-import type { Movie } from "@/types/movie";
+import type { MovieOverview } from "@/types/movie";
 
 interface Props {
-  movie: Movie;
+  movie: MovieOverview;
   onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 

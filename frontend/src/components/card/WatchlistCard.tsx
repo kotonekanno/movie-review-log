@@ -19,8 +19,8 @@ import {
 
 import WatchlistEditDialog from "@/components/dialog/WatchlistEditDialog";
 import { toast } from "sonner";
+import { updateIsWatched } from "@/api/watchlist";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const POSTER_BASE_URL = import.meta.env.VITE_POSTER_BASE_URL;
 
 interface Props {
@@ -38,25 +38,7 @@ function WatchlistCard({ item, onSuccess }: Props) {
     setIsWatched(value);
 
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await fetch(`${API_BASE_URL}/watchlist`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          watchlistId: item.watchlistId,
-          isWatched: value,
-        }),
-      });
-
-      if (res.status === 204) {
-        return;
-      } else {
-        toast.error("更新できませんでした");
-      }
+      await updateIsWatched(item.watchlistId, value);
     } catch(e) {
       toast.error("更新できませんでした");
     }

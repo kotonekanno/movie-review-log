@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 
 import LoadingOverlay from "@/components/others/LoadingOverlay";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { me } from "@/api/auth";
 
 function ProtectedLayout() {
   const [loading, setLoading] = useState(true);
@@ -17,16 +16,17 @@ function ProtectedLayout() {
       return;
     }
 
-    fetch(`${API_BASE_URL}/auth/me`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => {
-        if (res.ok) setIsAuthenticated(true);
+    me()
+      .then(() => {
+        setIsAuthenticated(true);
       })
-      .finally(() => setLoading(false));
+      .catch(() => {
+        localStorage.removeItem("token");
+        setIsAuthenticated(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   if (loading) return <LoadingOverlay open={true}/>;

@@ -26,11 +26,10 @@ import { ArrowUp, ArrowDown } from "lucide-react";
 import ReviewCard from "@/components/card/ReviewCard";
 import AddButton from "@/components/button/AddButton";
 import ReviewCardSkeleton from "@/components/skeleton/ReviewCardSkeleton";
+import { getReviewList } from "@/api/reviews";
 
 type SortKey = "jaTitle" | "releaseYear" | "createdAt" | "updatedAt" | "score" | "watchedAt";
 type Order = "ASC" | "DESC";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ReviewListPage() {
   const navigate = useNavigate();
@@ -63,23 +62,10 @@ function ReviewListPage() {
   const fetchReviews = async (page: number, sortKey: SortKey, order: Order) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      const data: ReviewListResponse = await getReviewList(page, sortKey, order);
 
-      const res: Response = await fetch(`${API_BASE_URL}/reviews?page=${page}&sort=${sortKey}&order=${order}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (res.status === 200) {
-        const data: ReviewListResponse = await res.json();
         setReviews(data.reviews);
         setTotalPages(data.totalPages);
-      } else {
-        toast.error("レビュー一覧の取得に失敗しました");
-      }
     } catch (e) {
       toast.error("レビュー一覧の取得に失敗しました");
     } finally {

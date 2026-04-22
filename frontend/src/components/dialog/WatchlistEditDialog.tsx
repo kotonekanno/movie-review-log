@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
-import type { Movie, MovieDetails } from "@/types/movie";
-import type { WatchlistFormValues, CreateWatchlistResponse, WatchlistItem } from "@/types/watchlist";
+import type { MovieOverview, MovieDetails } from "@/types/movie";
+import type { WatchlistFormValues, WatchlistItem } from "@/types/watchlist";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +23,8 @@ import { toast } from "sonner";
 
 import MovieDetailsCardForWatchlist from "@/components/card/MovieDetailsCardForWatchlist";
 import MovieDetailsCardForWatchlistSkeleton from "@/components/skeleton/MovieDetailsCardForWatchlistSkeleton";
+import { createWatchlistItem, editWatchlistItem } from "@/api/watchlist";
+import { getMovieDetails } from "@/api/movie";
 
 type Props =
   | {
@@ -39,8 +41,6 @@ type Props =
       prevItem: WatchlistItem;
     };
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 function WatchlistEditDialog (props: Props) {
   const [tmdbId, setTmdbId] = useState<number>();
   const [movie, setMovie] = useState<MovieDetails>();
@@ -49,52 +49,31 @@ function WatchlistEditDialog (props: Props) {
   const [loading, setLoading] = useState<boolean>(false);
 
   const onSubmit = async (item: WatchlistFormValues) => {
-    try {
-      const token = localStorage.getItem("token");
+    if (props.mode === "edit") {
+      const patchData: Partial<WatchlistFormValues> = {};
+      if (item.priority !== props.prevItem.priority) patchData.priority = item.priority;
+      if (item.note !== props.prevItem.note) patchData.note = item.note;
+      if (item.tmdbId !== props.prevItem.movie.tmdbId) patchData.tmdbId = item.tmdbId;
 
-      if (props.mode === "edit") {
-        const patchData: Partial<WatchlistFormValues> = {};
-        if (item.priority !== props.prevItem.priority) patchData.priority = item.priority;
-        if (item.note !== props.prevItem.note) patchData.note = item.note;
-        if (item.tmdbId !== props.prevItem.movie.tmdbId) patchData.tmdbId = item.tmdbId;
+      try {
+        await editWatchlistItem(props.prevItem.watchlistId, patchData);
 
-        const res: Response = await fetch(`${API_BASE_URL}/watchlist/${props.prevItem.watchlistId}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(patchData),
-        });
-
-        if (res.status === 204) {
-          props.onSuccess();
-          props.onOpenChange(false);
-          toast.success("更新しました");
-        } else {
-          toast.error("更新できませんでした");
-        }
-      } else {
-        const res: Response = await fetch(`${API_BASE_URL}/watchlist`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(item),
-        });
-
-        if (res.status === 201) {
-          props.onSuccess();
-          props.onOpenChange(false);
-        } else if (res.status === 409) {
-          toast.warning("この作品は既にウォッチリストにあります");
-        } else {
-          toast.error("追加できませんでした");
-        }
+        props.onSuccess();
+        props.onOpenChange(false);
+        toast.success("更新しました");
+      } catch {
+        toast.error("更新できませんでした");
       }
-    } catch (e) {
-      toast.error("追加できませんでした");
+    } else {
+      try {
+        await createWatchlistItem(item);
+
+        toast.success("ウォッチリストに追加しました");
+        props.onSuccess();
+        props.onOpenChange(false);
+      } catch {
+        toast.warning("この作品は既にウォッチリストにあります");
+      }
     }
   };
 
@@ -110,24 +89,11 @@ function WatchlistEditDialog (props: Props) {
   const fetchMovieDetails = async (tmdbId: number) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      const data: MovieDetails = await getMovieDetails(tmdbId);
 
-      const res = await fetch(`${API_BASE_URL}/movies/${tmdbId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (res.ok) {
-        const data: MovieDetails = await res.json();
-        setMovie(data);
-        setTmdbId(data.tmdbId);
-      } else {
-        toast.error("情報の取得に失敗しました");
-      }
-    } catch (e) {
+      setMovie(data);
+      setTmdbId(data.tmdbId);
+    } catch {
       toast.error("情報の取得に失敗しました");
     } finally {
       setLoading(false);
@@ -176,7 +142,7 @@ function WatchlistEditDialog (props: Props) {
           <FieldGroup>
             <Field>
               <MovieSearchDialog
-                onSelectMovie={(movie: Movie) => setTmdbId(movie.tmdbId)}
+                onSelectMovie={(movie: MovieOverview) => setTmdbId(movie.tmdbId)}
               />
 
               {loading

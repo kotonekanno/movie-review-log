@@ -1,5 +1,6 @@
 package com.kotonekanno.movielog.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.*;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,14 +25,20 @@ public class SecurityConfig {
 
     return http
         .csrf(csrf -> csrf.disable())
-        
         .logout(logout -> logout.disable())
-
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers("/auth/login", "/auth/register").permitAll()
             .anyRequest().authenticated()
+        )
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint((req, res, authException) -> {
+              res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            })
+            .accessDeniedHandler((req, res, accessDeniedException) -> {
+              res.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+            })
         )
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
