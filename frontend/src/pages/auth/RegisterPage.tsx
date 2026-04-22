@@ -19,7 +19,7 @@ function RegisterPage() {
     setLoading(true);
     
     try {
-      const res: Response = await fetch(`${API_BASE_URL}/register`, {
+      const res: Response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ email, password })

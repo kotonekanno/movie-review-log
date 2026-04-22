@@ -56,11 +56,14 @@ function ReviewForm(props: ReviewFormProps) {
   const fetchMovieDetails = async (tmdbId: number) => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("token");
 
       const res: Response = await fetch(`${API_BASE_URL}/movies/${tmdbId}`, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (res.ok) {

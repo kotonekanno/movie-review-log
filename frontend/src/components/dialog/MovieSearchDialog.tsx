@@ -32,11 +32,14 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
   const handleSearch = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("token");
 
       const res: Response = await fetch(`${API_BASE_URL}/movies?query=${encodeURIComponent(query)}`, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (res.ok) {

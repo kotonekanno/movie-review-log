@@ -45,9 +45,9 @@ public class ReviewService {
 
   // Create a review
   @Transactional
-  public Integer create(UserDetails userDetails, ReviewForm form) {
+  public Integer create(Integer userId, ReviewForm form) {
     Review review = new Review();
-    User user = userRepository.findByEmail(userDetails.getUsername())
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found"));
 
     review.setUser(user);
@@ -62,12 +62,12 @@ public class ReviewService {
   // Get a list of reviews
   @Transactional(readOnly = true)
   public ReviewListResponse getAll(
-      UserDetails userDetails,
+      Integer userId,
       int page,
       ReviewSort sort,
       Sort.Direction order
   ) {
-    User user = userRepository.findByEmail(userDetails.getUsername())
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found"));
 
     int pageSize = 12;
@@ -90,8 +90,8 @@ public class ReviewService {
   // Get details of a review
   // needs verification
   @Transactional(readOnly = true)
-  public ReviewDetailsResponse getDetails(UserDetails userDetails, Integer reviewId) {
-    User user = userRepository.findByEmail(userDetails.getUsername())
+  public ReviewDetailsResponse getDetails(Integer userId, Integer reviewId) {
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found"));
 
     Review review = reviewRepository
@@ -116,8 +116,8 @@ public class ReviewService {
   // Update a review
   // needs verification
   @Transactional
-  public void update(UserDetails userDetails, Integer reviewId, ReviewForm form) {
-    User user = userRepository.findByEmail(userDetails.getUsername())
+  public void update(Integer userId, Integer reviewId, ReviewForm form) {
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found"));
     Review review = reviewRepository.findById(reviewId)
         .orElseThrow(() -> new NotFoundException("Review not found"));
@@ -146,8 +146,8 @@ public class ReviewService {
   // Delete a review
   // needs verification
   @Transactional
-  public void delete(UserDetails userDetails, Integer reviewId) {
-    User user = userRepository.findByEmail(userDetails.getUsername())
+  public void delete(Integer userId, Integer reviewId) {
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found"));
     Review review = reviewRepository
         .findById(reviewId)

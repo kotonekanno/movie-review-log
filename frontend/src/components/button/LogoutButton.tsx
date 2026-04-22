@@ -10,12 +10,19 @@ function LogoutButton() {
   
   const handleLogout: () => Promise<void> = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/logout`, {
+      const token = localStorage.getItem("token");
+      
+      const res = await fetch(`${API_BASE_URL}/auth/logout`, {
         method: "POST",
-        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (res.status === 204) {
+        localStorage.removeItem("token");
+
+        toast.success("ログアウトしました");
         navigate("/login");
       } else {
         toast.error("ログアウトに失敗しました");

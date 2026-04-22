@@ -63,13 +63,14 @@ function ReviewListPage() {
   const fetchReviews = async (page: number, sortKey: SortKey, order: Order) => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("token");
 
       const res: Response = await fetch(`${API_BASE_URL}/reviews?page=${page}&sort=${sortKey}&order=${order}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        credentials: "include"
       });
 
       if (res.status === 200) {

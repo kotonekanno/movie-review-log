@@ -50,17 +50,21 @@ function WatchlistEditDialog (props: Props) {
 
   const onSubmit = async (item: WatchlistFormValues) => {
     try {
+      const token = localStorage.getItem("token");
+
       if (props.mode === "edit") {
-      const patchData: Partial<WatchlistFormValues> = {};
-      if (item.priority !== props.prevItem.priority) patchData.priority = item.priority;
-      if (item.note !== props.prevItem.note) patchData.note = item.note;
-      if (item.tmdbId !== props.prevItem.movie.tmdbId) patchData.tmdbId = item.tmdbId;
+        const patchData: Partial<WatchlistFormValues> = {};
+        if (item.priority !== props.prevItem.priority) patchData.priority = item.priority;
+        if (item.note !== props.prevItem.note) patchData.note = item.note;
+        if (item.tmdbId !== props.prevItem.movie.tmdbId) patchData.tmdbId = item.tmdbId;
 
         const res: Response = await fetch(`${API_BASE_URL}/watchlist/${props.prevItem.watchlistId}`, {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify(patchData),
-          credentials: "include",
         });
 
         if (res.status === 204) {
@@ -73,9 +77,11 @@ function WatchlistEditDialog (props: Props) {
       } else {
         const res: Response = await fetch(`${API_BASE_URL}/watchlist`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify(item),
-          credentials: "include",
         });
 
         if (res.status === 201) {
@@ -101,58 +107,61 @@ function WatchlistEditDialog (props: Props) {
       onSubmit({ tmdbId, note, priority });
     };
 
-    const fetchMovieDetails = async (tmdbId: number) => {
-      try {
-        setLoading(true);
+  const fetchMovieDetails = async (tmdbId: number) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
 
-        const res = await fetch(`${API_BASE_URL}/movies/${tmdbId}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        });
+      const res = await fetch(`${API_BASE_URL}/movies/${tmdbId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        if (res.ok) {
-          const data: MovieDetails = await res.json();
-          setMovie(data);
-          setTmdbId(data.tmdbId);
-        } else {
-          toast.error("情報の取得に失敗しました");
-        }
-      } catch (e) {
-        toast.error("情報の取得に失敗しました");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    useEffect(() => {
-      if (tmdbId !== undefined) {
-        fetchMovieDetails(tmdbId);
-      }
-    }, [tmdbId]);
-
-    useEffect(() => {
-      if (props.mode === "edit" && props.prevItem) {
-        setTmdbId(props.prevItem.movie.tmdbId);
-        setPriority(props.prevItem.priority);
-        setNote(props.prevItem.note);
-        setMovie({
-          tmdbId: props.prevItem.movie.tmdbId,
-          jaTitle: props.prevItem.movie.jaTitle,
-          originalTitle: props.prevItem.movie.originalTitle,
-          posterPath: props.prevItem.movie.posterPath,
-          genres: props.prevItem.movie.genres,
-          productionCountries: props.prevItem.movie.productionCountries,
-          releaseYear: props.prevItem.movie.releaseYear,
-          runtime: props.prevItem.movie.runtime,
-        })
+      if (res.ok) {
+        const data: MovieDetails = await res.json();
+        setMovie(data);
+        setTmdbId(data.tmdbId);
       } else {
-        setPriority(50);
-        setNote("");
-        setTmdbId(undefined);
-        setMovie(undefined);
+        toast.error("情報の取得に失敗しました");
       }
-    }, [props.mode, props.mode === "edit" ? props.prevItem : null]);
+    } catch (e) {
+      toast.error("情報の取得に失敗しました");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (tmdbId !== undefined) {
+      fetchMovieDetails(tmdbId);
+    }
+  }, [tmdbId]);
+
+  useEffect(() => {
+    if (props.mode === "edit" && props.prevItem) {
+      setTmdbId(props.prevItem.movie.tmdbId);
+      setPriority(props.prevItem.priority);
+      setNote(props.prevItem.note);
+      setMovie({
+        tmdbId: props.prevItem.movie.tmdbId,
+        jaTitle: props.prevItem.movie.jaTitle,
+        originalTitle: props.prevItem.movie.originalTitle,
+        posterPath: props.prevItem.movie.posterPath,
+        genres: props.prevItem.movie.genres,
+        productionCountries: props.prevItem.movie.productionCountries,
+        releaseYear: props.prevItem.movie.releaseYear,
+        runtime: props.prevItem.movie.runtime,
+      })
+    } else {
+      setPriority(50);
+      setNote("");
+      setTmdbId(undefined);
+      setMovie(undefined);
+    }
+  }, [props.mode, props.mode === "edit" ? props.prevItem : null]);
 
   return (
     <Dialog open={props.isOpen} onOpenChange={() => props.onOpenChange(false)}>

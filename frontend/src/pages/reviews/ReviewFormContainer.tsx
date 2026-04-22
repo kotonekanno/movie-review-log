@@ -24,6 +24,8 @@ function ReviewFormContainer(props: Props) {
 
   const handleSubmit = async (review: ReviewFormValues) => {
     try {
+      const token = localStorage.getItem("token");
+
       if (props.mode === "edit") {
         const payload: Partial<ReviewFormValues> = {};
         if (review.tmdbId !== prevReview?.tmdbId) payload.tmdbId = review.tmdbId;
@@ -33,9 +35,11 @@ function ReviewFormContainer(props: Props) {
 
         const res = await fetch(`${API_BASE_URL}/reviews/${props.reviewId}`, {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify(payload),
-          credentials: "include",
         });
 
         if (res.status === 204) {
@@ -47,9 +51,11 @@ function ReviewFormContainer(props: Props) {
       } else {
         const res = await fetch(`${API_BASE_URL}/reviews`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify(review),
-          credentials: "include",
         });
         
         if (res.status === 201) {
@@ -70,11 +76,14 @@ function ReviewFormContainer(props: Props) {
     const fetchReview = async () => {
       try {
         setLoading(true);
+        const token = localStorage.getItem("token");
 
         const res = await fetch(`${API_BASE_URL}/reviews/${props.reviewId}`, {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (res.status !== 200) {

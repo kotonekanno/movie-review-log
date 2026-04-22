@@ -38,14 +38,18 @@ function WatchlistCard({ item, onSuccess }: Props) {
     setIsWatched(value);
 
     try {
+      const token = localStorage.getItem("token");
+
       const res = await fetch(`${API_BASE_URL}/watchlist`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           watchlistId: item.watchlistId,
           isWatched: value,
         }),
-        credentials: "include",
       });
 
       if (res.status === 204) {

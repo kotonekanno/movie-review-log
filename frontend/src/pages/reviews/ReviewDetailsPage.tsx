@@ -34,11 +34,14 @@ function ReviewDetailsPage() {
   const fetchReview = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("token");
 
       const res = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (res.status === 200) {
@@ -57,10 +60,14 @@ function ReviewDetailsPage() {
 
   const handleDelete = async () => {
     try {
+      const token = localStorage.getItem("token");
+
       const res = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (res.status === 204) {
         navigate("/reviews");

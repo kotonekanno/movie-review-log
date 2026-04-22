@@ -20,21 +20,28 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const params = new URLSearchParams();
-      params.append("username", email);
-      params.append("password", password);
-
-      const res = await fetch(`${API_BASE_URL}/login`, {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
         },
-        body: params,
-        credentials: "include",
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
 
-      if (res.status === 204) {
+      if (res.status === 200) {
+        const data = await res.json();
+        const token = data.token;
+
+        localStorage.setItem("token", token);
+
         navigate("/");
+      } else if (res.status === 401) {
+        toast.error("パスワードが一致しません");
+      } else if (res.status === 404) {
+        toast.error("アカウントが見つかりません");
       } else {
         toast.error("ログインに失敗しました");
       }

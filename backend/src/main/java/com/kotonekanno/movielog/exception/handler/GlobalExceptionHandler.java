@@ -1,9 +1,6 @@
 package com.kotonekanno.movielog.exception.handler;
 
-import com.kotonekanno.movielog.exception.custom.AccessDeniedException;
-import com.kotonekanno.movielog.exception.custom.AlreadyExistsException;
-import com.kotonekanno.movielog.exception.custom.ExternalApiException;
-import com.kotonekanno.movielog.exception.custom.NotFoundException;
+import com.kotonekanno.movielog.exception.custom.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,6 +25,12 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(AccessDeniedException.class)
   public ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException e) {
     return ResponseEntity.status(403)  // Forbidden
+        .body(Map.of("error", e.getMessage()));
+  }
+
+  @ExceptionHandler(InvalidCredentialsException.class)
+  public ResponseEntity<Map<String, String>> handleInvalidCredentialsException(InvalidCredentialsException e) {
+    return ResponseEntity.status(401)  // Unauthorized
         .body(Map.of("error", e.getMessage()));
   }
 

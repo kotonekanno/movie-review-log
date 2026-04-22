@@ -10,9 +10,18 @@ function ProtectedLayout() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/me`, {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    fetch(`${API_BASE_URL}/auth/me`, {
       method: "GET",
-      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then(res => {
         if (res.ok) setIsAuthenticated(true);

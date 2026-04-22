@@ -1,73 +1,44 @@
 package com.kotonekanno.movielog.security;
 
-import com.kotonekanno.movielog.security.CustomUserDetailsService;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-  private final LoginSuccessHandler loginSuccessHandler;
+  private final JwtFilter jwtFilter;
 
-  public SecurityConfig(LoginSuccessHandler loginSuccessHandler) {
-    this.loginSuccessHandler = loginSuccessHandler;
+  public SecurityConfig(JwtFilter jwtFilter) {
+    this.jwtFilter = jwtFilter;
   }
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .cors(Customizer.withDefaults())
-        .csrf(AbstractHttpConfigurer::disable)
+
+    return http
+        .csrf(csrf -> csrf.disable())
+        
+        .logout(logout -> logout.disable())
+
+        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .requestMatchers("/login", "/register", "/error").permitAll()
+            .requestMatchers("/auth/login", "/auth/register").permitAll()
             .anyRequest().authenticated()
         )
-        .exceptionHandling(ex -> ex
-            .authenticationEntryPoint((req, res, e) -> {
-              res.setStatus(401);
-              res.setContentType("application/json");
-              res.getWriter().write("{\"error\":\"Unauthorized\"}");
-            })
-        )
-        .formLogin(form -> form
-            .loginProcessingUrl("/login")
-            .successHandler(loginSuccessHandler)
-        )
-        .logout(logout -> logout
-            .logoutUrl("/logout")
-            .logoutSuccessHandler((req, res, auth) -> {
-              res.setStatus(204);
-            })
-        );
-
-    return http.build();
+        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+        .build();
   }
 
   @Bean
   public BCryptPasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
-  }
-
-  @Bean
-  public AuthenticationManager authenticationManager(HttpSecurity http,
-                                                     CustomUserDetailsService userDetailsService,
-                                                     BCryptPasswordEncoder passwordEncoder) throws Exception {
-    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-    authProvider.setUserDetailsService(userDetailsService);
-    authProvider.setPasswordEncoder(passwordEncoder);
-
-    return new ProviderManager(authProvider);
   }
 }

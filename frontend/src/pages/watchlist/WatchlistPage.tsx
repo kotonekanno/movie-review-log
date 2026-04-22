@@ -21,11 +21,14 @@ function WatchlistPage() {
   const fetchWatchlist = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("token");
 
       const res: Response = await fetch(`${API_BASE_URL}/watchlist`, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (res.status === 200) {
@@ -44,10 +47,14 @@ function WatchlistPage() {
 
   const handleDeleteAll = async () => {
     try {
+      const token = localStorage.getItem("token");
+
       const res: Response = await fetch(`${API_BASE_URL}/watchlist/bulk-delete`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (res.status === 204) {

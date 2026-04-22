@@ -18,7 +18,6 @@ public class CacheCleanupService {
   @Async
   @Transactional
   public void cleanupExpired() {
-    System.out.println("クリーンアップ処理が実行されました");
     movieDetailsRepository.deleteExpired(LocalDateTime.now(), 50);
   }
 }
