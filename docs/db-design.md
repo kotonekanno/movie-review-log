@@ -23,6 +23,7 @@ erDiagram
         TIMESTAMP created_at
         TIMESTAMP deleted_at
         BOOLEAN is_active
+        BOOLEAN is_verified
     }
 
     MOVIES {
@@ -77,6 +78,7 @@ erDiagram
 | created_at     | TIMESTAMP    | アカウント作成日時 |
 | deleted_at     | TIMESTAMP    | アカウント削除日時 |
 | is_active      | BOOLEAN      | アカウントの有効性 |
+| is_verified    | BOOLEAN      | メールアドレス認証の可否 |
 
 - email
     - UNIQUE
@@ -85,6 +87,11 @@ erDiagram
 - is_active
     - DEFAULT FALSE
     - TRUEの場合のみログイン可能
+    - ログインをテストアカウントに制限するため、DBで直接カラムを書き換える方法のみ
+- is_verified
+  - DEFAULT FALSE
+  - TRUEの場合のみログイン可能
+  - メールアドレス認証を完了するとTRUEになる
 
 ## movies
 

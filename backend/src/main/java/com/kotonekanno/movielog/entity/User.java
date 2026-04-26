@@ -31,4 +31,7 @@ public class User {
 
   @Column(name = "is_active", nullable = false)
   private Boolean isActive = false;
+
+  @Column(name = "is_verified", nullable = false)
+  private Boolean isVerified = false;
 }
