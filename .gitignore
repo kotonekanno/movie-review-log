@@ -2,7 +2,7 @@
 # 共通
 # =====================
 .env
-.env.*
+.env.production
 *.log
 .DS_Store
 

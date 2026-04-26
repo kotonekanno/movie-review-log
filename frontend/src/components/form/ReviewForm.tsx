@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import type { ReviewFormValues } from "@/types/review";
-import type { MovieDetails, Movie } from "@/types/movie";
+import type { MovieDetails, MovieOverview } from "@/types/movie";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import MovieSearchDialog from "@/components/dialog/MovieSearchDialog";
 import MovieDetailsCard from "@/components/card/MovieDetailsCard";
 import MovieDetailsCardSkeleton from "@/components/skeleton/MovieDetailsCardSkeleton";
+import { getMovieDetails } from "@/api/movie";
 
 type ReviewFormProps =
   | {
@@ -31,8 +32,6 @@ type ReviewFormProps =
       prevReview: ReviewFormValues;
       prevMovie: MovieDetails;
     };
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ReviewForm(props: ReviewFormProps) {
   const [movie, setMovie] = useState<MovieDetails>();
@@ -57,19 +56,9 @@ function ReviewForm(props: ReviewFormProps) {
     try {
       setLoading(true);
 
-      const res: Response = await fetch(`${API_BASE_URL}/movies/${tmdbId}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-
-      if (res.ok) {
-        const data: MovieDetails = await res.json();
-        setMovie(data);
-        setTmdbId(data.tmdbId);
-      } else {
-        toast.error("情報の取得に失敗しました");
-      }
+      const data: MovieDetails = await getMovieDetails(tmdbId);
+      setMovie(data);
+      setTmdbId(data.tmdbId);
     } catch (e) {
       toast.error("情報の取得に失敗しました");
     } finally {
@@ -91,7 +80,7 @@ function ReviewForm(props: ReviewFormProps) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-[48rem] p-4 mx-auto">
       
       <MovieSearchDialog
-        onSelectMovie={(movie: Movie) => fetchMovieDetails(movie.tmdbId)}
+        onSelectMovie={(movie: MovieOverview) => fetchMovieDetails(movie.tmdbId)}
       />
 
       {loading

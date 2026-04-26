@@ -9,7 +9,6 @@ import com.kotonekanno.movielog.exception.custom.NotFoundException;
 import com.kotonekanno.movielog.dto.watchlist.WatchlistForm;
 import com.kotonekanno.movielog.repository.UserRepository;
 import com.kotonekanno.movielog.repository.WatchlistItemRepository;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +29,8 @@ public class WatchlistService {
 
   // Create a watchlist item
   @Transactional
-  public Integer create(UserDetails userDetails, WatchlistForm form) {
-    User user = userRepository.findByEmail(userDetails.getUsername())
+  public Integer create(Integer userId, WatchlistForm form) {
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found"));
     com.kotonekanno.movielog.entity.WatchlistItem watchlistItem = new com.kotonekanno.movielog.entity.WatchlistItem();
     Long tmdbId = form.getTmdbId();
@@ -50,8 +49,8 @@ public class WatchlistService {
 
   // Get a watchlist
   @Transactional(readOnly = true)
-  public WatchlistResponse getAll(UserDetails userDetails) {
-    User user = userRepository.findByEmail(userDetails.getUsername())
+  public WatchlistResponse getAll(Integer userId) {
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found"));
 
     List<WatchlistItem> items = watchlistItemRepository.findWatchlistItemDTOs(user.getId());
@@ -66,8 +65,8 @@ public class WatchlistService {
   // Update a watchlist item
   // needs verification
   @Transactional
-  public void update(UserDetails userDetails, Integer watchlistId, WatchlistForm form) {
-    User user = userRepository.findByEmail(userDetails.getUsername())
+  public void update(Integer userId, Integer watchlistId, WatchlistForm form) {
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found"));
     com.kotonekanno.movielog.entity.WatchlistItem watchlistItem = watchlistItemRepository.findById(watchlistId)
         .orElseThrow(() -> new NotFoundException("Watchlist item not found"));
@@ -105,8 +104,8 @@ public class WatchlistService {
   // Update isWatched of a watchlist item
   // needs verification
   @Transactional
-  public void updateIsWatched(UserDetails userDetails, Integer watchlistId, boolean isWatched) {
-    User user = userRepository.findByEmail(userDetails.getUsername())
+  public void updateIsWatched(Integer userId, Integer watchlistId, boolean isWatched) {
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found"));
     com.kotonekanno.movielog.entity.WatchlistItem watchlistItem = watchlistItemRepository.findById(watchlistId)
         .orElseThrow(() -> new NotFoundException("Watchlist item not found"));
@@ -121,8 +120,8 @@ public class WatchlistService {
   // Delete a watchlist item
   // needs verification
   @Transactional
-  public void delete(UserDetails userDetails, Integer watchlistId) {
-    User user = userRepository.findByEmail(userDetails.getUsername())
+  public void delete(Integer userId, Integer watchlistId) {
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found"));
     com.kotonekanno.movielog.entity.WatchlistItem watchlistItem = watchlistItemRepository
         .findById(watchlistId)
@@ -137,8 +136,8 @@ public class WatchlistService {
 
   // Delete all watched watchlist items
   @Transactional
-  public void deleteIsWatched(UserDetails userDetails) {
-    User user = userRepository.findByEmail(userDetails.getUsername())
+  public void deleteIsWatched(Integer userId) {
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found"));
 
     watchlistItemRepository.deleteAllWatchedByUserId(user.getId());

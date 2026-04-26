@@ -6,9 +6,18 @@ app:
   frontend-url: ${SPRING_FRONTEND_URL}
   api-key: ${SPRING_API_KEY}
 
+  cookie:
+    secure: true
+    same-site: None
+
 server:
   servlet:
     session:
       cookie:
         same-site: none
         secure: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
+  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}

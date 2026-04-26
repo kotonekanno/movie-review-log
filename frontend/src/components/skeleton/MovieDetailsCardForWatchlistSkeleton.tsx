@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 function MovieDetailsCardForWatchlistSkeleton() {
   return (
     <div className="p-6 flex gap-6">
-      <Skeleton className="w-[220px] aspect-[2/3] rounded-md bg-gray-400 shrink-0" />
+      <Skeleton className="w-[110px] aspect-[2/3] rounded-md bg-gray-400 shrink-0" />
 
       <div className="flex flex-col gap-2 flex-1">
         <Skeleton className="h-6 w-3/4" />

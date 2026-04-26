@@ -1,7 +1,7 @@
 package com.kotonekanno.movielog.service.external;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kotonekanno.movielog.config.AppProperties;
+import com.kotonekanno.movielog.config.properties.TmdbProperties;
 import com.kotonekanno.movielog.dto.external.tmdb.MovieDetailsResponse;
 import com.kotonekanno.movielog.dto.external.tmdb.MovieSearchResponse;
 import okhttp3.OkHttpClient;
@@ -16,12 +16,10 @@ public class TmdbClient {
 
   private final OkHttpClient client = new OkHttpClient();
   private final ObjectMapper mapper = new ObjectMapper();
-  private final AppProperties appProperties;
   private final String apikey;
 
-  public TmdbClient(AppProperties appProperties) {
-    this.appProperties = appProperties;
-    this.apikey = appProperties.getApiKey();
+  public TmdbClient(TmdbProperties tmdbProperties) {
+    this.apikey = tmdbProperties.getApiKey();
   }
 
   public MovieSearchResponse search(String query) throws IOException {

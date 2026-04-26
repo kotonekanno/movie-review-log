@@ -1,5 +1,6 @@
 package com.kotonekanno.movielog.config;
 
+import com.kotonekanno.movielog.config.properties.FrontendProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.cors.CorsConfiguration;
@@ -11,12 +12,10 @@ import java.util.List;
 @Configuration
 public class WebConfig {
 
-  private final AppProperties appProperties;
   private final String frontendUrl;
 
-  public WebConfig(AppProperties appProperties) {
-    this.appProperties = appProperties;
-    this.frontendUrl = appProperties.getFrontendUrl();
+  public WebConfig(FrontendProperties frontendProperties) {
+    this.frontendUrl = frontendProperties.getFrontendUrl();
   }
 
   @Bean

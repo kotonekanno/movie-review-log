@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
-import type { Movie, MovieDetails } from "@/types/movie";
-import type { WatchlistFormValues, CreateWatchlistResponse, WatchlistItem } from "@/types/watchlist";
+import type { MovieOverview, MovieDetails } from "@/types/movie";
+import type { WatchlistFormValues, WatchlistItem } from "@/types/watchlist";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +23,8 @@ import { toast } from "sonner";
 
 import MovieDetailsCardForWatchlist from "@/components/card/MovieDetailsCardForWatchlist";
 import MovieDetailsCardForWatchlistSkeleton from "@/components/skeleton/MovieDetailsCardForWatchlistSkeleton";
+import { createWatchlistItem, editWatchlistItem } from "@/api/watchlist";
+import { getMovieDetails } from "@/api/movie";
 
 type Props =
   | {
@@ -39,8 +41,6 @@ type Props =
       prevItem: WatchlistItem;
     };
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 function WatchlistEditDialog (props: Props) {
   const [tmdbId, setTmdbId] = useState<number>();
   const [movie, setMovie] = useState<MovieDetails>();
@@ -49,46 +49,31 @@ function WatchlistEditDialog (props: Props) {
   const [loading, setLoading] = useState<boolean>(false);
 
   const onSubmit = async (item: WatchlistFormValues) => {
-    try {
-      if (props.mode === "edit") {
+    if (props.mode === "edit") {
       const patchData: Partial<WatchlistFormValues> = {};
       if (item.priority !== props.prevItem.priority) patchData.priority = item.priority;
       if (item.note !== props.prevItem.note) patchData.note = item.note;
       if (item.tmdbId !== props.prevItem.movie.tmdbId) patchData.tmdbId = item.tmdbId;
 
-        const res: Response = await fetch(`${API_BASE_URL}/watchlist/${props.prevItem.watchlistId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(patchData),
-          credentials: "include",
-        });
+      try {
+        await editWatchlistItem(props.prevItem.watchlistId, patchData);
 
-        if (res.status === 204) {
-          props.onSuccess();
-          props.onOpenChange(false);
-          toast.success("更新しました");
-        } else {
-          toast.error("更新できませんでした");
-        }
-      } else {
-        const res: Response = await fetch(`${API_BASE_URL}/watchlist`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(item),
-          credentials: "include",
-        });
-
-        if (res.status === 201) {
-          props.onSuccess();
-          props.onOpenChange(false);
-        } else if (res.status === 409) {
-          toast.warning("この作品は既にウォッチリストにあります");
-        } else {
-          toast.error("追加できませんでした");
-        }
+        props.onSuccess();
+        props.onOpenChange(false);
+        toast.success("更新しました");
+      } catch {
+        toast.error("更新できませんでした");
       }
-    } catch (e) {
-      toast.error("追加できませんでした");
+    } else {
+      try {
+        await createWatchlistItem(item);
+
+        toast.success("ウォッチリストに追加しました");
+        props.onSuccess();
+        props.onOpenChange(false);
+      } catch {
+        toast.warning("この作品は既にウォッチリストにあります");
+      }
     }
   };
 
@@ -101,64 +86,54 @@ function WatchlistEditDialog (props: Props) {
       onSubmit({ tmdbId, note, priority });
     };
 
-    const fetchMovieDetails = async (tmdbId: number) => {
-      try {
-        setLoading(true);
+  const fetchMovieDetails = async (tmdbId: number) => {
+    try {
+      setLoading(true);
+      const data: MovieDetails = await getMovieDetails(tmdbId);
 
-        const res = await fetch(`${API_BASE_URL}/movies/${tmdbId}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        });
+      setMovie(data);
+      setTmdbId(data.tmdbId);
+    } catch {
+      toast.error("情報の取得に失敗しました");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        if (res.ok) {
-          const data: MovieDetails = await res.json();
-          setMovie(data);
-          setTmdbId(data.tmdbId);
-        } else {
-          toast.error("情報の取得に失敗しました");
-        }
-      } catch (e) {
-        toast.error("情報の取得に失敗しました");
-      } finally {
-        setLoading(false);
-      }
-    };
+  useEffect(() => {
+    if (tmdbId !== undefined) {
+      fetchMovieDetails(tmdbId);
+    }
+  }, [tmdbId]);
 
-    useEffect(() => {
-      if (tmdbId !== undefined) {
-        fetchMovieDetails(tmdbId);
-      }
-    }, [tmdbId]);
-
-    useEffect(() => {
-      if (props.mode === "edit" && props.prevItem) {
-        setTmdbId(props.prevItem.movie.tmdbId);
-        setPriority(props.prevItem.priority);
-        setNote(props.prevItem.note);
-        setMovie({
-          tmdbId: props.prevItem.movie.tmdbId,
-          jaTitle: props.prevItem.movie.jaTitle,
-          originalTitle: props.prevItem.movie.originalTitle,
-          posterPath: props.prevItem.movie.posterPath,
-          genres: props.prevItem.movie.genres,
-          productionCountries: props.prevItem.movie.productionCountries,
-          releaseYear: props.prevItem.movie.releaseYear,
-          runtime: props.prevItem.movie.runtime,
-        })
-      } else {
-        setPriority(50);
-        setNote("");
-        setTmdbId(undefined);
-        setMovie(undefined);
-      }
-    }, [props.mode, props.mode === "edit" ? props.prevItem : null]);
+  useEffect(() => {
+    if (props.mode === "edit" && props.prevItem) {
+      setTmdbId(props.prevItem.movie.tmdbId);
+      setPriority(props.prevItem.priority);
+      setNote(props.prevItem.note);
+      setMovie({
+        tmdbId: props.prevItem.movie.tmdbId,
+        jaTitle: props.prevItem.movie.jaTitle,
+        originalTitle: props.prevItem.movie.originalTitle,
+        posterPath: props.prevItem.movie.posterPath,
+        genres: props.prevItem.movie.genres,
+        productionCountries: props.prevItem.movie.productionCountries,
+        releaseYear: props.prevItem.movie.releaseYear,
+        runtime: props.prevItem.movie.runtime,
+      })
+    } else {
+      setPriority(50);
+      setNote("");
+      setTmdbId(undefined);
+      setMovie(undefined);
+    }
+  }, [props.mode, props.mode === "edit" ? props.prevItem : null]);
 
   return (
     <Dialog open={props.isOpen} onOpenChange={() => props.onOpenChange(false)}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle className="text-center text-lg">
+          <DialogTitle className="text-center text-xl">
             {props.mode === "edit" ? "編集" : "作成"}
           </DialogTitle>
         </DialogHeader>
@@ -167,7 +142,7 @@ function WatchlistEditDialog (props: Props) {
           <FieldGroup>
             <Field>
               <MovieSearchDialog
-                onSelectMovie={(movie: Movie) => setTmdbId(movie.tmdbId)}
+                onSelectMovie={(movie: MovieOverview) => setTmdbId(movie.tmdbId)}
               />
 
               {loading
@@ -178,7 +153,12 @@ function WatchlistEditDialog (props: Props) {
             </Field>
 
             <Field>
-              <Label>優先度</Label>
+              <Label
+                className="text-lg justify-center pb-2"
+                style={{ fontFamily: "kaisotai" }}
+              >
+                優先度
+              </Label>
               <div className="flex justify-center">
                 <Slider
                   value={[priority]}
@@ -193,7 +173,12 @@ function WatchlistEditDialog (props: Props) {
             </Field>
 
             <Field>
-              <Label>メモ</Label>
+              <Label
+                className="text-lg justify-center"
+                style={{ fontFamily: "kaisotai" }}
+              >
+                メモ
+              </Label>
               <Textarea
                 value={note}
                 onChange={e => setNote(e.target.value)}

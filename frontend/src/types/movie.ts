@@ -1,11 +1,15 @@
 import { countryMap } from "@/constants/countries";
 
 type CountryCode = keyof typeof countryMap;
-export interface Movie {
+export interface MovieOverview {
   tmdbId: number;
   jaTitle: string;
   originalTitle: string;
   posterPath: string;
+}
+
+export interface MovieSearchResult {
+  results: MovieOverview[];
 }
 
 export interface MovieDetails {

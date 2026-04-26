@@ -8,12 +8,11 @@ import ReviewForm from "@/components/form/ReviewForm";
 import { toast } from "sonner";
 
 import ReviewFormSkeleton from "@/components/skeleton/ReviewFormSkeleton";
+import { createReview, getReviewDetails, editReview } from "@/api/reviews";
 
 type Props =
   | { mode: "create" }
   | { mode: "edit"; reviewId: string };
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ReviewFormContainer(props: Props) {
   const navigate = useNavigate();
@@ -23,44 +22,30 @@ function ReviewFormContainer(props: Props) {
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async (review: ReviewFormValues) => {
-    try {
-      if (props.mode === "edit") {
-        const payload: Partial<ReviewFormValues> = {};
-        if (review.tmdbId !== prevReview?.tmdbId) payload.tmdbId = review.tmdbId;
-        if (review.text !== prevReview?.text) payload.text = review.text;
-        if (review.score !== prevReview?.score) payload.score = review.score;
-        if (review.watchedAt !== prevReview?.watchedAt) payload.watchedAt = review.watchedAt;
+    if (props.mode === "edit") {
+      const payload: Partial<ReviewFormValues> = {};
+      if (review.tmdbId !== prevReview?.tmdbId) payload.tmdbId = review.tmdbId;
+      if (review.text !== prevReview?.text) payload.text = review.text;
+      if (review.score !== prevReview?.score) payload.score = review.score;
+      if (review.watchedAt !== prevReview?.watchedAt) payload.watchedAt = review.watchedAt;
 
-        const res = await fetch(`${API_BASE_URL}/reviews/${props.reviewId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-          credentials: "include",
-        });
+      try {
+        await editReview(props.reviewId, payload);
 
-        if (res.status === 204) {
           navigate("/reviews");
           toast.success("レビューを更新しました");
-        } else {
-          toast.error("レビューの更新に失敗しました");
-        }
-      } else {
-        const res = await fetch(`${API_BASE_URL}/reviews`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(review),
-          credentials: "include",
-        });
-        
-        if (res.status === 201) {
-          navigate("/reviews");
-          toast.success("レビューを作成しました");
-        } else {
-          toast.error("レビューの作成に失敗しました");
-        }
+      } catch {
+        toast.error("レビューの更新に失敗しました");
       }
-    } catch (e) {
-      toast.error("エラーが起きました");
+    } else {
+      try {
+        await createReview(review);
+        
+        navigate("/reviews");
+        toast.success("レビューを作成しました");
+      } catch {
+        toast.error("レビューの作成に失敗しました");
+      }
     }
   };
 
@@ -71,19 +56,8 @@ function ReviewFormContainer(props: Props) {
       try {
         setLoading(true);
 
-        const res = await fetch(`${API_BASE_URL}/reviews/${props.reviewId}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        });
+        const data: ReviewDetails = await getReviewDetails(props.reviewId);
 
-        if (res.status !== 200) {
-          toast.error("エラーが起きました");
-          return;
-        }
-
-        const data: ReviewDetails = await res.json();
-        
         setPrevReview({
           tmdbId: data.movie.tmdbId,
           text: data.text,

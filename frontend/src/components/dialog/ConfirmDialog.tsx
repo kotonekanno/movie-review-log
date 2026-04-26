@@ -32,7 +32,7 @@ export default function ConfirmDialog({ title, text, buttonText, rightOnClick, l
 
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle className="text-lg">{title}</DialogTitle>
           <DialogDescription>
             {text}
           </DialogDescription>
