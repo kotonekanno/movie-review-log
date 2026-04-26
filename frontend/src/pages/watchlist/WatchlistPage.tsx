@@ -34,8 +34,6 @@ function WatchlistPage() {
 
   const handleDeleteAll = async () => {
     try {
-      const token = localStorage.getItem("token");
-
       await bulkDeleteWatchlistItems();
 
       toast.success("視聴済み作品を全て削除しました");
