@@ -14,7 +14,7 @@ export async function getWatchlist(): Promise<FetchWatchlistResponse> {
 
   const errorBody = await res.text(); // or json()
 
-  throw new ApiError("GET /watchlist failed)");
+  throw new ApiError("GET /watchlist failed)", res.status);
 }
 
 // ウォッチリストアイテム追加
@@ -28,7 +28,7 @@ export async function createWatchlistItem(item: WatchlistFormValues): Promise<vo
     return;
   }
 
-  throw new ApiError("POST /watchlist failed");
+  throw new ApiError("POST /watchlist failed", res.status);
 }
 
 // ウォッチリストアイテム編集
@@ -42,7 +42,7 @@ export async function editWatchlistItem(watchlistId: number, patchData: Partial<
     return;
   }
 
-  throw new ApiError("PATCH /watchlist/watchlistId failed");
+  throw new ApiError("PATCH /watchlist/watchlistId failed", res.status);
 }
 
 // ウォッチリストアイテムの視聴済みフラグ更新
@@ -59,7 +59,7 @@ export async function updateIsWatched(watchlistId: number, value: boolean): Prom
     return;
   }
 
-  throw new ApiError("PATCH /watchlist failed");
+  throw new ApiError("PATCH /watchlist failed", res.status);
 }
 
 // ウォッチリストアイテム削除（単体）
@@ -72,7 +72,7 @@ export async function deleteWatchlistItem(watchlistId: number): Promise<void> {
     return;
   }
 
-  throw new ApiError("DELETE /watchlist/watchlistItem failed");
+  throw new ApiError("DELETE /watchlist/watchlistItem failed", res.status);
 }
 
 // 視聴済みのウォッチリストアイテム一括削除
@@ -85,5 +85,5 @@ export async function bulkDeleteWatchlistItems(): Promise<void> {
     return;
   }
 
-  throw new ApiError("DELETE /watchlist/bulk-delete failed");
+  throw new ApiError("DELETE /watchlist/bulk-delete failed", res.status);
 }

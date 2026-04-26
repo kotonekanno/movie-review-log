@@ -20,10 +20,7 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const token = await login(form);
-
-      localStorage.setItem("token", token);
-
+      await login(form);
       navigate("/");
     } catch (e) {
       if (e instanceof ApiError) {

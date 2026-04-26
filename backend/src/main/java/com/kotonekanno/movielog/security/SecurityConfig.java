@@ -29,7 +29,7 @@ public class SecurityConfig {
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .requestMatchers("/auth/login", "/auth/register").permitAll()
+            .requestMatchers("/auth/login", "/auth/register", "/auth/refresh").permitAll()
             .anyRequest().authenticated()
         )
         .exceptionHandling(ex -> ex

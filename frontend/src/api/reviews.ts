@@ -12,7 +12,7 @@ export async function getReviewDetails(reviewId: string): Promise<ReviewDetails>
     return res.json();
   }
 
-  throw new ApiError("GET /reviews/reviewId failed");
+  throw new ApiError("GET /reviews/reviewId failed", res.status);
 }
 
 export async function deleteReview(reviewId: string): Promise<void> {
@@ -24,7 +24,7 @@ export async function deleteReview(reviewId: string): Promise<void> {
     return;
   }
 
-  throw new ApiError("DEELTE /reviews/reviewId failed");
+  throw new ApiError("DEELTE /reviews/reviewId failed", res.status);
 }
 
 export async function createReview(review: ReviewFormValues): Promise<void> {
@@ -37,7 +37,7 @@ export async function createReview(review: ReviewFormValues): Promise<void> {
     return;
   }
 
-  throw new ApiError("POST /reviews failed");
+  throw new ApiError("POST /reviews failed", res.status);
 }
 
 export async function editReview(reviewId: string, payload: Partial<ReviewFormValues>): Promise<void> {
@@ -50,7 +50,7 @@ export async function editReview(reviewId: string, payload: Partial<ReviewFormVa
     return;
   }
 
-  throw new ApiError("PATCH /reviews/reviewId failed");
+  throw new ApiError("PATCH /reviews/reviewId failed", res.status);
 }
 
 export async function getReviewList(page: number, sortKey: SortKey, order: Order): Promise<ReviewListResponse> {
@@ -62,5 +62,5 @@ export async function getReviewList(page: number, sortKey: SortKey, order: Order
     return res.json();
   }
 
-  throw new ApiError("GET /reviews failed");
+  throw new ApiError("GET /reviews failed", res.status);
 }

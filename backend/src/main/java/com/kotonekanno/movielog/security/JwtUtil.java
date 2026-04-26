@@ -1,33 +1,48 @@
 package com.kotonekanno.movielog.security;
 
+import com.kotonekanno.movielog.config.properties.JwtProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.security.Key;
 
 @Component
 public class JwtUtil {
 
-  @Value("${jwt.secret}")
-  private String secret;
+  private final String secret;
+  private final long accessTokenExpiration;
+  private final long refreshTokenExpiration;
 
-  @Value("${jwt.expiration}")
-  private long expiration;
+  public JwtUtil(JwtProperties jwtProperties) {
+    this.secret = jwtProperties.getSecret();
+    this.accessTokenExpiration = jwtProperties.getAccessTokenExpiration();
+    this.refreshTokenExpiration = jwtProperties.getRefreshTokenExpiration();
+  }
 
   private Key getKey() {
     return Keys.hmacShaKeyFor(secret.getBytes());
   }
 
-  public String generateToken(Integer userId) {
+  public String generateAccessToken(Integer userId) {
     return Jwts.builder()
         .setSubject(String.valueOf(userId))
+        .claim("type", "access")
         .setIssuedAt(new Date())
-        .setExpiration(new Date(System.currentTimeMillis() + expiration))
+        .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+        .signWith(getKey())
+        .compact();
+  }
+
+  public String generateRefreshToken(Integer userId) {
+    return Jwts.builder()
+        .setSubject(userId.toString())
+        .claim("type", "refresh")
+        .setIssuedAt(new Date())
+        .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
         .signWith(getKey())
         .compact();
   }
@@ -48,5 +63,13 @@ public class JwtUtil {
     } catch (Exception e) {
       return false;
     }
+  }
+
+  public Claims parseToken(String token) {
+    return Jwts.parserBuilder()
+        .setSigningKey(getKey())
+        .build()
+        .parseClaimsJws(token)
+        .getBody();
   }
 }

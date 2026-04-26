@@ -64,8 +64,8 @@ function ReviewListPage() {
       setLoading(true);
       const data: ReviewListResponse = await getReviewList(page, sortKey, order);
 
-        setReviews(data.reviews);
-        setTotalPages(data.totalPages);
+      setReviews(data.reviews);
+      setTotalPages(data.totalPages);
     } catch (e) {
       toast.error("レビュー一覧の取得に失敗しました");
     } finally {

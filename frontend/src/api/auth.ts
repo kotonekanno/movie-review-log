@@ -17,14 +17,14 @@ export async function register(form: AuthFormValues): Promise<void> {
   }
 
   if (res.status === 409) {
-    throw new ApiError("POST /auth/register failed: email already exists");
+    throw new ApiError("POST /auth/register failed: email already exists", res.status);
   }
 
-  throw new ApiError("POST /auth/register failed");
+  throw new ApiError("POST /auth/register failed", res.status);
 }
 
 // ログイン
-export async function login(form: AuthFormValues): Promise<string> {
+export async function login(form: AuthFormValues): Promise<void> {
   const res = await apiClient("/auth/login", {
     method: "POST",
     body: JSON.stringify({
@@ -35,27 +35,33 @@ export async function login(form: AuthFormValues): Promise<string> {
 
   if (res.status === 200) {
     const data: LoginResponse = await res.json();
-    return data.token;
-  } else if (res.status === 401) {
-    throw new ApiError("POST /auth/login failed: invalid credentials");
-  } else if (res.status === 404) {
-    throw new ApiError("POST /auth/login failed: user not found");
+    localStorage.setItem("token", data.accessToken);
+    return;
+  }
+  
+  if (res.status === 401) {
+    throw new ApiError("POST /auth/login failed: invalid credentials", res.status);
+  }
+  
+  if (res.status === 404) {
+    throw new ApiError("POST /auth/login failed: user not found", res.status);
   }
 
-  throw new ApiError("POST /auth/login fail");
+  throw new ApiError("POST /auth/login fail", res.status);
 }
 
 // ログアウト
 export async function logout(): Promise<void> {
   const res = await apiClient("/auth/logout", {
     method: "POST",
-  })
+  });
 
   if (res.status === 204) {
+    localStorage.removeItem("token");
     return;
   }
 
-  throw new ApiError("POST /auth/logout failed");
+  throw new ApiError("POST /auth/logout failed", res.status);
 }
 
 // ログイン済確認
@@ -68,5 +74,5 @@ export async function me(): Promise<void> {
     return;
   }
 
-  throw new ApiError("GET /auth/me failed:");
+  throw new ApiError("GET /auth/me failed", res.status);
 }

@@ -11,7 +11,6 @@ function LogoutButton() {
     try {
       await logout();
 
-      localStorage.removeItem("token");
       toast.success("ログアウトしました");
       navigate("/login");
     } catch (e) {

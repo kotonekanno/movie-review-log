@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, Routes, Route } from "react-router-dom";
 
 import MainLayout from "@/layout/MainLayout";
 import ProtectedLayout from "@/layout/ProtectedLayout";
@@ -11,14 +12,25 @@ import ReviewCreatePage from "@/pages/reviews/ReviewCreatePage";
 import ReviewEditPage from "@/pages/reviews/ReviewEditPage";
 import ReviewDetailsPage from "@/pages/reviews/ReviewDetailsPage";
 import WatchlistPage from "@/pages/watchlist/WatchlistPage";
-import { Toaster } from "sonner";
+import { toast, Toaster } from "sonner";
 
 function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handler = () => {
+      toast.error("ログインし直してください");
+      navigate("/login");
+    };
+
+    window.addEventListener("auth:logout", handler);
+    return () => window.removeEventListener("auth:logout", handler);
+  }, [navigate]);
+
   return (
     <>
       <Toaster position="top-center" />
 
-      <BrowserRouter>
         <Routes>
 
           <Route element={<MainLayout />}>
@@ -36,7 +48,6 @@ function App() {
           </Route>
 
         </Routes>
-      </BrowserRouter>
     </>
   )
 }

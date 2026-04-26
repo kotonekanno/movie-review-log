@@ -1,5 +1,6 @@
 package com.kotonekanno.movielog.service.application;
 
+import com.kotonekanno.movielog.dto.auth.LoginResponse;
 import com.kotonekanno.movielog.entity.User;
 import com.kotonekanno.movielog.exception.custom.AlreadyExistsException;
 import com.kotonekanno.movielog.exception.custom.InvalidCredentialsException;
@@ -7,6 +8,9 @@ import com.kotonekanno.movielog.exception.custom.NotFoundException;
 import com.kotonekanno.movielog.repository.UserRepository;
 import com.kotonekanno.movielog.security.JwtUtil;
 import com.kotonekanno.movielog.service.maintenance.CacheCleanupService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +53,7 @@ public class AuthService {
   }
 
   // Log in
-  public String login(String email, String password) {
+  public LoginResponse login(String email, String password) {
 
     User user = userRepository.findByEmail(email)
         .orElseThrow(() -> new NotFoundException("User not found"));
@@ -66,6 +70,40 @@ public class AuthService {
       cacheCleanupService.cleanupExpired();
     }
 
-    return jwtUtil.generateToken(user.getId());
+    String accessToken = jwtUtil.generateAccessToken(user.getId());
+    String refreshToken = jwtUtil.generateRefreshToken(user.getId());
+
+    return new LoginResponse(accessToken, refreshToken);
+  }
+
+  // Refresh token
+  public String refresh(String refreshToken) {
+    if (refreshToken == null || refreshToken.isBlank()) {
+      throw new InvalidCredentialsException("Refresh token is missing");
+    }
+
+    try {
+      Claims claims = jwtUtil.parseToken(refreshToken);
+
+      if (!"refresh".equals(claims.get("type"))) {
+        throw new InvalidCredentialsException("Invalid token type");
+      }
+
+      Integer userId = Integer.valueOf(claims.getSubject());
+
+      User user = userRepository.findById(userId)
+          .orElseThrow(() -> new NotFoundException("User not found"));
+
+      if (!user.getIsActive()) {
+        throw new NotFoundException("This account is not activated");
+      }
+
+      return jwtUtil.generateAccessToken(userId);
+
+    } catch (ExpiredJwtException e) {
+      throw new InvalidCredentialsException("Refresh token expired");
+    } catch (JwtException e) {
+      throw new InvalidCredentialsException("Invalid refresh token");
+    }
   }
 }

@@ -11,7 +11,7 @@ export async function getMovieDetails(tmdbId: number): Promise<MovieDetails> {
     return res.json();
   }
 
-  throw new ApiError("TMDB API failed");
+  throw new ApiError("TMDB API failed", res.status);
 }
 
 export async function searchMovie(query: string): Promise<MovieSearchResult> {
@@ -23,5 +23,5 @@ export async function searchMovie(query: string): Promise<MovieSearchResult> {
     return res.json();
   }
 
-  throw new ApiError("TMDB API failed");
+  throw new ApiError("TMDB API failed", res.status);
 }
