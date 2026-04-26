@@ -15,13 +15,13 @@ function SearchResultCard({ movie, onClick }: Props) {
       className="cursor-pointer p-3 rounded-lg transition hover:-translate-y-1 hover:shadow-lg"
     >
       <div className="flex">
-        <div>
+        <div className="flex-2">
           <img
             src={POSTER_BASE_URL + movie.posterPath}
-            className="w-[90px]"
+            className="w-full aspect-[2/3] object-cover rounded-md bg-black"
           />
         </div>        
-        <div className="ml-4 my-auto">
+        <div className="flex-8 ml-4 my-auto">
           <p className="text-base my-1">{movie.jaTitle}</p>
           <p className="text-muted-foreground">{movie.originalTitle}</p>
         </div>

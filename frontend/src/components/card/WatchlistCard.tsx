@@ -19,8 +19,12 @@ import {
 import { Trash } from "lucide-react";
 
 import WatchlistEditDialog from "@/components/dialog/WatchlistEditDialog";
+import ConfirmDialog from "@/components/dialog/ConfirmDialog";
 import { toast } from "sonner";
-import { updateIsWatched } from "@/api/watchlist";
+
+import { deleteWatchlistItem, updateIsWatched } from "@/api/watchlist";
+import { ApiError } from "@/errors/ApiError";
+import IconButtonConfirmDialog from "../dialog/IconButtonConfirmDialog";
 
 const POSTER_BASE_URL = import.meta.env.VITE_POSTER_BASE_URL;
 
@@ -40,14 +44,33 @@ function WatchlistCard({ item, onSuccess }: Props) {
 
     try {
       await updateIsWatched(item.watchlistId, value);
-    } catch(e) {
-      toast.error("更新できませんでした");
+    } catch (e) {
+      if (e instanceof ApiError) {
+        if (e.status === 409) {
+          toast.error("この作品は既にウォッチリストにあります");
+        } else {
+          toast.error("更新できませんでした");
+        }
+      } else {
+        toast.error("更新できませんでした");
+      }
     }
   };
 
   useEffect(() => {
     setIsWatched(!!item.isWatched);
   }, [item]);
+
+  const handleDelete = async () => {
+    try {
+      await deleteWatchlistItem(item.watchlistId);
+      toast.success("アイテムを削除しました");
+
+      onSuccess();
+    } catch (e) {
+      toast.error("削除できませんでした");
+    }
+  }
 
   return (
     <div className="w-[600px] mx-auto gap-4 p-1 border rounded-md">
@@ -89,6 +112,13 @@ function WatchlistCard({ item, onSuccess }: Props) {
                 {item.priority}%
               </span>
 
+              <IconButtonConfirmDialog
+                title="作品を削除しますか？"
+                text="この操作は取り消せません。削除すると完全に消去されます。"
+                buttonIcon={<Trash className="h-4 w-4" />}
+                leftOnClick={() => handleDelete()}
+              />
+              
               <WatchlistEditDialog
                 mode="edit"
                 isOpen={isOpen}
@@ -102,31 +132,32 @@ function WatchlistCard({ item, onSuccess }: Props) {
           </div>
 
           <AccordionContent className="px-4 pt-2 pb-4">
-            <div className="flex gap-4">
-              <img
-                src={POSTER_BASE_URL + item.movie.posterPath}
-                alt="poster"
-                className="w-[100px] aspect-[2/3] object-cover rounded-md bg-black"
-              />
-              <div className="flex-1 text-sm text-muted-foreground">
-                {item.note}
+            <div className="pl-4 pr-10">
+              <div className="flex gap-4">
+                <img
+                  src={POSTER_BASE_URL + item.movie.posterPath}
+                  alt="poster"
+                  className="w-[100px] aspect-[2/3] object-cover rounded-md bg-black"
+                />
+
+                <div className="flex flex-col flex-1">
+                  <div className="text-sm text-muted-foreground">
+                    {item.note}
+                  </div>
+
+                  <div className="mt-auto flex justify-end">
+                    <Button
+                      onClick={() => {
+                        setPrevItem(item);
+                        setIsOpen(true);
+                      }}
+                      disabled={isWatched}
+                    >
+                      編集
+                    </Button>
+                  </div>
+                </div>
               </div>
-
-              <Button
-                onClick={() => {
-                  setPrevItem(item);
-                  setIsOpen(true);
-                }}
-                disabled={isWatched}
-                className="my-auto"
-              >
-                編集
-              </Button>
-
-              <Button variant="destructive" size="icon">
-                <Trash className="h-4 w-4" />
-              </Button>
-              
             </div>
           </AccordionContent>
 
