@@ -5,10 +5,11 @@
 ### 一覧
 
 - [認証](#認証)
-  - [POST /register](#post-register)
-  - [POST /login](#post-login)
-  - [POST /logout](#post-logout)
-  - [GET /me](#get-me)
+  - [POST /auth/register](#post-authregister)
+  - [POST /auth/login](#post-authlogin)
+  - [POST /auth/logout](#post-authlogout)
+  - [GET /auth/me](#get-authme)
+  - [POST /auth/refresh](#post-authrefresh)
 - [映画](#映画)
   - [GET /movies](#get-movies)
   - [GET /movies/{tmdb\_id}](#get-moviestmdb_id)
@@ -31,14 +32,14 @@
 
 ## 認証
 
-### POST /register
+### POST /auth/register
 
 ユーザー登録
 
 <!-- omit in toc -->
 #### Request
 
-- Content-Type: `application/x-www-form-urlencoded`
+- Content-Type: `application/json`
 - Body:
   | name     | type   | required | description    |
   | -------- | ------ | -------- | -------------- |
@@ -55,16 +56,23 @@
   | ------ | ------- | ----------- |
   | userId | integer | ユーザーID  |
 
+<!-- omit in toc -->
+#### Error Responses
+
+| status       | descruption              |
+| ------------ | ------------------------ |
+| 409 Conflict | アカウントが既に存在する |
+
 ---
 
-### POST /login
+### POST /auth/login
 
-ユーザー認証（Spring Security）
+ユーザー認証
 
 <!-- omit in toc -->
 #### Request
 
-- Content-Type: `application/x-www-form-urlencoded`
+- Content-Type: `application/json`
 - Body:
   | name     | type   | required | description    |
   | -------- | ------ | -------- | -------------- |
@@ -74,11 +82,30 @@
 <!-- omit in toc -->
 #### Response
 
-- `204 No Content`
+- `200 OK`
+- Content-Type: `application/json`
+- Body:
+  | field       | type   | description        |
+  |-------------|--------|--------------------|
+  | accessToken | string | アクセストークン   |
+
+- Set-Cookie:
+  | name         | description            |
+  | ------------ | ---------------------- |
+  | refreshToken | リフレッシュトークン   |
+  
+
+<!-- omit in toc -->
+#### Error Responses
+
+| status           | descruption            |
+| ---------------- | ---------------------- |
+| 401 Unauthorized | パスワードが正しくない |
+| 404 Not Found    | ユーザーが存在しない／使用不可なアカウント |
 
 ---
 
-### POST /logout
+### POST /auth/logout
 
 ログアウト（Spring Security）
 
@@ -86,10 +113,14 @@
 #### Response
 
 - `204 No Content`
+- Set-Cookie:
+  | name         | description  |
+  | ------------ | ------------ |
+  | refreshToken | 削除         |
 
 ---
 
-### GET /me
+### GET /auth/me
 
 ログイン中であることを確かめる
 
@@ -97,6 +128,37 @@
 #### Response
 
 - `200 OK`
+
+---
+
+### POST /auth/refresh
+
+アクセストークンを再発行する
+
+<!-- omit in toc -->
+#### Request
+
+- Cookie
+  | name         | required | description            |
+  | ------------ | -------- | ---------------------- |
+  | refreshToken | yes      | リフレッシュトークン   |
+
+<!-- omit in toc -->
+#### Response
+
+- `200 OK`
+- Content-Type: `application/json`
+- Body:
+  | field       | type   | description            |
+  | ----------- | ------ | ---------------------- |
+  | accessToken | string | 新しいアクセストークン |
+
+<!-- omit in toc -->
+#### Error Responses
+
+| status           | descruption                              |
+| ---------------- | ---------------------------------------- |
+| 401 Unauthorized | リフレッシュトークンが無効または期限切れ |
 
 ---
 
@@ -120,19 +182,20 @@ TMDBで映画をタイトル検索し、20件取得する
 - `200 OK`
 - Content-Type: `application/json`
 - Body:
-  | field         | type    | description        |
-  | ------------- | ------- | ------------------ |
-  | tmdbId        | integer | TMDB内のID         |
-  | jaTitle       | string  | 日本語タイトル     |
-  | originalTitle | string  | 原題               |
-  | posterPath    | string  | ポスター画像のパス |
+  | field            | type    | description        |
+  | ---------------- | ------- | ------------------ |
+  | results          | object  |                    |
+  | └ tmdbId        | integer | TMDB内のID         |
+  | └ jaTitle       | string  | 日本語タイトル     |
+  | └ originalTitle | string  | 原題               |
+  | └ posterPath    | string  | ポスター画像のパス |
 
 - Example:
   ```json
   {
     "results": [
       {
-        "tmdbId": 123,
+        "tmdbId": 11,
         "jaTitle": "スター・ウォーズ",
         "originalTitle": "Star Wars",
         "posterPath": "/xxx.jpg"
@@ -245,11 +308,11 @@ TMDBで映画をタイトル検索し、20件取得する
 #### Request
 
 - Query Parameters:
-  | name  | type    | required | default   | description  |
-  | ----- | ------- | -------- | --------- | ------------ |
-  | page  | integer | no       | 1         | ページ数     |
-  | sort  | string  | no       | createdAt | 並べ替えキー |
-  | order | string  | no       | desc      | 昇順／降順   |
+  | name  | type    | required | description  | allowed values | default   |
+  | ----- | ------- | -------- | ------------ | -------------- | --------- |
+  | page  | integer | no       | ページ数     | - | 1         |
+  | sort  | string  | no       | 並べ替えキー | jaTitle, releaseYear, createdAt, updatedAt, score, watchedAt | createdAt |
+  | order | string  | no       | 昇順／降順   | ASC, DESC | DESC      |
 
 <!-- omit in toc -->
 #### Response
@@ -266,7 +329,7 @@ TMDBで映画をタイトル検索し、20件取得する
   | └ score      | number  | 点数（0.0〜5.0）      |
   | totalPages    | integer | (レビュー数 / 12) + 1 |
 
-- Body:
+- Example:
   ```json
   {
     "reviews": [
@@ -441,6 +504,13 @@ TMDBで映画をタイトル検索し、20件取得する
   }
   ```
 
+<!-- omit in toc -->
+#### Error Responses
+
+| status       | descruption                        |
+| ------------ | ---------------------------------- |
+| 409 Conflict | 映画が既にウォッチリストに存在する |
+
 ---
 
 ### GET /watchlist
@@ -514,6 +584,13 @@ TMDBで映画をタイトル検索し、20件取得する
 #### Response
 
 - `204 No Content`
+
+<!-- omit in toc -->
+#### Error Responses
+
+| status       | descruption                        |
+| ------------ | ---------------------------------- |
+| 409 Conflict | 映画が既にウォッチリストに存在する |
 
 ---
 

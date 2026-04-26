@@ -2,24 +2,17 @@ import { useNavigate } from "react-router-dom";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { logout } from "@/api/auth";
 
 function LogoutButton() {
   const navigate = useNavigate();
   
   const handleLogout: () => Promise<void> = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
+      await logout();
 
-      if (res.status === 204) {
-        navigate("/login");
-      } else {
-        toast.error("ログアウトに失敗しました");
-      }
+      toast.success("ログアウトしました");
+      navigate("/login");
     } catch (e) {
       toast.error("ログアウトに失敗しました");
     }

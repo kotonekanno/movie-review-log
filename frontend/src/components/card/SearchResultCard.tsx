@@ -1,7 +1,7 @@
-import type { Movie } from "@/types/movie";
+import type { MovieOverview } from "@/types/movie";
 
 interface Props {
-  movie: Movie;
+  movie: MovieOverview;
   onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 
@@ -11,16 +11,19 @@ function SearchResultCard({ movie, onClick }: Props) {
   return (
     <div
       onClick={onClick}
-      style={{ border: "1px solid #ccc", margin: 5, padding: 5 }}
-      className="cursor-pointer transition hover:-translate-y-1 hover:shadow-lg"
+      style={{ border: "1px solid #ccc" }}
+      className="cursor-pointer p-3 rounded-lg transition hover:-translate-y-1 hover:shadow-lg"
     >
-      <div style={{ display: "flex" }}>
-        <div style={{ flex: 3 }}>
-          <img src={POSTER_BASE_URL + movie.posterPath} style={{ width: 80 }} />
+      <div className="flex">
+        <div>
+          <img
+            src={POSTER_BASE_URL + movie.posterPath}
+            className="w-[90px]"
+          />
         </div>        
-        <div style={{ flex: 7 }}>
-          <p>{movie.jaTitle}</p>
-          <p>{movie.originalTitle}</p>
+        <div className="ml-4 my-auto">
+          <p className="text-base my-1">{movie.jaTitle}</p>
+          <p className="text-muted-foreground">{movie.originalTitle}</p>
         </div>
       </div>      
     </div>

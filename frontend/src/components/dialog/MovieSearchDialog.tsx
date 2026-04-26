@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { Movie } from "@/types/movie";
+import type { MovieOverview, MovieSearchResult } from "@/types/movie";
 
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupInput, InputGroupAddon } from "@/components/ui/input-group";
@@ -15,16 +15,15 @@ import { Search, Loader2 } from "lucide-react";
 
 import SearchResultCard from "@/components/card/SearchResultCard";
 import { toast } from "sonner";
+import { searchMovie } from "@/api/movie";
 
 interface MovieSearchDialogProps {
-  onSelectMovie: (movie: Movie) => void;
+  onSelectMovie: (movie: MovieOverview) => void;
 }
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
   const [query, setQuery] = useState<string>("");
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [movies, setMovies] = useState<MovieOverview[]>([]);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -32,22 +31,12 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
   const handleSearch = async () => {
     try {
       setLoading(true);
+      const data: MovieSearchResult = await searchMovie(query);
 
-      const res: Response = await fetch(`${API_BASE_URL}/movies?query=${encodeURIComponent(query)}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setMovies(data.results);
-        setHasSearched(true);
-      } else {
-        toast.error("エラーが起きました");
-      }
+      setMovies(data.results);
+      setHasSearched(true);
     } catch (e) {
-      toast.error("エラーが起きました");
+      toast.error("検索中にエラーが起きました");
     } finally {
       setLoading(false);
     }
@@ -61,13 +50,13 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="w-full max-w-xl h-[90vh] flex flex-col">
+      <DialogContent className="w-full max-w-none sm:max-w-lg h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>映画検索</DialogTitle>
+          <DialogTitle className="text-xl text-center">映画検索</DialogTitle>
         </DialogHeader>
 
-        <div className="flex gap-2 mb-4">
-          <InputGroup className="max-w-xs">
+        <div className="flex gap-2 mb-4 mx-4">
+          <InputGroup className="w-full">
             <InputGroupInput
               value={query}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setQuery(e.target.value)}}
@@ -88,7 +77,7 @@ function MovieSearchDialog({ onSelectMovie }: MovieSearchDialogProps) {
         <div className="flex-1 overflow-y-auto">
           {loading ? (
             <div className="flex justify-center items-center h-full">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
             </div>
           ) : hasSearched && movies.length === 0 ? (
             <p className="text-center text-muted-foreground mt-8">

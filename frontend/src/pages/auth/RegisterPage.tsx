@@ -7,31 +7,32 @@ import { toast } from "sonner";
 
 import AuthForm from "@/components/form/AuthForm"
 import LoadingOverlay from "@/components/others/LoadingOverlay";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { register } from "@/api/auth";
+import { ApiError } from "@/errors/ApiError";
 
 function RegisterPage() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  /*const handleRegister = async ({ email, password }: AuthFormValues) => {
+  /*const handleRegister = async (form: AuthFormValues) => {
     setLoading(true);
     
     try {
-      const res: Response = await fetch(`${API_BASE_URL}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ email, password })
-      });
-
-      if (res.status === 204) {
-        navigate("/login");
-      } else if (res.status === 409) {
-        toast.warning("このメールアドレスは既に登録されています");
-      }
+      await register(form);
+      
+      toast.success("アカウントを作成しました");
+      navigate("/login");
     } catch (e) {
-      toast.error("登録に失敗しました");
+      if (e instanceof ApiError) {
+        if (e.status === 409) {
+          toast.warning("このメールアドレスは既に登録されています");
+        } else {
+          toast.error("登録に失敗しました");
+        }
+      } else {
+        toast.error("登録に失敗しました");
+      }
     } finally {
       setLoading(false);
     }

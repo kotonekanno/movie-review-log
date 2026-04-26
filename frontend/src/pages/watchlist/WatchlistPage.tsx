@@ -9,8 +9,7 @@ import AddButton from "@/components/button/AddButton";
 import WatchlistEditDialog from "@/components/dialog/WatchlistEditDialog";
 import ConfirmDialog from "@/components/dialog/ConfirmDialog";
 import WatchlistCardSkeleton from "@/components/skeleton/WatchlistCardSkeleton";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { getWatchlist, bulkDeleteWatchlistItems } from "@/api/watchlist";
 
 function WatchlistPage() {
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
@@ -22,19 +21,10 @@ function WatchlistPage() {
     try {
       setLoading(true);
 
-      const res: Response = await fetch(`${API_BASE_URL}/watchlist`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+      const data: FetchWatchlistResponse = await getWatchlist();
 
-      if (res.status === 200) {
-        const data: FetchWatchlistResponse = await res.json();
-        setWatchlist(data.watchlist);
-        setWatched(data.watched);
-      } else {
-        toast.error("ウォッチリストの取得に失敗しました");
-      }
+      setWatchlist(data.watchlist);
+      setWatched(data.watched);
     } catch (e) {
       toast.error("ウォッチリストの取得に失敗しました");
     } finally {
@@ -44,18 +34,12 @@ function WatchlistPage() {
 
   const handleDeleteAll = async () => {
     try {
-      const res: Response = await fetch(`${API_BASE_URL}/watchlist/bulk-delete`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+      const token = localStorage.getItem("token");
 
-      if (res.status === 204) {
-        toast.success("視聴済み作品を全て削除しました");
-        await fetchWatchlist();
-      } else {
-        toast.error("削除できませんでした");
-      }
+      await bulkDeleteWatchlistItems();
+
+      toast.success("視聴済み作品を全て削除しました");
+      await fetchWatchlist();
     } catch (e) {
       toast.error("削除できませんでした");
     }

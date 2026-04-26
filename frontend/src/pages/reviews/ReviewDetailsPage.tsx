@@ -11,8 +11,7 @@ import ConfirmDialog from "@/components/dialog/ConfirmDialog";
 import MovieDetailsCard from "@/components/card/MovieDetailsCard";
 import ScoreStars from "@/components/others/ScoreStars";
 import ReviewDetailsPageSkeleton from "@/components/skeleton/ReviewDetailsPageSkeleton";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { deleteReview, getReviewDetails } from "@/api/reviews";
 
 function ReviewDetailsPage() {
   const navigate = useNavigate();
@@ -35,19 +34,10 @@ function ReviewDetailsPage() {
     try {
       setLoading(true);
 
-      const res = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+      const data = await getReviewDetails(reviewId!);
 
-      if (res.status === 200) {
-        const data = await res.json();
-        setReview(data);
-        setMovie(data.movie);
-      } else {
-        toast.error("レビューの取得に失敗しました");
-      }
+      setReview(data);
+      setMovie(data.movie);
     } catch (e) {
       toast.error("レビューの取得に失敗しました");
     } finally {
@@ -57,17 +47,10 @@ function ReviewDetailsPage() {
 
   const handleDelete = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-      if (res.status === 204) {
-        navigate("/reviews");
-        toast.success("レビューを削除しました");
-      } else {
-        toast.error("レビューの削除に失敗しました");
-      }
+      await deleteReview(reviewId!);
+      
+      navigate("/reviews");
+      toast.success("レビューを削除しました");
     } catch (e) {
       toast.error("レビューの削除に失敗しました");
     }

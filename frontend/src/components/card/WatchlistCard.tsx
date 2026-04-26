@@ -16,11 +16,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Trash } from "lucide-react";
 
 import WatchlistEditDialog from "@/components/dialog/WatchlistEditDialog";
 import { toast } from "sonner";
+import { updateIsWatched } from "@/api/watchlist";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const POSTER_BASE_URL = import.meta.env.VITE_POSTER_BASE_URL;
 
 interface Props {
@@ -38,21 +39,7 @@ function WatchlistCard({ item, onSuccess }: Props) {
     setIsWatched(value);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/watchlist`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          watchlistId: item.watchlistId,
-          isWatched: value,
-        }),
-        credentials: "include",
-      });
-
-      if (res.status === 204) {
-        return;
-      } else {
-        toast.error("更新できませんでした");
-      }
+      await updateIsWatched(item.watchlistId, value);
     } catch(e) {
       toast.error("更新できませんでした");
     }
@@ -102,17 +89,6 @@ function WatchlistCard({ item, onSuccess }: Props) {
                 {item.priority}%
               </span>
 
-              <Button
-                onClick={() => {
-                  setPrevItem(item);
-                  setIsOpen(true);
-                }}
-                disabled={isWatched}
-                className="my-auto"
-              >
-                編集
-              </Button>
-
               <WatchlistEditDialog
                 mode="edit"
                 isOpen={isOpen}
@@ -135,6 +111,22 @@ function WatchlistCard({ item, onSuccess }: Props) {
               <div className="flex-1 text-sm text-muted-foreground">
                 {item.note}
               </div>
+
+              <Button
+                onClick={() => {
+                  setPrevItem(item);
+                  setIsOpen(true);
+                }}
+                disabled={isWatched}
+                className="my-auto"
+              >
+                編集
+              </Button>
+
+              <Button variant="destructive" size="icon">
+                <Trash className="h-4 w-4" />
+              </Button>
+              
             </div>
           </AccordionContent>
 
