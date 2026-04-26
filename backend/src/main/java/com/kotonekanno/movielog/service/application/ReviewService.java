@@ -10,14 +10,12 @@ import com.kotonekanno.movielog.entity.User;
 import com.kotonekanno.movielog.exception.custom.AccessDeniedException;
 import com.kotonekanno.movielog.exception.custom.NotFoundException;
 import com.kotonekanno.movielog.dto.review.ReviewForm;
-import com.kotonekanno.movielog.repository.MovieRepository;
 import com.kotonekanno.movielog.repository.ReviewRepository;
 import com.kotonekanno.movielog.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,18 +26,15 @@ public class ReviewService {
 
   private final ReviewRepository reviewRepository;
   private final UserRepository userRepository;
-  private final MovieRepository movieRepository;
   private final MovieService movieService;
 
   public ReviewService(
       ReviewRepository reviewRepository,
       UserRepository userRepository,
-      MovieRepository movieRepository,
       MovieService movieService
   ) {
     this.reviewRepository = reviewRepository;
     this.userRepository = userRepository;
-    this.movieRepository = movieRepository;
     this.movieService = movieService;
   }
 

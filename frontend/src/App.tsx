@@ -19,7 +19,7 @@ function App() {
 
   useEffect(() => {
     const handler = () => {
-      toast.error("ログインし直してください");
+      toast.warning("ログインし直してください");
       navigate("/login");
     };
 

@@ -23,6 +23,10 @@ export async function apiClient(
     return res;
   }
 
+  if (path.startsWith("/auth")) {
+    return res;
+  }
+
   if (!isRefreshing) {
     isRefreshing = true;
     refreshPromise = refreshToken();
