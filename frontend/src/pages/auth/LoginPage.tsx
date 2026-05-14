@@ -26,6 +26,8 @@ function LoginPage() {
       if (e instanceof ApiError) {
         if (e.status === 401) {
           toast.error("パスワードが一致しません");
+        } else if (e.status === 403) {
+          toast.error("メールアドレス認証を行ってください");
         } else if (e.status === 404) {
           toast.error("アカウントが見つかりません");
         } else {

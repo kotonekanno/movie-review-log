@@ -1,6 +1,7 @@
 package com.kotonekanno.movielog.controller;
 
 import com.kotonekanno.movielog.config.properties.CookieProperties;
+import com.kotonekanno.movielog.config.properties.FrontendProperties;
 import com.kotonekanno.movielog.config.properties.JwtProperties;
 import com.kotonekanno.movielog.dto.auth.LoginRequest;
 import com.kotonekanno.movielog.dto.auth.LoginResponse;
@@ -19,16 +20,19 @@ import java.util.Map;
 public class AuthController {
 
   private final AuthService authService;
+  private final String frontendUrl;
   private final boolean secure;
   private final String sameSite;
   private final long refreshTokenExpiration;
 
   public AuthController(
       AuthService authService,
+      FrontendProperties frontendProperties,
       CookieProperties cookieProperties,
       JwtProperties jwtProperties
   ) {
     this.authService = authService;
+    this.frontendUrl = frontendProperties.getFrontendUrl();
     this.secure = cookieProperties.getSecure();
     this.sameSite = cookieProperties.getSameSite();
     this.refreshTokenExpiration = jwtProperties.getRefreshTokenExpiration();
@@ -41,6 +45,14 @@ public class AuthController {
     User user = authService.register(request.email(), request.password());
     return ResponseEntity.status(201)
         .body(Map.of("userId", user.getId()));
+  }
+
+  // Verify email
+  // returns 200 OK
+  @GetMapping("/verify")
+  public ResponseEntity<Void> verify(@RequestParam("token") String token) {
+      authService.verify(token);
+      return ResponseEntity.ok().build();
   }
 
   // Log In

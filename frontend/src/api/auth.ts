@@ -23,6 +23,19 @@ export async function register(form: AuthFormValues): Promise<void> {
   throw new ApiError("POST /auth/register failed", res.status);
 }
 
+// メールアドレス認証
+export async function verify(token: String) {
+  const res = await apiClient(`/auth/verify?token=${token}`, {
+    method: "GET",
+  });
+
+  if (res.status === 200) {
+    return;
+  }
+
+  throw new ApiError("GET /auth/verify failed", res.status);
+}
+
 // ログイン
 export async function login(form: AuthFormValues): Promise<void> {
   const res = await apiClient("/auth/login", {
@@ -41,6 +54,10 @@ export async function login(form: AuthFormValues): Promise<void> {
   
   if (res.status === 401) {
     throw new ApiError("POST /auth/login failed: invalid credentials", res.status);
+  }
+
+  if (res.status === 403) {
+    throw new ApiError("POST /auth/login failed: account not verified", res.status);
   }
   
   if (res.status === 404) {

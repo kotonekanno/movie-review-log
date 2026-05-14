@@ -3,6 +3,7 @@ import { useNavigate, Routes, Route } from "react-router-dom";
 
 import MainLayout from "@/layout/MainLayout";
 import ProtectedLayout from "@/layout/ProtectedLayout";
+import { toast, Toaster } from "sonner";
 
 import RegisterPage from "@/pages/auth/RegisterPage";
 import LoginPage from "@/pages/auth/LoginPage";
@@ -12,7 +13,7 @@ import ReviewCreatePage from "@/pages/reviews/ReviewCreatePage";
 import ReviewEditPage from "@/pages/reviews/ReviewEditPage";
 import ReviewDetailsPage from "@/pages/reviews/ReviewDetailsPage";
 import WatchlistPage from "@/pages/watchlist/WatchlistPage";
-import { toast, Toaster } from "sonner";
+import VerifyPage from "./pages/auth/VerifyPage";
 
 function App() {
   const navigate = useNavigate();
@@ -36,6 +37,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/verify" element={<VerifyPage />}></Route>
 
             <Route element={<ProtectedLayout />}>
               <Route path="/" element={<HomePage />} />
