@@ -15,14 +15,17 @@ function RegisterPage() {
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  /*const handleRegister = async (form: AuthFormValues) => {
+  const handleRegister = async (form: AuthFormValues) => {
     setLoading(true);
     
     try {
       await register(form);
       
-      toast.success("アカウントを作成しました");
-      navigate("/login");
+      navigate("/verify-notice", {
+        state: {
+          email: form.email,
+        },
+      });
     } catch (e) {
       if (e instanceof ApiError) {
         if (e.status === 409) {
@@ -36,20 +39,11 @@ function RegisterPage() {
     } finally {
       setLoading(false);
     }
-  };*/
-
-  // デモ用
-  const handleRegister = () => {
-    toast.warning("新規登録はできません");
-  }
+  };
 
   return (
     <>
       {loading && <LoadingOverlay open={true}/>}
-
-      <p className="text-red-500 text-center py-3">
-        ※指定されたテストアカウントでのみログインできます
-      </p>
 
       <AuthForm
         onSubmit={handleRegister}

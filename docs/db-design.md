@@ -5,6 +5,7 @@
 ### テーブル一覧
 
 - [users](#users)
+- [verification\_tokens](#verification_tokens)
 - [movies](#movies)
 - [movie\_details](#movie_details)
 - [reviews](#reviews)
@@ -12,6 +13,7 @@
 
 ```mermaid
 erDiagram
+    USERS ||--o{ VERIFICATION_TOKENS : has
     USERS ||--o{ REVIEWS : has
     USERS ||--o{ WATCHLIST_ITEMS : has
     MOVIES ||--|| MOVIE_DETAILS : has
@@ -23,6 +25,14 @@ erDiagram
         TIMESTAMP created_at
         TIMESTAMP deleted_at
         BOOLEAN is_active
+        BOOLEAN is_verified
+    }
+
+    VERIFICATION_TOKENS {
+        SERIAL id
+        TEXT token
+        INT user_id
+        TIMESTAMP expires_at
     }
 
     MOVIES {
@@ -77,6 +87,7 @@ erDiagram
 | created_at     | TIMESTAMP    | アカウント作成日時 |
 | deleted_at     | TIMESTAMP    | アカウント削除日時 |
 | is_active      | BOOLEAN      | アカウントの有効性 |
+| is_verified    | BOOLEAN      | メールアドレス認証の可否 |
 
 - email
     - UNIQUE
@@ -85,6 +96,27 @@ erDiagram
 - is_active
     - DEFAULT FALSE
     - TRUEの場合のみログイン可能
+    - ログインをテストアカウントに制限するため、DBで直接カラムを書き換える方法のみ
+- is_verified
+  - DEFAULT FALSE
+  - TRUEの場合のみログイン可能
+  - メールアドレス認証を完了するとTRUEになる
+
+## verification_tokens
+
+メールアドレスの認証トークン
+
+| カラム名       | 型           | 説明               |
+| -------------- | ------------ | ------------------ |
+| id             | SERIAL       | ID                 |
+| token          | TEXT         | メールアドレス     |
+| user_id        | INT          | ユーザーID         |
+| expires_at     | TIMESTAMP    | 有効期限           |
+
+- user_id
+    - FOREIGN: users.id(ON DELETE CASCADE)
+- expires_at
+  - トークンの有効期限（30分）
 
 ## movies
 
@@ -108,7 +140,7 @@ erDiagram
 | カラム名             | 型           | 説明           |
 | -------------------- | ------------ | -------------- |
 | movie_id             | INT          | 映画ID         |
-| expires_at           | TIMESTAMP    | 最終利用日時   |
+| expires_at           | TIMESTAMP    | 有効期限       |
 | genres               | TEXT[]       | ジャンル       |
 | production_countries | VARCHAR(2)[] | 製作国（ISO国名コード）         |
 | release_year         | INT          | 公開年         |

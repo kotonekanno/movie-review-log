@@ -10,15 +10,9 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(NotFoundException.class)
-  public ResponseEntity<Map<String, String>> handleNotFoundException(NotFoundException e) {
-    return ResponseEntity.status(404)  // Not found
-        .body(Map.of("error", e.getMessage()));
-  }
-
-  @ExceptionHandler(AlreadyExistsException.class)
-  public ResponseEntity<Map<String, String>> handleAlreadyExistsException(AlreadyExistsException e) {
-    return ResponseEntity.status(409)  // Conflict
+  @ExceptionHandler(InvalidCredentialsException.class)
+  public ResponseEntity<Map<String, String>> handleInvalidCredentialsException(InvalidCredentialsException e) {
+    return ResponseEntity.status(401)  // Unauthorized
         .body(Map.of("error", e.getMessage()));
   }
 
@@ -28,9 +22,21 @@ public class GlobalExceptionHandler {
         .body(Map.of("error", e.getMessage()));
   }
 
-  @ExceptionHandler(InvalidCredentialsException.class)
-  public ResponseEntity<Map<String, String>> handleInvalidCredentialsException(InvalidCredentialsException e) {
-    return ResponseEntity.status(401)  // Unauthorized
+  @ExceptionHandler(NotVerifiedException.class)
+  public ResponseEntity<Map<String, String>> handleNotVerifiedException(NotVerifiedException e) {
+    return ResponseEntity.status(403)
+        .body(Map.of("error", e.getMessage()));
+  }
+
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<Map<String, String>> handleNotFoundException(NotFoundException e) {
+    return ResponseEntity.status(404)  // Not found
+        .body(Map.of("error", e.getMessage()));
+  }
+
+  @ExceptionHandler(AlreadyExistsException.class)
+  public ResponseEntity<Map<String, String>> handleAlreadyExistsException(AlreadyExistsException e) {
+    return ResponseEntity.status(409)  // Conflict
         .body(Map.of("error", e.getMessage()));
   }
 
