@@ -5,6 +5,7 @@ import com.kotonekanno.movielog.config.properties.FrontendProperties;
 import com.kotonekanno.movielog.config.properties.JwtProperties;
 import com.kotonekanno.movielog.dto.auth.LoginRequest;
 import com.kotonekanno.movielog.dto.auth.LoginResponse;
+import com.kotonekanno.movielog.dto.auth.ResendVerificationRequest;
 import com.kotonekanno.movielog.entity.User;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseCookie;
@@ -53,6 +54,17 @@ public class AuthController {
   public ResponseEntity<Void> verify(@RequestParam("token") String token) {
       authService.verify(token);
       return ResponseEntity.ok().build();
+  }
+
+  // Resend Verification mail
+  // returns 200 OK
+  @PostMapping("/resend-verification")
+  public ResponseEntity<Void> resendVeirication(
+      @RequestBody ResendVerificationRequest request
+  ) {
+    authService.resendVerification(request.email());
+
+    return ResponseEntity.ok().build();
   }
 
   // Log In

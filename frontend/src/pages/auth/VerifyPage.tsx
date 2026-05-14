@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { verify } from "@/api/auth";
-import { toast } from "sonner";
-import VerifySuccessPage from "./verification/VerifySuccessPage";
-import VerifyFailedPage from "./verification/VerifyFailedPage";
 
 type Status = "loading" | "success" | "error";
 
 function VerifyPage() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const [status, setStatus] = useState<Status>("loading");
 
@@ -35,15 +33,12 @@ function VerifyPage() {
     run();
   }, [searchParams]);
 
-  if (status === "loading") {
-    return <p>認証中...</p>;
-  }
-
   if (status === "success") {
-    return <VerifySuccessPage />;
+    navigate("/verified");
+    return;
   }
 
-  return <VerifyFailedPage />;
+  navigate("/verify-failed");
 }
 
 export default VerifyPage;

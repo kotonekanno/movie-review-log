@@ -23,6 +23,30 @@ export async function register(form: AuthFormValues): Promise<void> {
   throw new ApiError("POST /auth/register failed", res.status);
 }
 
+// 認証メール再送信
+export async function resendVerification(email: String) {
+  const res = await apiClient("/auth/resend-verification", {
+    method: "POST",
+    body: JSON.stringify ({
+      email: email
+    })
+  });
+
+  if (res.status === 200) {
+    return;
+  }
+
+  if (res.status === 404) {
+    throw new ApiError("POST /auth/resend-verification failed: user not found", res.status);
+  }
+
+  if (res.status === 409) {
+    throw new ApiError("POST /auth/resend-verification failed: email already verified", res.status);
+  }
+
+  throw new ApiError("POST /auth/resend-verification failed", res.status);
+}
+
 // メールアドレス認証
 export async function verify(token: String) {
   const res = await apiClient(`/auth/verify?token=${token}`, {

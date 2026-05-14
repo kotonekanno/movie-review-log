@@ -21,8 +21,11 @@ function RegisterPage() {
     try {
       await register(form);
       
-      toast.success("アカウントを作成しました");  // 「メールを送りました」画面に遷移
-      navigate("/login");
+      navigate("/verify-notice", {
+        state: {
+          email: form.email,
+        },
+      });
     } catch (e) {
       if (e instanceof ApiError) {
         if (e.status === 409) {
@@ -41,10 +44,6 @@ function RegisterPage() {
   return (
     <>
       {loading && <LoadingOverlay open={true}/>}
-
-      <p className="text-red-500 text-center py-3">
-        ※指定されたテストアカウントでのみログインできます
-      </p>
 
       <AuthForm
         onSubmit={handleRegister}

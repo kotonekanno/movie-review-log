@@ -7,6 +7,7 @@
 - [認証](#認証)
   - [POST /auth/register](#post-authregister)
   - [GET /auth/verify](#get-authverify)
+  - [POST /auth/resend-verification](#post-authresend-verification)
   - [POST /auth/login](#post-authlogin)
   - [POST /auth/logout](#post-authlogout)
   - [GET /auth/me](#get-authme)
@@ -89,6 +90,35 @@
 | status           | descruption            |
 | ---------------- | ---------------------- |
 | 401 Unauthorized | 不正なトークン         |
+
+---
+
+### POST /auth/resend-verification
+
+認証メールの再送信
+
+
+<!-- omit in toc -->
+#### Request
+
+- Content-Type: `application/json`
+- Body:
+  | name     | type   | required | description    |
+  | -------- | ------ | -------- | -------------- |
+  | email    | string | yes      | メールアドレス |
+
+
+<!-- omit in toc -->
+#### Response
+
+- `200 OK`
+
+<!-- omit in toc -->
+#### Error Responses
+
+| status       | descruption              |
+| ------------ | ------------------------ |
+| 409 Conflict | 認証済みのメールアドレス |
 
 ---
 

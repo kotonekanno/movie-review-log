@@ -17,6 +17,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -48,6 +49,7 @@ public class AuthService {
   }
 
   // Register
+  @Transactional
   public User register(String email, String rawPassword) {
     if (userRepository.findByEmail(email).isPresent()) {
       throw new AlreadyExistsException("Email already exists: " + email);
@@ -62,22 +64,41 @@ public class AuthService {
 
     userRepository.save(user);
 
-    String token = UUID.randomUUID().toString();
-
-    VerificationToken verificationToken = new VerificationToken();
-
-    verificationToken.setToken(token);
-    verificationToken.setUser(user);
-    verificationToken.setExpiresAt(LocalDateTime.now().plusMinutes(30));
-
-    verificationTokenRepository.save(verificationToken);
-
-    mailService.sendVerificationMail(user.getEmail(), token);
-
+    sendVerificationMail(user);
     return user;
   }
 
+  // Resend email verification
+  public void resendVerification(String email) {
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new NotFoundException("User not found"));
+
+    if (user.getIsVerified()) {
+      throw new AlreadyExistsException("Email already verified");
+    }
+
+    sendVerificationMail(user);
+  }
+
+  // Send email verification token
+  private void sendVerificationMail(User user) {
+    verificationTokenRepository.deleteByUser(user);
+
+    VerificationToken vt = new VerificationToken();
+
+    String token = UUID.randomUUID().toString();
+
+    vt.setToken(token);
+    vt.setUser(user);
+    vt.setExpiresAt(LocalDateTime.now().plusMinutes(30));
+
+    verificationTokenRepository.save(vt);
+
+    mailService.sendVerificationMail(user.getEmail(), token);
+  }
+
   // Verify email
+  @Transactional
   public void verify(String token) {
     VerificationToken vt = verificationTokenRepository.findByToken(token)
         .orElseThrow(() -> new InvalidCredentialsException("Invalid token"));

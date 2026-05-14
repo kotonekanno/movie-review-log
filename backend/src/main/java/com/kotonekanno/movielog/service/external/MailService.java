@@ -26,14 +26,26 @@ public class MailService {
     SimpleMailMessage message = new SimpleMailMessage();
 
     message.setTo(to);
-    message.setSubject("映画記録アプリ　メールアドレス認証");
+    message.setSubject("【映画記録】メールアドレス認証のお願い");
     message.setText(
         """
-          メールアドレスを認証するには、
-          下記のURLをクリックしてください。
+          映画記録をご利用いただきありがとうございます。
+          
+          アカウント登録を完了するには、
+          以下のURLにアクセスしてメールアドレス認証を行ってください。
           
           %s
-        """.formatted(verifyUrl)
+          
+          ※このURLの有効期限は30分です。
+          
+          
+          このメールに心当たりがない場合は、
+          このメールを破棄してください。
+          
+          ---
+          映画記録
+          %s
+        """.formatted(verifyUrl, frontendUrl)
     );
 
     mailSender.send(message);
