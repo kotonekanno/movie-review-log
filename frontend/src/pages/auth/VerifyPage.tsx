@@ -24,7 +24,6 @@ function VerifyPage() {
         await verify(token);
 
         setStatus("success");
-
       } catch (e) {
         setStatus("error");
       }
@@ -33,12 +32,19 @@ function VerifyPage() {
     run();
   }, [searchParams]);
 
-  if (status === "success") {
-    navigate("/verified");
-    return;
-  }
+  useEffect(() => {
+    if (status === "success") {
+      navigate("/verified");
+    }
 
-  navigate("/verify-failed");
+    if (status === "error") {
+      navigate("/verify-failed");
+    }
+  }, [status, navigate]);
+
+  return (
+    <p>検証中...</p>
+  );
 }
 
 export default VerifyPage;

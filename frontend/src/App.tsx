@@ -16,6 +16,7 @@ import WatchlistPage from "@/pages/watchlist/WatchlistPage";
 import VerifyNoticePage from "./pages/auth/verification/VerifyNoticePage";
 import VerifySuccessPage from "./pages/auth/verification/VerifySuccessPage";
 import VerifyFailedPage from "./pages/auth/verification/VerifyFailedPage";
+import VerifyPage from "./pages/auth/VerifyPage";
 
 function App() {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/verify" element={<VerifyPage />}></Route>
             <Route path="/verify-notice" element={<VerifyNoticePage />}></Route>
             <Route path="/verified" element={<VerifySuccessPage />}></Route>
             <Route path="/verify-failed" element={<VerifyFailedPage />}></Route>

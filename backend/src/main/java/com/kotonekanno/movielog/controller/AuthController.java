@@ -1,7 +1,6 @@
 package com.kotonekanno.movielog.controller;
 
 import com.kotonekanno.movielog.config.properties.CookieProperties;
-import com.kotonekanno.movielog.config.properties.FrontendProperties;
 import com.kotonekanno.movielog.config.properties.JwtProperties;
 import com.kotonekanno.movielog.dto.auth.LoginRequest;
 import com.kotonekanno.movielog.dto.auth.LoginResponse;
@@ -21,19 +20,16 @@ import java.util.Map;
 public class AuthController {
 
   private final AuthService authService;
-  private final String frontendUrl;
   private final boolean secure;
   private final String sameSite;
   private final long refreshTokenExpiration;
 
   public AuthController(
       AuthService authService,
-      FrontendProperties frontendProperties,
       CookieProperties cookieProperties,
       JwtProperties jwtProperties
   ) {
     this.authService = authService;
-    this.frontendUrl = frontendProperties.getFrontendUrl();
     this.secure = cookieProperties.getSecure();
     this.sameSite = cookieProperties.getSameSite();
     this.refreshTokenExpiration = jwtProperties.getRefreshTokenExpiration();
