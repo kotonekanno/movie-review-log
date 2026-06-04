@@ -20,6 +20,14 @@ public class SecurityConfig {
     this.jwtFilter = jwtFilter;
   }
 
+  private static final String[] PUBLIC_ENDPOINTS = {
+      "/auth/login",
+      "/auth/register",
+      "/auth/verify",
+      "/auth/resend-verification",
+      "/auth/refresh"
+  };
+
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -29,7 +37,7 @@ public class SecurityConfig {
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .requestMatchers("/auth/login", "/auth/register", "/auth/verify", "auth/resend-verification", "/auth/refresh").permitAll()
+            .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
             .anyRequest().authenticated()
         )
         .exceptionHandling(ex -> ex
