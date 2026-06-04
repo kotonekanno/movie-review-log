@@ -1,6 +1,7 @@
 package com.kotonekanno.movielog.repository;
 
 import com.kotonekanno.movielog.dto.review.ReviewListItem;
+import com.kotonekanno.movielog.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -31,4 +33,35 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
   );
 
   Optional<Review> findByIdAndDeletedAtIsNull(Integer id);
+
+  int countByUser(User user);
+
+  @Query("""
+    SELECT COUNT(r)
+    FROM Review r
+    WHERE r.user = :user
+      AND MONTH(r.createdAt) = :month
+      AND YEAR(r.createdAt) = YEAR(CURRENT_DATE)
+  """)
+  int countInCurrentMonth(User user, int month);
+
+  @Query("""
+    SELECT AVG(r.score)
+    FROM Review r
+    WHERE r.user = :user
+  """)
+  Optional<Double> getAverageScoreByUser(User user);
+
+  @Query("""
+    SELECT MONTH(r.createdAt), COUNT(r)
+    FROM Review r
+    WHERE r.user = :user
+      AND YEAR(r.createdAt) = :year
+    GROUP BY MONTH(r.createdAt)
+    ORDER BY MONTH(r.createdAt)
+  """)
+  List<Object[]> countPerMonth(
+      User user,
+      int year
+  );
 }
