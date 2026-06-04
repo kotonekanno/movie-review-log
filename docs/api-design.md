@@ -28,6 +28,9 @@
   - [PATCH /watchlist](#patch-watchlist)
   - [DELETE /watchlist/{watchlist\_id}](#delete-watchlistwatchlist_id)
   - [DELETE /watchlist/bulk-delete](#delete-watchlistbulk-delete)
+- [統計](#統計)
+  - [GET /statistics/overview](#get-statisticsoverview)
+  - [GET /statistics/monthly](#get-statisticsmonthly)
 - [外部API: The Movie Database API](#外部api-the-movie-database-api)
   - [検索](#検索)
   - [詳細取得](#詳細取得)
@@ -326,7 +329,7 @@ TMDBで映画をタイトル検索し、20件取得する
   | --------- | ------- | -------- | ---------------- |
   | tmdbId    | integer | yes      | TMDB内の映画ID   |
   | text      | string  | no       | 感想文           |
-  | score     | number  | yes      | 点数（0.0〜5.0） |
+  | score     | double  | yes      | 点数（0.0〜5.0） |
   | watchedAt | string  | yes      | 視聴日           |
 
 - Example:
@@ -384,7 +387,7 @@ TMDBで映画をタイトル検索し、20件取得する
   | └ reviewId   | integer | レビューID            |
   | └ title      | string  | 日本語タイトル        |
   | └ posterPath | string  | ポスター画像のパス    |
-  | └ score      | number  | 点数（0.0〜5.0）      |
+  | └ score      | double  | 点数（0.0〜5.0）      |
   | totalPages    | integer | (レビュー数 / 12) + 1 |
 
 - Example:
@@ -425,7 +428,7 @@ TMDBで映画をタイトル検索し、20件取得する
   | field                  | type    | description        |
   | ---------------------- | ------- | ------------------ |
   | reviewId               | integer | レビューID         |
-  | score                  | number  | 点数（0.0〜5.0）   |
+  | score                  | double  | 点数（0.0〜5.0）   |
   | text                   | string  | 感想文             |
   | watchedAt              | string  | 視聴日             |
   | movie                  | object  | 映画詳細情報       |
@@ -481,7 +484,7 @@ TMDBで映画をタイトル検索し、20件取得する
   | --------- | ------- | -------- | --------------- |
   | tmdbId    | integer | no       | TMDB内の映画ID  |
   | text      | string  | no       | 感想文          |
-  | score     | number  | no       | 点数（0.0-5.0） |
+  | score     | double  | no       | 点数（0.0-5.0） |
   | watchedAt | string  | no       | 視聴日          |
 
 - Example:
@@ -708,6 +711,82 @@ TMDBで映画をタイトル検索し、20件取得する
 #### Response
 
 - `204 No Content`
+
+
+## 統計
+
+### GET /statistics/overview
+
+統計情報を取得する
+
+<!-- omit in toc -->
+#### Request
+
+<!-- omit in toc -->
+#### Response
+
+- `200 OK`
+- Content-Type: `application/json`
+- Body:
+  | field                  | type    | description                |
+  | ---------------------- | ------- | -------------------------- |
+  | totalReviews           | integer | レビュー数の合計           |
+  | currentMonthReviews    | integer | 今月のレビュー数           |
+  | reviewsPerGenre        | array   | ジャンル毎のレビューの合計 |
+  | └ genre               | string  | ジャンル名                 |
+  | └ count               | integer | そのジャンルのレビュー数   |
+  | averageScore           | double  | 平均スコア（0.0-5.0）      |
+
+- Example:
+  ```json
+  {
+    "totalReviews": 200,
+    "currentMonthReviews": 10,
+    "reviewsPerGenre": [
+      {
+        "genre": "SF",
+        "count": 100
+      },
+      {
+        "genre": "ホラー",
+        "count": 100
+      }
+    ],
+    "averageScore": 3.5
+  }
+  ```
+
+---
+
+
+### GET /statistics/monthly
+
+指定した年の月毎の統計情報を取得する
+
+<!-- omit in toc -->
+#### Request
+
+- Query Parameters:
+  | name  | type    | required | description  | allowed values | default      |
+  | ----- | ------- | -------- | ------------ | -------------- | ------------ |
+  | year  | integer | no       | 対象年       | -              | [今年の西暦] |
+
+<!-- omit in toc -->
+#### Response
+
+- `200 OK`
+- Content-Type: `application/json`
+- Body:
+  | field           | type    | description           |
+  | --------------- | ------- | --------------------- |
+  | reviewsPerMonth | array   | 月毎のレビュー数（指定した年の12ヶ月分）|
+
+- Example:
+  ```json
+  {
+    "reviewsPerMonth": [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
+  }
+  ```
 
 
 ## 外部API: The Movie Database API
